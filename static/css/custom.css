@@ -1,0 +1,210 @@
+/* Custom Styling for TOAN 11 MASTER Web App */
+
+:root {
+    --app-font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    --quiz-gradient: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+}
+
+body {
+    font-family: var(--app-font);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Brand Logo */
+.brand-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--primary-gradient);
+    color: #ffffff;
+    border-radius: 10px;
+    font-size: 1.15rem;
+}
+
+.brand-text {
+    letter-spacing: -0.5px;
+    font-size: 1.25rem;
+}
+
+/* Hero Section */
+.hero-card {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #0284c7 100%);
+}
+
+.bg-gradient-header {
+    background: linear-gradient(to right, rgba(37, 99, 235, 0.08), rgba(59, 130, 246, 0.02));
+}
+
+.bg-gradient-quiz {
+    background: var(--quiz-gradient);
+}
+
+/* Stat Cards */
+.stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.06) !important;
+}
+
+.stat-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Chapter Card */
+.chapter-card {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chapter-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.08) !important;
+}
+
+.hover-primary:hover {
+    color: #2563eb !important;
+    text-decoration: underline !important;
+}
+
+.hover-success:hover {
+    color: #10b981 !important;
+    text-decoration: underline !important;
+}
+
+/* Sidebar Sticky */
+.sidebar-sticky {
+    position: sticky;
+    top: 70px;
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.sidebar-sticky::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar-sticky::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.15);
+    border-radius: 4px;
+}
+
+/* Lesson Content & Theory Sections */
+.lesson-article {
+    font-size: 1.05rem;
+    line-height: 1.8;
+}
+
+.lesson-article h4 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-top: 1.75rem;
+    margin-bottom: 1rem;
+    color: var(--bs-primary);
+    border-left: 4px solid var(--bs-primary);
+    padding-left: 0.75rem;
+}
+
+.formula-card {
+    background: rgba(37, 99, 235, 0.04);
+    border: 1px solid rgba(37, 99, 235, 0.15);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1.25rem 0;
+    text-align: center;
+}
+
+.example-box {
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+}
+
+.lesson-order-badge {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+}
+
+/* Quiz Specific Styling */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.option-label {
+    background: var(--bs-body-bg);
+    border: 2px solid var(--bs-border-color);
+    user-select: none;
+    transition: all 0.15s ease-in-out;
+}
+
+.option-label:hover {
+    border-color: #2563eb;
+    background-color: rgba(37, 99, 235, 0.04);
+}
+
+.option-label.selected {
+    border-color: #2563eb;
+    background-color: rgba(37, 99, 235, 0.08);
+    font-weight: 600;
+}
+
+.option-label.correct-choice {
+    border-color: #10b981 !important;
+    background-color: rgba(16, 185, 129, 0.12) !important;
+    color: #065f46 !important;
+}
+
+.option-label.wrong-choice {
+    border-color: #ef4444 !important;
+    background-color: rgba(239, 68, 68, 0.12) !important;
+    color: #991b1b !important;
+}
+
+/* Dark mode adjustments */
+[data-bs-theme="dark"] .bg-body-tertiary {
+    background-color: #0f172a !important;
+}
+
+[data-bs-theme="dark"] .card {
+    background-color: #1e293b;
+    border-color: #334155;
+}
+
+[data-bs-theme="dark"] .option-label {
+    border-color: #334155;
+}
+
+[data-bs-theme="dark"] .formula-card {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+[data-bs-theme="dark"] .example-box {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+/* Animation */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+.animate-pulse {
+    animation: pulse 2s infinite ease-in-out;
+}

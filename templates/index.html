@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}Trang chủ - Tổng hợp kiến thức Toán 11 Toàn Diện{% endblock %}
+
+{% block content %}
+<div class="homepage-container">
+    <!-- Hero Banner -->
+    <div class="hero-card card border-0 shadow-sm rounded-4 mb-4 text-white overflow-hidden position-relative">
+        <div class="hero-bg-overlay"></div>
+        <div class="card-body p-4 p-md-5 position-relative z-1">
+            <span class="badge bg-white text-primary fw-bold mb-2 px-3 py-1 text-uppercase">Chương trình GDPT mới 2018</span>
+            <h1 class="display-6 fw-extrabold mb-3">Toàn Bộ Kiến Thức & Bài Kiểm Tra Toán 11</h1>
+            <p class="lead text-light-50 mb-4" style="max-width: 720px;">
+                Tổng hợp đầy đủ lý thuyết, công thức trọng tâm, ví dụ mẫu có lời giải chi tiết cho toàn bộ 9 chương sách giáo khoa Toán 11 kèm hệ thống bài kiểm tra trắc nghiệm tự chấm điểm ở cuối mỗi chương.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ url_for('chapter_detail', chapter_id=1) }}" class="btn btn-light btn-lg px-4 fw-semibold text-primary d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-play-circle-fill"></i> Bắt đầu học từ Chương 1
+                </a>
+                <a href="{{ url_for('formulas') }}" class="btn btn-outline-light btn-lg px-4 fw-semibold d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-journal-check"></i> Tra cứu công thức
+                </a>
+                <a href="{{ url_for('calculator') }}" class="btn btn-outline-light btn-lg px-4 fw-semibold d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-cpu"></i> Máy tính giải toán
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 text-center p-3 stat-card">
+                <div class="stat-icon bg-primary-subtle text-primary mb-2 mx-auto">
+                    <i class="bi bi-journal-richtext fs-3"></i>
+                </div>
+                <div class="fs-3 fw-bold text-primary">{{ all_chapters|length }}</div>
+                <div class="text-muted small">Chương sách chuẩn</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 text-center p-3 stat-card">
+                <div class="stat-icon bg-success-subtle text-success mb-2 mx-auto">
+                    <i class="bi bi-book-half fs-3"></i>
+                </div>
+                <div class="fs-3 fw-bold text-success">{{ total_lessons }}</div>
+                <div class="text-muted small">Bài học lý thuyết</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 text-center p-3 stat-card">
+                <div class="stat-icon bg-danger-subtle text-danger mb-2 mx-auto">
+                    <i class="bi bi-check2-circle fs-3"></i>
+                </div>
+                <div class="fs-3 fw-bold text-danger">{{ all_chapters|length }}</div>
+                <div class="text-muted small">Bài kiểm tra cuối chương</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 text-center p-3 stat-card">
+                <div class="stat-icon bg-warning-subtle text-warning mb-2 mx-auto">
+                    <i class="bi bi-question-diamond fs-3"></i>
+                </div>
+                <div class="fs-3 fw-bold text-warning">{{ total_questions }}+</div>
+                <div class="text-muted small">Câu trắc nghiệm có giải</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Volume 1 Section -->
+    <div class="volume-section mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+            <div>
+                <h3 class="fw-bold mb-0 text-primary d-flex align-items-center gap-2">
+                    <i class="bi bi-1-circle-fill"></i> TẬP 1: HỌC KÌ I
+                </h3>
+                <span class="text-muted small">Lượng giác • Cấp số cộng & nhân • Thống kê ghép nhóm • Quan hệ song song • Giới hạn</span>
+            </div>
+            <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-semibold">{{ vol1_chapters|length }} Chương</span>
+        </div>
+
+        <div class="row g-4">
+            {% for ch in vol1_chapters %}
+            <div class="col-md-6 col-xl-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 chapter-card transition-hover">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-light text-secondary border">{{ ch.badge }}</span>
+                            <span class="chapter-number text-primary fw-bold">Chương {{ ch.id }}</span>
+                        </div>
+                        <h5 class="card-title fw-bold mb-2">
+                            <a href="{{ url_for('chapter_detail', chapter_id=ch.id) }}" class="text-decoration-none text-body stretched-link-target">
+                                {{ ch.title }}
+                            </a>
+                        </h5>
+                        <p class="card-text text-muted small flex-grow-1">{{ ch.summary }}</p>
+                        
+                        <div class="lesson-preview mb-3">
+                            <div class="small fw-semibold text-muted mb-1"><i class="bi bi-list-task me-1"></i>Các bài học trong chương:</div>
+                            <ul class="list-unstyled small mb-0 ps-1">
+                                {% for les in ch.lessons %}
+                                <li class="text-truncate py-0-5">
+                                    <i class="bi bi-chevron-right text-primary me-1" style="font-size: 0.75rem;"></i>
+                                    <a href="{{ url_for('lesson_detail', chapter_id=ch.id, lesson_id=les.id) }}" class="text-secondary text-decoration-none hover-primary">
+                                        {{ les.title }}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div class="pt-2 border-top d-flex gap-2">
+                            <a href="{{ url_for('chapter_detail', chapter_id=ch.id) }}" class="btn btn-outline-primary btn-sm flex-grow-1">
+                                <i class="bi bi-book"></i> Xem chi tiết
+                            </a>
+                            <a href="{{ url_for('chapter_quiz', chapter_id=ch.id) }}" class="btn btn-danger btn-sm px-3 d-flex align-items-center gap-1" title="Làm bài kiểm tra">
+                                <i class="bi bi-pencil-square"></i> Làm bài test
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Volume 2 Section -->
+    <div class="volume-section mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+            <div>
+                <h3 class="fw-bold mb-0 text-success d-flex align-items-center gap-2">
+                    <i class="bi bi-2-circle-fill"></i> TẬP 2: HỌC KÌ II
+                </h3>
+                <span class="text-muted small">Hàm số mũ & Logarit • Đạo hàm • Quan hệ vuông góc không gian • Quy tắc xác suất</span>
+            </div>
+            <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill fw-semibold">{{ vol2_chapters|length }} Chương</span>
+        </div>
+
+        <div class="row g-4">
+            {% for ch in vol2_chapters %}
+            <div class="col-md-6 col-xl-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 chapter-card transition-hover">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-light text-secondary border">{{ ch.badge }}</span>
+                            <span class="chapter-number text-success fw-bold">Chương {{ ch.id }}</span>
+                        </div>
+                        <h5 class="card-title fw-bold mb-2">
+                            <a href="{{ url_for('chapter_detail', chapter_id=ch.id) }}" class="text-decoration-none text-body">
+                                {{ ch.title }}
+                            </a>
+                        </h5>
+                        <p class="card-text text-muted small flex-grow-1">{{ ch.summary }}</p>
+                        
+                        <div class="lesson-preview mb-3">
+                            <div class="small fw-semibold text-muted mb-1"><i class="bi bi-list-task me-1"></i>Các bài học trong chương:</div>
+                            <div class="row g-1">
+                                {% for les in ch.lessons %}
+                                <div class="col-12 col-sm-6 text-truncate">
+                                    <i class="bi bi-chevron-right text-success me-1" style="font-size: 0.75rem;"></i>
+                                    <a href="{{ url_for('lesson_detail', chapter_id=ch.id, lesson_id=les.id) }}" class="text-secondary text-decoration-none hover-success small">
+                                        {{ les.title }}
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-top d-flex gap-2">
+                            <a href="{{ url_for('chapter_detail', chapter_id=ch.id) }}" class="btn btn-outline-success btn-sm flex-grow-1">
+                                <i class="bi bi-book"></i> Xem chi tiết
+                            </a>
+                            <a href="{{ url_for('chapter_quiz', chapter_id=ch.id) }}" class="btn btn-danger btn-sm px-3 d-flex align-items-center gap-1" title="Làm bài kiểm tra">
+                                <i class="bi bi-pencil-square"></i> Làm bài test
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

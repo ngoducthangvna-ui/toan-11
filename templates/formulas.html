@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Sổ Tay Công Thức Toán 11 Toàn Tập - Tra Cứu Nhanh{% endblock %}
+
+{% block content %}
+<div class="formulas-page">
+    <!-- Header -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-primary text-white p-4">
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="badge bg-white text-primary fw-bold text-uppercase">Tài liệu ôn thi</span>
+        </div>
+        <h2 class="fw-bold mb-2"><i class="bi bi-journal-bookmark-fill me-2"></i>Sổ Tay Công Thức Toán 11 Toàn Tập</h2>
+        <p class="mb-0 text-white-50">Tổng hợp toàn bộ công thức cốt lõi Đại số & Hình học lớp 11 giúp tra cứu nhanh trong quá trình học và làm bài kiểm tra.</p>
+    </div>
+
+    <!-- Live Formula Search -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-body">
+        <div class="input-group">
+            <span class="input-group-text bg-body-tertiary border-0 text-muted"><i class="bi bi-search"></i></span>
+            <input type="text" id="formulaFilterInput" class="form-control bg-body-tertiary border-0" placeholder="Lọc nhanh công thức (VD: lượng giác, đạo hàm, cấp số nhân, nhị thức, tiếp tuyến...)" autocomplete="off">
+        </div>
+    </div>
+
+    <!-- Formula Categories -->
+    <div class="row g-4" id="formulaCategoriesContainer">
+        {% for cat in categories %}
+        <div class="col-12 formula-category-card" data-category-title="{{ cat.title|lower }}">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-body">
+                <div class="card-header bg-primary-subtle border-0 py-3 px-4">
+                    <h5 class="fw-bold text-primary mb-0 d-flex align-items-center gap-2">
+                        <i class="bi {{ cat.icon }}"></i> {{ cat.title }}
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex flex-column gap-3">
+                        {% for item in cat.formulas %}
+                        <div class="formula-item p-3 rounded-3 bg-body-tertiary border border-light-subtle">
+                            <h6 class="fw-bold text-secondary mb-2">{{ item.name }}</h6>
+                            <div class="formula-latex-display fs-5 text-body">
+                                $${{ item.latex }}$$
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Live filter formulas
+    document.getElementById('formulaFilterInput')?.addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.formula-category-card');
+        cards.forEach(card => {
+            const text = card.innerText.toLowerCase();
+            if (text.includes(query)) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}Máy Tính Toán Học SymPy - Toán 11{% endblock %}
+
+{% block content %}
+<div class="calculator-page">
+    <!-- Header -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-success text-white p-4">
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="badge bg-white text-success fw-bold text-uppercase">Công cụ tính toán Python</span>
+        </div>
+        <h2 class="fw-bold mb-2"><i class="bi bi-cpu-fill me-2"></i>Máy Tính Hỗ Trợ Kiểm Tra Kết Quả Toán 11</h2>
+        <p class="mb-0 text-white-50">Sử dụng thư viện tính toán đại số giải tích SymPy của Python để tính nhanh Đạo hàm, Giới hạn hàm số và Giải phương trình.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-body">
+                <h5 class="fw-bold mb-3 d-flex align-items-center gap-2 text-body">
+                    <i class="bi bi-sliders text-success"></i> Thiết lập phép tính
+                </h5>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small text-muted">Loại phép toán:</label>
+                    <select id="calcType" class="form-select">
+                        <option value="derivative" selected>1. Tính Đạo Hàm f'(x)</option>
+                        <option value="limit">2. Tính Giới Hạn lim f(x)</option>
+                        <option value="solve">3. Giải Phương Trình f(x) = 0</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small text-muted">Nhập biểu thức $f(x)$:</label>
+                    <input type="text" id="calcExpression" class="form-control font-monospace" placeholder="VD: x**3 - 3*x**2 + 5" value="x**3 - 3*x**2 + 5">
+                    <div class="form-text small">
+                        Quy ước nhập: lũy thừa <code>x**2</code>, nhân <code>3*x</code>, căn <code>sqrt(x)</code>, lượng giác <code>sin(x), cos(x)</code>, mũ <code>e**x</code>.
+                    </div>
+                </div>
+
+                <!-- Limit options (dynamic) -->
+                <div class="mb-3 d-none" id="limitTargetGroup">
+                    <label class="form-label fw-semibold small text-muted">Điểm tới hạn $x \to x_0$:</label>
+                    <input type="text" id="calcTarget" class="form-control font-monospace" placeholder="VD: 2, 0, oo, -oo" value="2">
+                    <div class="form-text small">Dùng <code>oo</code> cho $+\infty$ và <code>-oo</code> cho $-\infty$.</div>
+                </div>
+
+                <!-- Quick Template Buttons -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold small text-muted">Ví dụ mẫu nhanh:</label>
+                    <div class="d-flex flex-wrap gap-1">
+                        <button class="btn btn-sm btn-outline-secondary font-monospace quick-tpl" data-type="derivative" data-expr="sin(2*x)">sin(2*x)</button>
+                        <button class="btn btn-sm btn-outline-secondary font-monospace quick-tpl" data-type="derivative" data-expr="(2*x + 1)/(x - 3)">(2x+1)/(x-3)</button>
+                        <button class="btn btn-sm btn-outline-secondary font-monospace quick-tpl" data-type="limit" data-target="1" data-expr="(x**2 - 1)/(x - 1)">lim (x^2-1)/(x-1)</button>
+                        <button class="btn btn-sm btn-outline-secondary font-monospace quick-tpl" data-type="limit" data-target="oo" data-expr="(3*x**2 - 1)/(x**2 + 2)">lim vô cực</button>
+                        <button class="btn btn-sm btn-outline-secondary font-monospace quick-tpl" data-type="solve" data-expr="x**2 - 5*x + 6">x^2 - 5x + 6 = 0</button>
+                    </div>
+                </div>
+
+                <button id="calculateBtn" class="btn btn-success btn-lg w-100 fw-bold d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-play-circle-fill"></i> Thực hiện tính toán
+                </button>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-body h-100 d-flex flex-column">
+                <h5 class="fw-bold mb-3 d-flex align-items-center gap-2 text-body">
+                    <i class="bi bi-clipboard2-check text-success"></i> Kết quả từ SymPy Python
+                </h5>
+
+                <div id="calcStatusPlaceholder" class="text-center text-muted my-auto py-5">
+                    <i class="bi bi-calculator fs-1 mb-2 d-block opacity-50"></i>
+                    Nhập biểu thức và bấm <strong>"Thực hiện tính toán"</strong> để xem kết quả đại số chính xác.
+                </div>
+
+                <div id="calcResultDisplay" class="d-none">
+                    <div class="alert alert-success border-0 mb-3">
+                        <div class="small fw-semibold text-success mb-1">BIỂU THỨC BAN ĐẦU:</div>
+                        <div class="fs-5" id="latexOriginalDisplay"></div>
+                    </div>
+
+                    <div class="card border bg-light-subtle rounded-3 p-3 mb-3">
+                        <div class="small fw-semibold text-secondary mb-1">KẾT QUẢ ĐẠI SỐ CHÍNH XÁC:</div>
+                        <div class="display-6 fw-bold text-success my-2" id="latexResultDisplay"></div>
+                        <div class="small text-muted font-monospace mt-2" id="textResultDisplay"></div>
+                    </div>
+                </div>
+
+                <div id="calcErrorAlert" class="alert alert-danger d-none mt-auto"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const calcType = document.getElementById('calcType');
+        const limitGroup = document.getElementById('limitTargetGroup');
+        const calcBtn = document.getElementById('calculateBtn');
+        const exprInput = document.getElementById('calcExpression');
+        const targetInput = document.getElementById('calcTarget');
+        const placeholder = document.getElementById('calcStatusPlaceholder');
+        const resultDisplay = document.getElementById('calcResultDisplay');
+        const errorAlert = document.getElementById('calcErrorAlert');
+
+        calcType.addEventListener('change', function() {
+            if (this.value === 'limit') {
+                limitGroup.classList.remove('d-none');
+            } else {
+                limitGroup.classList.add('d-none');
+            }
+        });
+
+        // Quick template clicks
+        document.querySelectorAll('.quick-tpl').forEach(btn => {
+            btn.addEventListener('click', function() {
+                calcType.value = this.dataset.type;
+                calcType.dispatchEvent(new Event('change'));
+                exprInput.value = this.dataset.expr;
+                if (this.dataset.target) {
+                    targetInput.value = this.dataset.target;
+                }
+                calcBtn.click();
+            });
+        });
+
+        calcBtn.addEventListener('click', async function() {
+            errorAlert.classList.add('d-none');
+            calcBtn.disabled = true;
+            calcBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang tính toán...';
+
+            try {
+                const response = await fetch('/api/calc', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        type: calcType.value,
+                        expression: exprInput.value,
+                        target: targetInput.value
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    placeholder.classList.add('d-none');
+                    resultDisplay.classList.remove('d-none');
+                    document.getElementById('latexOriginalDisplay').innerHTML = `$$f(x) = ${data.original_latex}$$`;
+                    document.getElementById('latexResultDisplay').innerHTML = `$$${data.result_latex}$$`;
+                    document.getElementById('textResultDisplay').innerText = `Python output: ${data.result_text}`;
+
+                    if (window.MathJax) {
+                        MathJax.typesetPromise([resultDisplay]);
+                    }
+                } else {
+                    errorAlert.innerText = data.error;
+                    errorAlert.classList.remove('d-none');
+                }
+            } catch (err) {
+                errorAlert.innerText = 'Lỗi kết nối máy chủ: ' + err.message;
+                errorAlert.classList.remove('d-none');
+            } finally {
+                calcBtn.disabled = false;
+                calcBtn.innerHTML = '<i class="bi bi-play-circle-fill"></i> Thực hiện tính toán';
+            }
+        });
+    });
+</script>
+{% endblock %}

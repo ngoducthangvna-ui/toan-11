@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ lesson.title }} - {{ chapter.title }}{% endblock %}
+
+{% block content %}
+<div class="lesson-page">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('chapter_detail', chapter_id=chapter.id) }}" class="text-decoration-none">{{ chapter.short_title }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ lesson.title }}</li>
+        </ol>
+    </nav>
+
+    <!-- Lesson Top Toolbar -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 mb-1">Chương {{ chapter.id }} • {{ chapter.badge }}</span>
+            <h2 class="fw-bold mb-1">{{ lesson.title }}</h2>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <button id="markCompleteBtn" class="btn btn-outline-success btn-sm d-inline-flex align-items-center gap-1" data-lesson-id="ch{{ chapter.id }}_les{{ lesson.id }}">
+                <i class="bi bi-check2-circle"></i> <span id="markCompleteText">Đánh dấu đã học xong</span>
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="window.print()" title="In bài học">
+                <i class="bi bi-printer"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Objectives Callout -->
+    {% if lesson.objectives %}
+    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-light-subtle border-start border-4 border-primary">
+        <div class="card-body p-3 p-md-4">
+            <h6 class="fw-bold text-primary mb-2 d-flex align-items-center gap-2">
+                <i class="bi bi-bullseye"></i> Mục tiêu cần đạt của bài học:
+            </h6>
+            <ul class="mb-0 ps-3 small text-secondary">
+                {% for obj in lesson.objectives %}
+                <li class="mb-1">{{ obj }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Lesson Content (MathJax & Formatted HTML) -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 mb-4 lesson-content-card bg-body">
+        <article class="lesson-article text-body">
+            {{ lesson.content | safe }}
+        </article>
+    </div>
+
+    <!-- Lesson Navigation Footer -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-body">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                {% if prev_lesson %}
+                <a href="{{ url_for('lesson_detail', chapter_id=chapter.id, lesson_id=prev_lesson.id) }}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-arrow-left"></i>
+                    <div class="text-start d-none d-sm-block">
+                        <div class="small text-muted" style="font-size: 0.75rem;">BÀI TRƯỚC</div>
+                        <div class="small fw-semibold text-truncate" style="max-width: 200px;">{{ prev_lesson.title }}</div>
+                    </div>
+                    <span class="d-sm-none">Bài trước</span>
+                </a>
+                {% else %}
+                <a href="{{ url_for('chapter_detail', chapter_id=chapter.id) }}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-arrow-left"></i> Về mục lục chương
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="d-flex gap-2">
+                {% if next_lesson %}
+                <a href="{{ url_for('lesson_detail', chapter_id=chapter.id, lesson_id=next_lesson.id) }}" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                    <div class="text-end d-none d-sm-block">
+                        <div class="small text-white-50" style="font-size: 0.75rem;">BÀI TIẾP THEO</div>
+                        <div class="small fw-semibold text-truncate" style="max-width: 200px;">{{ next_lesson.title }}</div>
+                    </div>
+                    <span class="d-sm-none">Bài tiếp theo</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+                {% else %}
+                <!-- Bài học cuối cùng của chương -> Mời làm bài kiểm tra -->
+                <a href="{{ url_for('chapter_quiz', chapter_id=chapter.id) }}" class="btn btn-danger btn-lg d-inline-flex align-items-center gap-2 shadow-sm animate-pulse">
+                    <i class="bi bi-award-fill"></i> Hoàn thành chương - Làm bài kiểm tra ngay!
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
