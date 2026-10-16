@@ -159,6 +159,19 @@ class Math11AppTests(unittest.TestCase):
         self.assertIn('Kiểm tra Chương 1', html_text)
         res.close()
 
+    def test_sidebar_accordion_structure(self):
+        """Kiểm tra cấu trúc nút accordion và icon chevron trong thanh Sidebar"""
+        res = self.app.get('/')
+        self.assertEqual(res.status_code, 200)
+        html_text = res.data.decode('utf-8')
+        self.assertIn('sidebar-ch-btn', html_text)
+        self.assertIn('sidebar-ch-chevron', html_text)
+        self.assertIn('sidebar-accordion-collapse', html_text)
+        self.assertIn('data-chapter-id="1"', html_text)
+        self.assertIn('data-chapter-target="collapse-ch-1"', html_text)
+        res.close()
+
 if __name__ == '__main__':
     unittest.main()
+
 

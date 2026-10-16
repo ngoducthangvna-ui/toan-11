@@ -87,32 +87,48 @@
                     if (!s) return;
                     s.classList.add('no-transition');
 
-                    // 1. Restore open chapters from sessionStorage
-                    var openRaw = sessionStorage.getItem('toan11_open_chapters');
+                    // 1. Restore open chapters from localStorage (fallback sessionStorage)
+                    var openRaw = localStorage.getItem('toan11_open_chapters') || sessionStorage.getItem('toan11_open_chapters');
+                    var openIds = [];
                     if (openRaw) {
-                        var openIds = JSON.parse(openRaw);
-                        var colls = s.querySelectorAll('.sidebar-accordion-collapse');
-                        colls.forEach(function(c) {
-                            var chId = c.getAttribute('data-chapter-id');
-                            var btn = s.querySelector('[data-chapter-target="' + c.id + '"]');
-                            if (openIds.indexOf(chId) !== -1 || openIds.indexOf(Number(chId)) !== -1) {
-                                c.classList.add('show');
-                                if (btn) {
-                                    btn.classList.remove('collapsed');
-                                    btn.setAttribute('aria-expanded', 'true');
-                                }
-                            } else {
-                                c.classList.remove('show');
-                                if (btn) {
-                                    btn.classList.add('collapsed');
-                                    btn.setAttribute('aria-expanded', 'false');
-                                }
-                            }
-                        });
+                        try { openIds = JSON.parse(openRaw); } catch(_) { openIds = []; }
                     }
 
+                    // Auto-open chapter of current active lesson/page
+                    var pathMatch = window.location.pathname.match(/\/chapter\/(\d+)/);
+                    if (pathMatch && pathMatch[1]) {
+                        var activeChId = String(pathMatch[1]);
+                        if (openIds.indexOf(activeChId) === -1 && openIds.indexOf(Number(activeChId)) === -1) {
+                            openIds.push(activeChId);
+                        }
+                    } else if (!openRaw) {
+                        // Default open Chapter 1 on initial visit
+                        openIds = ['1'];
+                    }
+
+                    var colls = s.querySelectorAll('.sidebar-accordion-collapse');
+                    colls.forEach(function(c) {
+                        var chId = c.getAttribute('data-chapter-id');
+                        var btn = s.querySelector('.sidebar-ch-btn[data-chapter-target="' + c.id + '"]') ||
+                                  s.querySelector('.sidebar-ch-btn[data-chapter-id="' + chId + '"]');
+                        var isOpen = openIds.indexOf(chId) !== -1 || openIds.indexOf(Number(chId)) !== -1;
+                        if (isOpen) {
+                            c.classList.add('show');
+                            if (btn) {
+                                btn.classList.remove('collapsed');
+                                btn.setAttribute('aria-expanded', 'true');
+                            }
+                        } else {
+                            c.classList.remove('show');
+                            if (btn) {
+                                btn.classList.add('collapsed');
+                                btn.setAttribute('aria-expanded', 'false');
+                            }
+                        }
+                    });
+
                     // 2. Restore scroll position
-                    var scroll = sessionStorage.getItem('toan11_sidebar_scroll');
+                    var scroll = localStorage.getItem('toan11_sidebar_scroll') || sessionStorage.getItem('toan11_sidebar_scroll');
                     if (scroll !== null) {
                         var scroller = s.querySelector('#curriculumAccordion') || s;
                         scroller.scrollTop = parseInt(scroll, 10) || 0;

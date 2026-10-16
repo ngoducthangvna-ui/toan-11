@@ -874,7 +874,7 @@ function initKeyboardShortcuts() {
 }
 
 /* ==========================================================================
-   7. Sidebar 60fps CSS Grid Accordion & Zero-Flicker State Lock
+   7. Sidebar 60fps Accordion & Smart LocalStorage Persistence
    ========================================================================== */
 function saveSidebarState() {
     try {
@@ -887,50 +887,111 @@ function saveSidebarState() {
                 openIds.push(String(id));
             }
         });
+        localStorage.setItem('toan11_open_chapters', JSON.stringify(openIds));
         sessionStorage.setItem('toan11_open_chapters', JSON.stringify(openIds));
     } catch (_) {}
 }
 
 function initSidebarAccordion() {
-    // 1. If sessionStorage doesn't have open chapters yet, save whatever initial chapters are open
-    if (!sessionStorage.getItem('toan11_open_chapters')) {
+    // 1. Restore state from localStorage & auto-expand active chapter
+    try {
+        let openIds = [];
+        const saved = localStorage.getItem('toan11_open_chapters') || sessionStorage.getItem('toan11_open_chapters');
+        if (saved) {
+            try { openIds = JSON.parse(saved); } catch (_) { openIds = []; }
+        }
+
+        // Detect active chapter from URL e.g. /chapter/2 or /chapter/2/lesson/1
+        const pathMatch = window.location.pathname.match(/\/chapter\/(\d+)/);
+        if (pathMatch && pathMatch[1]) {
+            const activeChId = String(pathMatch[1]);
+            if (!openIds.includes(activeChId)) {
+                openIds.push(activeChId);
+            }
+        } else if (!saved) {
+            // First time visit on homepage: open Chapter 1 by default
+            openIds = ['1'];
+        }
+
+        // Apply state across both desktop & offcanvas mobile sidebars
+        document.querySelectorAll('.sidebar-accordion-collapse').forEach(collapseEl => {
+            const chId = collapseEl.getAttribute('data-chapter-id');
+            const targetId = collapseEl.id;
+            const btn = document.querySelector(`.sidebar-ch-btn[data-chapter-target="${targetId}"]`) ||
+                        document.querySelector(`.sidebar-ch-btn[data-chapter-id="${chId}"]`);
+            const isOpen = openIds.includes(String(chId)) || openIds.includes(Number(chId));
+
+            if (isOpen) {
+                collapseEl.classList.add('show');
+                if (btn) {
+                    btn.classList.remove('collapsed');
+                    btn.setAttribute('aria-expanded', 'true');
+                }
+            } else {
+                collapseEl.classList.remove('show');
+                if (btn) {
+                    btn.classList.add('collapsed');
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            }
+        });
+
         saveSidebarState();
+    } catch (e) {
+        console.warn('Sidebar state initialization error:', e);
     }
 
-    // 2. Delegate click handler for accordion toggle buttons (Pure CSS Grid, no layout reflow)
+    // 2. Delegate click handler on entire chapter header (including chevron & icons)
+    if (window._sidebarAccordionBound) return;
+    window._sidebarAccordionBound = true;
+
     document.addEventListener('click', function(e) {
         const btn = e.target.closest('.sidebar-ch-btn');
         if (!btn) return;
+
         e.preventDefault();
+        e.stopPropagation();
 
+        const chapterId = btn.getAttribute('data-chapter-id') || 
+                          btn.closest('.accordion-item')?.getAttribute('data-chapter-id');
         const targetId = btn.getAttribute('data-chapter-target');
-        if (!targetId) return;
 
-        // Find the matching collapse container
+        // Locate target collapse container in the current accordion-item
         const accordionItem = btn.closest('.accordion-item');
-        const targetCollapse = accordionItem ? accordionItem.querySelector('.sidebar-accordion-collapse') : document.getElementById(targetId);
+        const targetCollapse = accordionItem ? 
+            accordionItem.querySelector('.sidebar-accordion-collapse') : 
+            (targetId ? document.getElementById(targetId) : null);
+            
         if (!targetCollapse) return;
 
         const isCurrentlyOpen = targetCollapse.classList.contains('show');
-        const chapterId = targetCollapse.getAttribute('data-chapter-id');
+        const nextState = !isCurrentlyOpen;
 
-        // Toggle state smoothly across both desktop and mobile sidebars
-        const selectorColl = chapterId ? `.sidebar-accordion-collapse[data-chapter-id="${chapterId}"]` : `#${targetId}`;
-        const selectorBtn = chapterId ? `.sidebar-ch-btn[data-chapter-target="collapse-ch-${chapterId}"]` : `[data-chapter-target="${targetId}"]`;
+        // Toggle state across both desktop & offcanvas mobile instances of this chapter
+        const collSelector = chapterId ? 
+            `.sidebar-accordion-collapse[data-chapter-id="${chapterId}"]` : 
+            `#${targetId}`;
+        const btnSelector = chapterId ? 
+            `.sidebar-ch-btn[data-chapter-id="${chapterId}"]` : 
+            `[data-chapter-target="${targetId}"]`;
 
-        if (isCurrentlyOpen) {
-            document.querySelectorAll(selectorColl).forEach(c => c.classList.remove('show'));
-            document.querySelectorAll(selectorBtn).forEach(b => {
-                b.classList.add('collapsed');
-                b.setAttribute('aria-expanded', 'false');
-            });
-        } else {
-            document.querySelectorAll(selectorColl).forEach(c => c.classList.add('show'));
-            document.querySelectorAll(selectorBtn).forEach(b => {
+        document.querySelectorAll(collSelector).forEach(c => {
+            if (nextState) {
+                c.classList.add('show');
+            } else {
+                c.classList.remove('show');
+            }
+        });
+
+        document.querySelectorAll(btnSelector).forEach(b => {
+            if (nextState) {
                 b.classList.remove('collapsed');
                 b.setAttribute('aria-expanded', 'true');
-            });
-        }
+            } else {
+                b.classList.add('collapsed');
+                b.setAttribute('aria-expanded', 'false');
+            }
+        });
 
         saveSidebarState();
     });
@@ -946,6 +1007,7 @@ function initSidebarScrollTracking() {
         clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(() => {
             try {
+                localStorage.setItem('toan11_sidebar_scroll', scroller.scrollTop);
                 sessionStorage.setItem('toan11_sidebar_scroll', scroller.scrollTop);
             } catch (_) {}
         }, 60);
@@ -1040,21 +1102,9 @@ function initSpaRouter() {
                 if (activeChId) {
                     // Open active chapter across desktop & mobile
                     document.querySelectorAll(`.sidebar-accordion-collapse[data-chapter-id="${activeChId}"]`).forEach(c => c.classList.add('show'));
-                    document.querySelectorAll(`.sidebar-ch-btn[data-chapter-target="collapse-ch-${activeChId}"]`).forEach(btn => {
+                    document.querySelectorAll(`.sidebar-ch-btn[data-chapter-id="${activeChId}"], .sidebar-ch-btn[data-chapter-target="collapse-ch-${activeChId}"]`).forEach(btn => {
                         btn.classList.remove('collapsed');
                         btn.setAttribute('aria-expanded', 'true');
-                    });
-
-                    // Collapse other chapters to keep sidebar clean & tidy
-                    document.querySelectorAll('.sidebar-accordion-collapse').forEach(c => {
-                        const chId = c.getAttribute('data-chapter-id');
-                        if (chId && chId !== activeChId) {
-                            c.classList.remove('show');
-                            document.querySelectorAll(`.sidebar-ch-btn[data-chapter-target="collapse-ch-${chId}"]`).forEach(btn => {
-                                btn.classList.add('collapsed');
-                                btn.setAttribute('aria-expanded', 'false');
-                            });
-                        }
                     });
 
                     saveSidebarState();

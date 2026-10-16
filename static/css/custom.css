@@ -75,12 +75,48 @@ body {
     line-height: 1.4 !important;
 }
 
-.sidebar-wrapper .accordion-button {
-    padding-right: 2.25rem !important;
+/* Sidebar Header & Button Styling */
+.sidebar-wrapper .accordion-header {
+    pointer-events: auto !important;
 }
 
-.sidebar-wrapper .accordion-button div {
-    width: 100%;
+.sidebar-wrapper .accordion-button {
+    cursor: pointer !important;
+    user-select: none;
+    pointer-events: auto !important;
+    position: relative !important;
+    z-index: 2 !important;
+    box-shadow: none !important;
+    border-radius: 0.5rem !important;
+    transition: background-color 0.18s ease, color 0.18s ease !important;
+}
+
+/* Hide Bootstrap default pseudo-chevron background */
+.sidebar-wrapper .accordion-button::after {
+    display: none !important;
+}
+
+/* Allow clicking anywhere on header, children pass events to button */
+.sidebar-ch-btn * {
+    pointer-events: none;
+}
+
+/* Smooth Chevron Arrow Rotation */
+.sidebar-ch-chevron {
+    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), color 180ms ease !important;
+    font-size: 0.78rem;
+    color: var(--bs-secondary-color, #64748b);
+    display: inline-block;
+    will-change: transform;
+}
+
+.sidebar-ch-btn.collapsed .sidebar-ch-chevron {
+    transform: rotate(-90deg) !important;
+}
+
+.sidebar-ch-btn:not(.collapsed) .sidebar-ch-chevron {
+    transform: rotate(0deg) !important;
+    color: var(--bs-primary, #0d6efd) !important;
 }
 
 /* ==========================================================================
@@ -92,11 +128,12 @@ body {
     animation: none !important;
 }
 
-/* 60fps CSS Grid Accordion for Sidebar (Zero layout reflow) */
+/* 60fps CSS Grid Accordion with overflow: hidden */
 .sidebar-accordion-collapse {
     display: grid !important;
     grid-template-rows: 0fr;
-    transition: grid-template-rows 220ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+    transition: grid-template-rows 250ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+    overflow: hidden !important;
     will-change: grid-template-rows;
     visibility: visible !important;
 }
@@ -110,33 +147,13 @@ body {
     min-height: 0 !important;
     opacity: 0;
     transform: translateY(-4px);
-    transition: opacity 160ms ease, transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity 180ms ease, transform 200ms cubic-bezier(0.22, 1, 0.36, 1) !important;
     will-change: opacity, transform;
 }
 
 .sidebar-accordion-collapse.show > .sidebar-accordion-inner {
     opacity: 1;
     transform: translateY(0);
-}
-
-/* Accordion button & Chevron rotation (GPU accelerated transform) */
-.sidebar-wrapper .accordion-button {
-    cursor: pointer;
-    user-select: none;
-    transition: background-color 0.15s ease, color 0.15s ease !important;
-}
-
-.sidebar-wrapper .accordion-button::after {
-    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1) !important;
-    will-change: transform;
-}
-
-.sidebar-wrapper .accordion-button.collapsed::after {
-    transform: rotate(0deg) !important;
-}
-
-.sidebar-wrapper .accordion-button:not(.collapsed)::after {
-    transform: rotate(-180deg) !important;
 }
 
 /* Clean Nav links: eliminate transition: all, only color & background */
