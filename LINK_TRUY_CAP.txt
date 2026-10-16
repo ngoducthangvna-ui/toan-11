@@ -1,0 +1,20 @@
+================================================================================
+🎓 WEBSITE TOÁN 11 MASTER - ĐANG CHẠY NGẦM THÀNH CÔNG!
+(Website vẫn đang chạy bình thường, bạn KHÔNG cần mở bất kỳ cửa sổ nào)
+================================================================================
+
+🌍 ĐƯỜNG LINK MỞ TRÊN ĐIỆN THOẠI (BẤT KỲ MẠNG 4G / 5G / WIFI NÀO CŨNG VÀO ĐƯỢC):
+👉 https://past-boxing-colleges-refer.trycloudflare.com
+
+📱 CÁCH MỞ:
+1. Sao chép đường link trên gửi vào Zalo, Messenger hoặc gõ vào điện thoại.
+2. Hoặc mở file ảnh "qrcode.png" trong thư mục này để quét mã bằng Camera/Zalo!
+
+--------------------------------------------------------------------------------
+📌 CÁC ĐỊA CHỈ KHÁC:
+💻 Mở trên máy tính này : http://localhost:5000 (hoặc http://127.0.0.1:5000)
+📶 Mở trên cùng Wi-Fi   : http://192.168.0.100:5000
+--------------------------------------------------------------------------------
+🛑 ĐỂ TẮT TRANG WEB KHI KHÔNG DÙNG NỮA:
+Nhấp đúp chuột vào file: "TAT_TRANG_WEB.bat" là xong!
+================================================================================
