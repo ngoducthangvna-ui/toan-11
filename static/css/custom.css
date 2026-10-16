@@ -663,3 +663,180 @@ body {
     animation: spaFadeIn 180ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
 }
 
+/* ==========================================================================
+   LaTeX Math Spacing & Anti-FOUC (KaTeX & MathJax)
+   ========================================================================== */
+mjx-container[jax="CHTML"][display="false"],
+mjx-container:not([display="true"]),
+.katex {
+    margin: 0 3px !important;
+    display: inline-block !important;
+    vertical-align: -0.08em;
+}
+
+.katex-display,
+mjx-container[jax="CHTML"][display="true"] {
+    margin: 1rem 0 !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/* Anti-FOUC gentle fade in for math contents */
+.lesson-page .theory-section,
+.lesson-page .example-item,
+.lesson-page .quick-check-card {
+    transition: opacity 0.2s ease-in;
+}
+
+/* ==========================================================================
+   Sidebar Active Item Glow & Smooth Transition
+   ========================================================================== */
+.sidebar-wrapper .nav-pills .nav-link.active {
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.28) !important;
+    transform: translateX(4px);
+}
+
+[data-bs-theme="dark"] .sidebar-wrapper .nav-pills .nav-link.active {
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4) !important;
+}
+
+.sidebar-wrapper .nav-pills .nav-link {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.sidebar-wrapper .nav-pills .nav-link:hover:not(.active) {
+    background-color: rgba(13, 110, 253, 0.08);
+    transform: translateX(2px);
+}
+
+/* ==========================================================================
+   Subtle Hover Effects & Micro-interactions
+   ========================================================================== */
+.formula-card,
+.math-box,
+.example-item,
+.quick-check-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+
+.formula-card:hover,
+.math-box:hover,
+.example-item:hover,
+.quick-check-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08) !important;
+}
+
+.lesson-nav-footer .btn {
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.lesson-nav-footer .btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Solution Toggle Chevron Rotation */
+.solution-toggle-btn[aria-expanded="true"] .transition-transform {
+    transform: rotate(180deg);
+}
+
+.transition-transform {
+    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+    display: inline-block;
+}
+
+/* Quick Check Interactive Buttons */
+.quick-opt-btn {
+    transition: all 0.18s ease;
+    border-width: 1.5px;
+}
+
+.quick-opt-btn:hover:not(:disabled) {
+    background-color: rgba(13, 110, 253, 0.08);
+    border-color: var(--bs-primary);
+    transform: translateX(3px);
+}
+
+.quick-explanation {
+    transition: all 0.25s ease;
+}
+
+/* Search Dropdown Keyboard Highlight */
+.dropdown-item.search-active {
+    background-color: rgba(13, 110, 253, 0.12) !important;
+    border-left: 3px solid var(--bs-primary) !important;
+    padding-left: calc(1rem - 3px) !important;
+}
+
+/* ==========================================================================
+   Print Optimization (@media print)
+   ========================================================================== */
+@media print {
+    /* Hide navigation, header, sidebar, footer, search, buttons, and progress */
+    .navbar,
+    .sidebar-column,
+    #sidebarOffcanvas,
+    .spa-progress-bar,
+    .lesson-nav-footer,
+    #markCompleteBtn,
+    button[onclick="window.print()"],
+    .quick-check-section,
+    .toast-container,
+    .solution-toggle-btn,
+    .footer,
+    .breadcrumb,
+    #themeToggleBtn {
+        display: none !important;
+    }
+
+    body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-size: 12pt !important;
+        line-height: 1.6 !important;
+    }
+
+    .container-fluid,
+    .main-column,
+    .lesson-content-card,
+    .card {
+        width: 100% !important;
+        max-width: 100% !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+    }
+
+    /* Keep solutions open when printing */
+    .collapse.solution-collapse {
+        display: block !important;
+        height: auto !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .formula-card,
+    .math-box,
+    .example-item,
+    .solution-card {
+        border: 1px solid #ccc !important;
+        background-color: #fafafa !important;
+        color: #000000 !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+        margin-bottom: 1rem !important;
+        padding: 0.8rem 1rem !important;
+    }
+
+    mjx-container, .katex {
+        color: #000000 !important;
+    }
+}
+
+

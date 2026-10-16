@@ -111,10 +111,10 @@ EXAM_GK2_DE3 = {
             "id": 10,
             "question": r"Nếu đường thẳng $a$ vuông góc với hai đường thẳng cắt nhau cùng nằm trong mặt phẳng $(P)$ thì:",
             "options": [
-                "A. $a \perp (P)$",
+                r"A. $a \perp (P)$",
                 "B. $a // (P)$",
-                "C. $a \subset (P)$",
-                "D. $a$ tạo với $(P)$ góc $45^\circ$"
+                r"C. $a \subset (P)$",
+                r"D. $a$ tạo với $(P)$ góc $45^\circ$"
             ],
             "correct": 0,
             "method": "Định lí đường vuông góc mặt",

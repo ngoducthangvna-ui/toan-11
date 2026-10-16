@@ -16,6 +16,11 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 
+    <!-- KaTeX CSS & JS for ultra-fast instant LaTeX rendering without FOUC -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
     <!-- MathJax 3 Configuration -->
     <script>
         window.MathJax = {
@@ -159,6 +164,19 @@
     <!-- Dynamic Page Scripts Container for SPA re-execution -->
     <div id="spaScriptsContainer" class="d-none">
         {% block scripts %}{% endblock %}
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
+        <div id="appToast" class="toast align-items-center border-0 shadow-lg text-white bg-success" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center gap-2 fw-medium">
+                    <i id="appToastIcon" class="bi bi-check-circle-fill fs-5"></i>
+                    <span id="appToastMessage">Đã hoàn thành bài học! Tiến độ +1</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
     </div>
 </body>
 </html>

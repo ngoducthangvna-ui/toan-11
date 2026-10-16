@@ -622,9 +622,9 @@ VOLUME_2_CHAPTERS = [
                 "slug": "bien-co-giao-va-quy-tac-nhan-xac-suat",
                 "title": "Bài 1: Biến cố giao và quy tắc nhân xác suất",
                 "objectives": [
-                    r"Định nghĩa biến cố giao $AB = A \\cap B$.",
+                    r"Định nghĩa biến cố giao $AB = A \cap B$.",
                     "Khái niệm hai biến cố độc lập.",
-                    r"Công thức nhân xác suất cho hai biến cố độc lập: $P(AB) = P(A) \\cdot P(B)$."
+                    r"Công thức nhân xác suất cho hai biến cố độc lập: $P(AB) = P(A) \cdot P(B)$."
                 ],
                 "content": r"""
 <div class="theory-section">
@@ -653,8 +653,8 @@ VOLUME_2_CHAPTERS = [
                 "slug": "bien-co-hop-va-quy-tac-cong-xac-suat",
                 "title": "Bài 2: Biến cố hợp và quy tắc cộng xác suất",
                 "objectives": [
-                    r"Định nghĩa biến cố hợp $A \\cup B$.",
-                    r"Khái niệm hai biến cố xung khắc ($A \\cap B = \\emptyset$).",
+                    r"Định nghĩa biến cố hợp $A \cup B$.",
+                    r"Khái niệm hai biến cố xung khắc ($A \cap B = \emptyset$).",
                     "Quy tắc cộng xác suất tổng quát và trường hợp biến cố xung khắc."
                 ],
                 "content": r"""

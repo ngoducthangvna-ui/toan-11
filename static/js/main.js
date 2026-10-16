@@ -1,6 +1,6 @@
 /**
  * Main JavaScript for TOAN 11 MASTER
- * Handles Dark Mode, Learning Progress, Continue Learning, Live Search Filter, Interactive Quiz Engine, and SPA Router
+ * Handles Dark Mode, Learning Progress, Quick Check, Live Search Filter, Interactive Quiz Engine, and SPA Router
  */
 
 // Monkey-patch document.addEventListener for DOMContentLoaded to support dynamic SPA scripts
@@ -13,6 +13,61 @@ document.addEventListener = function(type, listener, options) {
     return _originalAddEventListener.call(this, type, listener, options);
 };
 
+/* ==========================================================================
+   Global Toast & Ultra-Fast Math Rendering Helpers
+   ========================================================================== */
+function showToast(message, type = 'success') {
+    const toastEl = document.getElementById('appToast');
+    if (!toastEl) return;
+    const msgEl = document.getElementById('appToastMessage');
+    const iconEl = document.getElementById('appToastIcon');
+    if (msgEl) msgEl.innerText = message;
+    
+    toastEl.className = 'toast align-items-center border-0 shadow-lg text-white';
+    if (type === 'success') {
+        toastEl.classList.add('bg-success');
+        if (iconEl) iconEl.className = 'bi bi-check-circle-fill fs-5 text-white';
+    } else if (type === 'danger' || type === 'error') {
+        toastEl.classList.add('bg-danger');
+        if (iconEl) iconEl.className = 'bi bi-exclamation-triangle-fill fs-5 text-white';
+    } else {
+        toastEl.classList.add('bg-primary');
+        if (iconEl) iconEl.className = 'bi bi-info-circle-fill fs-5 text-white';
+    }
+
+    try {
+        const bsToast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 2800 });
+        bsToast.show();
+    } catch (_) {}
+}
+
+function renderMath(container) {
+    if (!container) container = document.body;
+    // 1. Try KaTeX auto-render first (Fastest, zero FOUC)
+    if (window.renderMathInElement) {
+        try {
+            window.renderMathInElement(container, {
+                delimiters: [
+                    { left: '$$', right: '$$', display: true },
+                    { left: '\\[', right: '\\]', display: true },
+                    { left: '$', right: '$', display: false },
+                    { left: '\\(', right: '\\)', display: false }
+                ],
+                throwOnError: false,
+                ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code", "option"]
+            });
+            return;
+        } catch (_) {}
+    }
+    // 2. MathJax 3 fallback
+    if (window.MathJax && window.MathJax.typesetPromise) {
+        try {
+            window.MathJax.typesetClear && window.MathJax.typesetClear([container]);
+            window.MathJax.typesetPromise([container]).catch(() => {});
+        } catch (_) {}
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     initTheme();
     initProgress();
@@ -20,9 +75,13 @@ document.addEventListener("DOMContentLoaded", function() {
     initSearch();
     initQuiz();
     initWorkout();
+    initQuickCheck();
+    initSolutionToggles();
     initSidebarAccordion();
     initSidebarScrollTracking();
+    initKeyboardShortcuts();
     initSpaRouter();
+    renderMath();
 });
 
 /* ==========================================================================
@@ -75,26 +134,34 @@ function initProgress() {
             setBtnCompleted(true);
         }
 
-        markBtn.addEventListener('click', function() {
-            const idx = completedLessons.indexOf(lessonId);
-            if (idx === -1) {
-                completedLessons.push(lessonId);
-                setBtnCompleted(true);
-            } else {
-                completedLessons.splice(idx, 1);
-                setBtnCompleted(false);
-            }
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(completedLessons));
-            updateProgressUI();
-        });
+        if (!markBtn.dataset.bound) {
+            markBtn.dataset.bound = 'true';
+            markBtn.addEventListener('click', function() {
+                const idx = completedLessons.indexOf(lessonId);
+                if (idx === -1) {
+                    completedLessons.push(lessonId);
+                    setBtnCompleted(true);
+                    showToast('Đã hoàn thành bài học! Tiến độ +1', 'success');
+                } else {
+                    completedLessons.splice(idx, 1);
+                    setBtnCompleted(false);
+                    showToast('Đã hủy đánh dấu hoàn thành bài học', 'info');
+                }
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(completedLessons));
+                updateProgressUI();
+            });
+        }
 
         function setBtnCompleted(isDone) {
+            const icon = markBtn.querySelector('i');
             if (isDone) {
-                markBtn.className = 'btn btn-success btn-sm d-inline-flex align-items-center gap-1';
+                markBtn.className = 'btn btn-success btn-sm d-inline-flex align-items-center gap-1 shadow-sm';
                 if (markText) markText.innerText = 'Đã hoàn thành bài này';
+                if (icon) icon.className = 'bi bi-check-circle-fill text-white';
             } else {
                 markBtn.className = 'btn btn-outline-success btn-sm d-inline-flex align-items-center gap-1';
                 if (markText) markText.innerText = 'Đánh dấu đã học xong';
+                if (icon) icon.className = 'bi bi-check2-circle';
             }
         }
     }
@@ -289,6 +356,24 @@ function initSearch() {
 
     if (!searchInput) return;
 
+    let selectedSearchIdx = -1;
+
+    function highlightSearchItem(idx) {
+        if (!dropdown) return;
+        const items = dropdown.querySelectorAll('.dropdown-item');
+        if (!items.length) return;
+
+        items.forEach((item, i) => {
+            if (i === idx) {
+                item.classList.add('search-active');
+                item.scrollIntoView({ block: 'nearest' });
+            } else {
+                item.classList.remove('search-active');
+            }
+        });
+        selectedSearchIdx = idx;
+    }
+
     // Keyboard shortcut: Ctrl + K or Cmd + K
     document.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
@@ -298,6 +383,30 @@ function initSearch() {
         }
         if (e.key === 'Escape' && dropdown) {
             dropdown.style.display = 'none';
+        }
+    });
+
+    // Keyboard navigation within search input
+    searchInput.addEventListener('keydown', function(e) {
+        if (!dropdown || dropdown.style.display !== 'block') return;
+        const items = dropdown.querySelectorAll('.dropdown-item');
+        if (!items.length) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            const nextIdx = (selectedSearchIdx + 1) % items.length;
+            highlightSearchItem(nextIdx);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            const prevIdx = (selectedSearchIdx - 1 + items.length) % items.length;
+            highlightSearchItem(prevIdx);
+        } else if (e.key === 'Enter') {
+            if (selectedSearchIdx >= 0 && items[selectedSearchIdx]) {
+                e.preventDefault();
+                items[selectedSearchIdx].click();
+                dropdown.style.display = 'none';
+                searchInput.blur();
+            }
         }
     });
 
@@ -317,6 +426,7 @@ function initSearch() {
                 if (dropdown) {
                     dropdown.style.display = 'none';
                     dropdown.innerHTML = '';
+                    selectedSearchIdx = -1;
                 }
                 return;
             }
@@ -384,6 +494,7 @@ function initSearch() {
 
     function renderSearchResults(results) {
         if (!dropdown) return;
+        selectedSearchIdx = -1;
 
         if (!results || results.length === 0) {
             dropdown.innerHTML = '<div class="p-3 text-center text-muted small"><i class="bi bi-emoji-neutral me-1"></i> Không tìm thấy bài học phù hợp</div>';
@@ -407,6 +518,10 @@ function initSearch() {
         html += '</div>';
         dropdown.innerHTML = html;
         dropdown.style.display = 'block';
+
+        dropdown.querySelectorAll('.dropdown-item').forEach((item, i) => {
+            item.addEventListener('mouseenter', () => highlightSearchItem(i));
+        });
     }
 
     // Close on outside click
@@ -735,6 +850,111 @@ function initWorkout() {
 }
 
 /* ==========================================================================
+   6.1. Interactive Lesson Features (Quick Check & Solution Toggles)
+   ========================================================================== */
+function initQuickCheck() {
+    const cards = document.querySelectorAll('.quick-check-card');
+    cards.forEach(card => {
+        if (card.dataset.bound) return;
+        card.dataset.bound = 'true';
+
+        const correctIdx = parseInt(card.dataset.correct, 10);
+        const optBtns = card.querySelectorAll('.quick-opt-btn');
+        const expBox = card.querySelector('.quick-explanation');
+        const expTitle = card.querySelector('.explanation-title');
+
+        optBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const chosenIdx = parseInt(btn.dataset.index, 10);
+                optBtns.forEach(b => {
+                    b.disabled = true;
+                    b.classList.remove('btn-outline-secondary');
+                });
+
+                if (chosenIdx === correctIdx) {
+                    btn.classList.add('btn-success', 'text-white');
+                    const icon = btn.querySelector('.opt-status-icon');
+                    if (icon) {
+                        icon.className = 'bi bi-check-circle-fill text-white ms-2';
+                        icon.classList.remove('d-none');
+                    }
+                    if (expBox) {
+                        expBox.classList.remove('d-none');
+                        expBox.className = 'quick-explanation p-3 rounded-3 border border-success bg-success-subtle text-success-emphasis mt-3';
+                        if (expTitle) expTitle.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Chính xác! Bạn đã chọn đáp án đúng.';
+                    }
+                    showToast('Chính xác! Bạn đã hiểu đúng bài học.', 'success');
+                } else {
+                    btn.classList.add('btn-danger', 'text-white');
+                    const icon = btn.querySelector('.opt-status-icon');
+                    if (icon) {
+                        icon.className = 'bi bi-x-circle-fill text-white ms-2';
+                        icon.classList.remove('d-none');
+                    }
+                    const correctBtn = card.querySelector(`.quick-opt-btn[data-index="${correctIdx}"]`);
+                    if (correctBtn) {
+                        correctBtn.classList.add('btn-success', 'text-white');
+                        const cIcon = correctBtn.querySelector('.opt-status-icon');
+                        if (cIcon) {
+                            cIcon.className = 'bi bi-check-circle-fill text-white ms-2';
+                            cIcon.classList.remove('d-none');
+                        }
+                    }
+                    if (expBox) {
+                        expBox.classList.remove('d-none');
+                        expBox.className = 'quick-explanation p-3 rounded-3 border border-danger bg-danger-subtle text-danger-emphasis mt-3';
+                        if (expTitle) expTitle.innerHTML = '<i class="bi bi-info-circle-fill me-1"></i> Chưa chính xác. Xem hướng dẫn & giải thích:';
+                    }
+                }
+
+                // Render math in explanation
+                if (expBox) renderMath(expBox);
+            });
+        });
+    });
+}
+
+function initSolutionToggles() {
+    document.querySelectorAll('.solution-toggle-btn').forEach(btn => {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = 'true';
+        btn.addEventListener('click', function() {
+            const toggleText = btn.querySelector('.toggle-text');
+            setTimeout(() => {
+                const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+                if (toggleText) {
+                    toggleText.innerText = isExpanded ? 'Thu gọn lời giải' : 'Xem lời giải chi tiết';
+                }
+            }, 60);
+        });
+    });
+}
+
+function initKeyboardShortcuts() {
+    if (window._keyboardShortcutsInitialized) return;
+    window._keyboardShortcutsInitialized = true;
+
+    document.addEventListener('keydown', function(e) {
+        // Alt + Left Arrow: Previous lesson
+        if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'Left')) {
+            const prevBtn = document.getElementById('prevLessonBtn');
+            if (prevBtn) {
+                e.preventDefault();
+                prevBtn.click();
+            }
+        }
+        // Alt + Right Arrow: Next lesson
+        else if (e.altKey && (e.key === 'ArrowRight' || e.key === 'Right')) {
+            const nextBtn = document.getElementById('nextLessonBtn');
+            if (nextBtn) {
+                e.preventDefault();
+                nextBtn.click();
+            }
+        }
+    });
+}
+
+/* ==========================================================================
    7. Sidebar 60fps CSS Grid Accordion & Zero-Flicker State Lock
    ========================================================================== */
 function saveSidebarState() {
@@ -866,9 +1086,10 @@ function initSpaRouter() {
     };
 
     // 3. Instant Sidebar Active State Updater
-    function updateSidebarActive(targetPath) {
+    function updateSidebarActive(targetPath, shouldScroll = true) {
         const cleanPath = targetPath.split('?')[0].split('#')[0];
         const sidebarLinks = document.querySelectorAll('.sidebar-column a, #sidebarOffcanvas a');
+        let activeLink = null;
 
         sidebarLinks.forEach(link => {
             const href = link.getAttribute('href');
@@ -877,22 +1098,10 @@ function initSpaRouter() {
 
             if (linkPath === cleanPath) {
                 link.classList.add('active');
+                activeLink = link;
                 if (link.href.includes('/quiz')) {
                     link.classList.add('text-white', 'bg-danger');
                     link.classList.remove('bg-danger-subtle');
-                }
-                // Auto-expand parent chapter accordion smoothly without resetting other chapters
-                const collapseEl = link.closest('.sidebar-accordion-collapse');
-                if (collapseEl && !collapseEl.classList.contains('show')) {
-                    const chId = collapseEl.getAttribute('data-chapter-id');
-                    if (chId) {
-                        document.querySelectorAll(`.sidebar-accordion-collapse[data-chapter-id="${chId}"]`).forEach(c => c.classList.add('show'));
-                        document.querySelectorAll(`.sidebar-ch-btn[data-chapter-target="collapse-ch-${chId}"]`).forEach(btn => {
-                            btn.classList.remove('collapsed');
-                            btn.setAttribute('aria-expanded', 'true');
-                        });
-                        saveSidebarState();
-                    }
                 }
             } else {
                 link.classList.remove('active');
@@ -902,6 +1111,46 @@ function initSpaRouter() {
                 }
             }
         });
+
+        // Smart Chapter Accordion Sync: Open active chapter, collapse other chapters
+        if (activeLink) {
+            const collapseEl = activeLink.closest('.sidebar-accordion-collapse');
+            if (collapseEl) {
+                const activeChId = collapseEl.getAttribute('data-chapter-id');
+                if (activeChId) {
+                    // Open active chapter across desktop & mobile
+                    document.querySelectorAll(`.sidebar-accordion-collapse[data-chapter-id="${activeChId}"]`).forEach(c => c.classList.add('show'));
+                    document.querySelectorAll(`.sidebar-ch-btn[data-chapter-target="collapse-ch-${activeChId}"]`).forEach(btn => {
+                        btn.classList.remove('collapsed');
+                        btn.setAttribute('aria-expanded', 'true');
+                    });
+
+                    // Collapse other chapters to keep sidebar clean & tidy
+                    document.querySelectorAll('.sidebar-accordion-collapse').forEach(c => {
+                        const chId = c.getAttribute('data-chapter-id');
+                        if (chId && chId !== activeChId) {
+                            c.classList.remove('show');
+                            document.querySelectorAll(`.sidebar-ch-btn[data-chapter-target="collapse-ch-${chId}"]`).forEach(btn => {
+                                btn.classList.add('collapsed');
+                                btn.setAttribute('aria-expanded', 'false');
+                            });
+                        }
+                    });
+
+                    saveSidebarState();
+                }
+            }
+
+            // Smooth scroll into view inside desktop sidebar
+            if (shouldScroll) {
+                setTimeout(() => {
+                    const desktopActive = document.querySelector('#desktopSidebar a.active');
+                    if (desktopActive) {
+                        desktopActive.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 120);
+            }
+        }
 
         // Close mobile offcanvas if open
         const offcanvasEl = document.getElementById('sidebarOffcanvas');
@@ -1027,8 +1276,8 @@ function initSpaRouter() {
             return;
         }
 
-        // 1. Instant active feedback on sidebar
-        updateSidebarActive(targetUrl.pathname);
+        // 1. Instant active feedback on sidebar with smooth auto-scroll
+        updateSidebarActive(targetUrl.pathname, true);
 
         // 2. Cleanup 3D scene if leaving 3D page
         if (window.location.pathname === '/hinh-hoc-3d' && targetUrl.pathname !== '/hinh-hoc-3d') {
@@ -1113,19 +1362,16 @@ function initSpaRouter() {
                 console.warn('SPA Script Execution Warning:', scriptErr);
             }
 
-            // 7. MathJax typeset for newly loaded content
-            if (window.MathJax && window.MathJax.typesetPromise && viewContainer) {
-                try {
-                    window.MathJax.typesetClear && window.MathJax.typesetClear([viewContainer]);
-                    window.MathJax.typesetPromise([viewContainer]).catch(() => {});
-                } catch (_) {}
-            }
+            // 7. Ultra-fast Math rendering (KaTeX auto-render prioritized + MathJax fallback)
+            renderMath(viewContainer);
 
             // 8. Re-initialize global components on new DOM
             try { initProgress(); } catch (_) {}
             try { initContinueLearning(); } catch (_) {}
             try { initQuiz(); } catch (_) {}
             try { initWorkout(); } catch (_) {}
+            try { initQuickCheck(); } catch (_) {}
+            try { initSolutionToggles(); } catch (_) {}
 
             // 9. If navigated to 3D page, ensure 3D scene starts
             if (targetUrl.pathname === '/hinh-hoc-3d') {
