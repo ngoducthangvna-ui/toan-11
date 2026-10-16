@@ -1,7 +1,17 @@
 /**
  * Main JavaScript for TOAN 11 MASTER
- * Handles Dark Mode, Learning Progress, Continue Learning, Live Search Filter, and Interactive Quiz Engine
+ * Handles Dark Mode, Learning Progress, Continue Learning, Live Search Filter, Interactive Quiz Engine, and SPA Router
  */
+
+// Monkey-patch document.addEventListener for DOMContentLoaded to support dynamic SPA scripts
+const _originalAddEventListener = document.addEventListener;
+document.addEventListener = function(type, listener, options) {
+    if (type === 'DOMContentLoaded' && document.readyState !== 'loading') {
+        setTimeout(listener, 1);
+        return;
+    }
+    return _originalAddEventListener.call(this, type, listener, options);
+};
 
 document.addEventListener("DOMContentLoaded", function() {
     initTheme();
@@ -10,6 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
     initSearch();
     initQuiz();
     initWorkout();
+    initSpaRouter();
 });
 
 /* ==========================================================================
@@ -720,4 +731,354 @@ function initWorkout() {
         });
     }
 }
+
+/* ==========================================================================
+   7. SPA Smooth Navigation Engine (Fetch API + History API + View Transitions)
+   ========================================================================== */
+function initSpaRouter() {
+    // 1. In-memory Cache: url -> { title, viewHtml, scriptsHtml, timestamp }
+    const pageCache = new Map();
+
+    // Cache initial page on load
+    const initialView = document.getElementById('spaViewContainer');
+    const initialScripts = document.getElementById('spaScriptsContainer');
+    if (initialView) {
+        pageCache.set(window.location.pathname + window.location.search, {
+            title: document.title,
+            viewHtml: initialView.innerHTML,
+            scriptsHtml: initialScripts ? initialScripts.innerHTML : '',
+            timestamp: Date.now()
+        });
+    }
+
+    // 2. Top Progress Bar Controller (Only appears if network takes > 120ms)
+    const ProgressBar = {
+        timer: null,
+        bar: document.getElementById('spaProgressBar'),
+        start() {
+            if (!this.bar) this.bar = document.getElementById('spaProgressBar');
+            if (!this.bar) return;
+            clearTimeout(this.timer);
+            this.bar.classList.remove('done');
+            this.bar.style.width = '0%';
+            this.timer = setTimeout(() => {
+                this.bar.classList.add('active');
+                this.bar.style.width = '35%';
+                setTimeout(() => {
+                    if (this.bar.classList.contains('active')) {
+                        this.bar.style.width = '75%';
+                    }
+                }, 200);
+            }, 120);
+        },
+        finish() {
+            clearTimeout(this.timer);
+            if (!this.bar) return;
+            if (this.bar.classList.contains('active')) {
+                this.bar.style.width = '100%';
+                this.bar.classList.add('done');
+                setTimeout(() => {
+                    this.bar.classList.remove('active', 'done');
+                    this.bar.style.width = '0%';
+                }, 300);
+            }
+        }
+    };
+
+    // 3. Instant Sidebar Active State Updater
+    function updateSidebarActive(targetPath) {
+        const cleanPath = targetPath.split('?')[0].split('#')[0];
+        const sidebarLinks = document.querySelectorAll('.sidebar-column a, #sidebarOffcanvas a');
+
+        sidebarLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (!href) return;
+            const linkPath = href.split('?')[0].split('#')[0];
+
+            if (linkPath === cleanPath) {
+                link.classList.add('active');
+                if (link.href.includes('/quiz')) {
+                    link.classList.add('text-white', 'bg-danger');
+                    link.classList.remove('bg-danger-subtle');
+                }
+                // Auto-expand parent chapter accordion if collapsed
+                const collapseEl = link.closest('.accordion-collapse');
+                if (collapseEl && !collapseEl.classList.contains('show')) {
+                    try {
+                        const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
+                        bsCollapse.show();
+                        const headerBtn = collapseEl.closest('.accordion-item')?.querySelector('.accordion-button');
+                        if (headerBtn) headerBtn.classList.remove('collapsed');
+                    } catch (_) {}
+                }
+            } else {
+                link.classList.remove('active');
+                if (link.href.includes('/quiz')) {
+                    link.classList.remove('text-white', 'bg-danger');
+                    link.classList.add('bg-danger-subtle');
+                }
+            }
+        });
+
+        // Close mobile offcanvas if open
+        const offcanvasEl = document.getElementById('sidebarOffcanvas');
+        if (offcanvasEl && offcanvasEl.classList.contains('show')) {
+            try {
+                const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasEl);
+                if (offcanvasInstance) offcanvasInstance.hide();
+            } catch (_) {}
+        }
+
+        // Close search dropdown if open
+        const dropdown = document.getElementById('searchResultsDropdown');
+        if (dropdown) dropdown.style.display = 'none';
+    }
+
+    // 4. Background Prefetcher (Low-priority fetch with 60ms hover debounce)
+    let prefetchTimer = null;
+    function prefetchPage(url) {
+        const urlObj = new URL(url, window.location.origin);
+        const key = urlObj.pathname + urlObj.search;
+        if (pageCache.has(key)) return;
+
+        fetch(urlObj.href, { priority: 'low' })
+            .then(res => {
+                if (res.ok) return res.text();
+                throw new Error('Prefetch failed');
+            })
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const view = doc.getElementById('spaViewContainer');
+                const scripts = doc.getElementById('spaScriptsContainer');
+                if (view) {
+                    pageCache.set(key, {
+                        title: doc.title,
+                        viewHtml: view.innerHTML,
+                        scriptsHtml: scripts ? scripts.innerHTML : '',
+                        timestamp: Date.now()
+                    });
+                }
+            })
+            .catch(() => {});
+    }
+
+    document.addEventListener('mouseover', function(e) {
+        const link = e.target.closest('a[href]');
+        if (!link) return;
+        const href = link.getAttribute('href');
+        if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:')) return;
+
+        try {
+            const targetUrl = new URL(href, window.location.origin);
+            if (targetUrl.origin !== window.location.origin) return;
+            if (targetUrl.pathname === window.location.pathname && targetUrl.search === window.location.search) return;
+            if (targetUrl.pathname.startsWith('/api/')) return;
+
+            prefetchTimer = setTimeout(() => {
+                prefetchPage(targetUrl.href);
+            }, 60);
+        } catch (_) {}
+    });
+
+    document.addEventListener('mouseout', function(e) {
+        const link = e.target.closest('a[href]');
+        if (link && prefetchTimer) {
+            clearTimeout(prefetchTimer);
+            prefetchTimer = null;
+        }
+    });
+
+    // 5. Script Re-Execution Helper
+    async function executeScriptsFromContainer(scriptsContainer) {
+        if (!scriptsContainer) return;
+        const scripts = Array.from(scriptsContainer.querySelectorAll('script'));
+
+        for (const oldScript of scripts) {
+            if (oldScript.src) {
+                // Skip re-downloading large external libs if already in window
+                if (oldScript.src.includes('three.min.js') && window.THREE) continue;
+                if (oldScript.src.includes('OrbitControls.js') && window.THREE && window.THREE.OrbitControls) continue;
+                if (oldScript.src.includes('geometry3d.js')) {
+                    if (window.initGeometry3D) {
+                        window.initGeometry3D();
+                        continue;
+                    }
+                }
+
+                // Sequential load for new external scripts
+                await new Promise((resolve) => {
+                    const newScript = document.createElement('script');
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    newScript.onload = resolve;
+                    newScript.onerror = resolve;
+                    document.head.appendChild(newScript);
+                });
+            } else {
+                // Inline script execution
+                const newScript = document.createElement('script');
+                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                newScript.textContent = oldScript.textContent;
+                document.body.appendChild(newScript);
+                newScript.remove();
+            }
+        }
+    }
+
+    // 6. Navigation Logic with View Transitions
+    let isNavigating = false;
+    async function navigateTo(url, isPopState = false) {
+        const targetUrl = new URL(url, window.location.origin);
+        const cacheKey = targetUrl.pathname + targetUrl.search;
+
+        // If clicking on current URL without hash difference, no-op
+        if (!isPopState && targetUrl.pathname === window.location.pathname && targetUrl.search === window.location.search) {
+            if (targetUrl.hash) {
+                const targetEl = document.querySelector(targetUrl.hash);
+                if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth' });
+            }
+            return;
+        }
+
+        // 1. Instant active feedback on sidebar
+        updateSidebarActive(targetUrl.pathname);
+
+        // 2. Cleanup 3D scene if leaving 3D page
+        if (window.location.pathname === '/hinh-hoc-3d' && targetUrl.pathname !== '/hinh-hoc-3d') {
+            if (window.cleanupGeometry3D) {
+                window.cleanupGeometry3D();
+            }
+        }
+
+        // 3. Start top progress bar
+        ProgressBar.start();
+        isNavigating = true;
+
+        try {
+            let pageData = pageCache.get(cacheKey);
+
+            if (!pageData) {
+                const response = await fetch(targetUrl.href);
+                if (!response.ok) {
+                    window.location.href = targetUrl.href;
+                    return;
+                }
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const view = doc.getElementById('spaViewContainer');
+                const scripts = doc.getElementById('spaScriptsContainer');
+
+                if (!view) {
+                    window.location.href = targetUrl.href;
+                    return;
+                }
+
+                pageData = {
+                    title: doc.title,
+                    viewHtml: view.innerHTML,
+                    scriptsHtml: scripts ? scripts.innerHTML : '',
+                    timestamp: Date.now()
+                };
+                pageCache.set(cacheKey, pageData);
+            }
+
+            // 4. Update History
+            if (!isPopState) {
+                history.pushState({ url: targetUrl.href }, '', targetUrl.href);
+            }
+
+            // 5. DOM Swap with View Transitions API or Fallback
+            const viewContainer = document.getElementById('spaViewContainer');
+            const scriptsContainer = document.getElementById('spaScriptsContainer');
+
+            const performDomSwap = () => {
+                document.title = pageData.title;
+                if (viewContainer) {
+                    viewContainer.innerHTML = pageData.viewHtml;
+                }
+                if (scriptsContainer) {
+                    scriptsContainer.innerHTML = pageData.scriptsHtml;
+                }
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            };
+
+            if (document.startViewTransition) {
+                const transition = document.startViewTransition(performDomSwap);
+                await transition.finished;
+            } else {
+                if (viewContainer) {
+                    viewContainer.classList.add('spa-fade-out');
+                    await new Promise(r => setTimeout(r, 90));
+                    performDomSwap();
+                    viewContainer.classList.remove('spa-fade-out');
+                    viewContainer.classList.add('spa-fade-in');
+                    setTimeout(() => viewContainer.classList.remove('spa-fade-in'), 180);
+                } else {
+                    performDomSwap();
+                }
+            }
+
+            // 6. Execute scripts from the new page
+            await executeScriptsFromContainer(scriptsContainer);
+
+            // 7. MathJax typeset for newly loaded content
+            if (window.MathJax && window.MathJax.typesetPromise && viewContainer) {
+                try {
+                    window.MathJax.typesetClear && window.MathJax.typesetClear([viewContainer]);
+                    window.MathJax.typesetPromise([viewContainer]).catch(() => {});
+                } catch (_) {}
+            }
+
+            // 8. Re-initialize global components on new DOM
+            initProgress();
+            initContinueLearning();
+            initQuiz();
+            initWorkout();
+
+            // 9. If navigated to 3D page, ensure 3D scene starts
+            if (targetUrl.pathname === '/hinh-hoc-3d') {
+                if (window.initGeometry3D) {
+                    window.initGeometry3D();
+                }
+            }
+
+        } catch (err) {
+            console.error('SPA Navigation Error:', err);
+            window.location.href = targetUrl.href;
+        } finally {
+            isNavigating = false;
+            ProgressBar.finish();
+        }
+    }
+
+    // 7. Global Link Interception
+    document.addEventListener('click', function(e) {
+        const link = e.target.closest('a');
+        if (!link) return;
+
+        if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+        if (link.target && link.target !== '_self') return;
+        if (link.hasAttribute('download')) return;
+
+        const href = link.getAttribute('href');
+        if (!href) return;
+        if (href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+
+        try {
+            const targetUrl = new URL(href, window.location.origin);
+            if (targetUrl.origin !== window.location.origin) return;
+            if (targetUrl.pathname.startsWith('/api/') || targetUrl.pathname === '/health' || targetUrl.pathname === '/healthz') return;
+
+            e.preventDefault();
+            navigateTo(targetUrl.href);
+        } catch (_) {}
+    });
+
+    // 8. History PopState Handler (Back / Forward buttons)
+    window.addEventListener('popstate', function() {
+        navigateTo(window.location.href, true);
+    });
+}
+
 

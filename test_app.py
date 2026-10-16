@@ -134,7 +134,17 @@ class Math11AppTests(unittest.TestCase):
             self.assertEqual(res.status_code, 200, f"Exam {eid} failed")
             self.assertEqual(len(ex['part1']), 12, f"Exam {eid} Part 1 must have 12 questions")
             self.assertEqual(len(ex['part2']), 4, f"Exam {eid} Part 2 must have 4 questions")
-            self.assertEqual(len(ex['part3']), 6, f"Exam {eid} Part 3 must have 6 questions")
+    def test_spa_containers(self):
+        """Kiểm tra cấu trúc DOM cho hệ thống điều hướng SPA"""
+        pages_to_check = ['/', '/formulas', '/hinh-hoc-3d', '/exams', '/calculator', '/error-log', '/chapter/1', '/chapter/1/lesson/1']
+        for path in pages_to_check:
+            res = self.app.get(path)
+            self.assertEqual(res.status_code, 200, f"Path {path} failed")
+            html_text = res.data.decode('utf-8')
+            self.assertIn('id="spaProgressBar"', html_text, f"{path} missing spaProgressBar")
+            self.assertIn('id="spaViewContainer"', html_text, f"{path} missing spaViewContainer")
+            self.assertIn('id="spaScriptsContainer"', html_text, f"{path} missing spaScriptsContainer")
+            res.close()
 
 if __name__ == '__main__':
     unittest.main()

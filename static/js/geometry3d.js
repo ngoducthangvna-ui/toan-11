@@ -4,9 +4,12 @@
  * Author: Antigravity AI
  */
 
-document.addEventListener("DOMContentLoaded", function() {
+window.initGeometry3D = function() {
     const canvas = document.getElementById('geometry3dCanvas');
     if (!canvas) return;
+    if (window._geo3dCleanup) {
+        window._geo3dCleanup();
+    }
 
     // 1. Setup Three.js Scene, Camera, Renderer
     const scene = new THREE.Scene();
@@ -514,13 +517,14 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Resize Handler
-    window.addEventListener('resize', () => {
+    const resizeHandler = () => {
         if (!canvas.parentElement) return;
         const newWidth = canvas.parentElement.clientWidth;
         camera.aspect = newWidth / height;
         camera.updateProjectionMatrix();
         renderer.setSize(newWidth, height);
-    });
+    };
+    window.addEventListener('resize', resizeHandler);
 
     // Animation Loop with Visibility & Intersection Pausing
     let isRenderingActive = true;
@@ -550,17 +554,19 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Tab Visibility API: pause when user switches browser tabs
-    document.addEventListener('visibilitychange', () => {
+    const visibilityHandler = () => {
         if (document.hidden) {
             pauseRendering();
         } else {
             resumeRendering();
         }
-    });
+    };
+    document.addEventListener('visibilitychange', visibilityHandler);
 
     // IntersectionObserver: pause rendering if 3D canvas is scrolled out of viewport
+    let observer = null;
     if ('IntersectionObserver' in window) {
-        const observer = new IntersectionObserver((entries) => {
+        observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     resumeRendering();
@@ -572,13 +578,38 @@ document.addEventListener("DOMContentLoaded", function() {
         observer.observe(canvas);
     }
 
-    // Clean up on beforeunload
-    window.addEventListener('beforeunload', () => {
+    // Cleanup hook for SPA navigation & beforeunload
+    window._geo3dCleanup = function() {
         pauseRendering();
+        if (observer) {
+            observer.disconnect();
+            observer = null;
+        }
+        window.removeEventListener('resize', resizeHandler);
+        document.removeEventListener('visibilitychange', visibilityHandler);
+        if (controls && controls.dispose) {
+            try { controls.dispose(); } catch(_) {}
+        }
         disposeHierarchy(scene);
-        renderer.dispose();
+        try { renderer.dispose(); } catch(_) {}
+        window._geo3dCleanup = null;
+    };
+
+    window.cleanupGeometry3D = function() {
+        if (window._geo3dCleanup) {
+            window._geo3dCleanup();
+        }
+    };
+
+    window.addEventListener('beforeunload', () => {
+        window.cleanupGeometry3D();
     });
 
     renderActiveShape();
     animate();
+};
+
+// Initialize on DOM load if canvas is present
+document.addEventListener("DOMContentLoaded", function() {
+    window.initGeometry3D();
 });

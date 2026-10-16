@@ -515,3 +515,81 @@ body {
         display: block !important;
     }
 }
+
+/* ==========================================================================
+   SPA Navigation: Top Progress Bar & Smooth View Transitions
+   ========================================================================== */
+.spa-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, #38bdf8 0%, #2563eb 50%, #8b5cf6 100%);
+    z-index: 99999;
+    pointer-events: none;
+    opacity: 0;
+    transition: width 200ms cubic-bezier(0.22, 1, 0.36, 1), opacity 150ms ease;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.8), 0 0 4px rgba(99, 102, 241, 0.6);
+}
+
+.spa-progress-bar.active {
+    opacity: 1;
+}
+
+.spa-progress-bar.done {
+    opacity: 0;
+    width: 100% !important;
+    transition: width 100ms ease, opacity 250ms ease 100ms;
+}
+
+/* Native CSS View Transitions */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 180ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#spaViewContainer {
+    view-transition-name: spa-view;
+}
+
+::view-transition-old(spa-view) {
+    animation: 90ms cubic-bezier(0.22, 1, 0.36, 1) both spaFadeOut;
+}
+
+::view-transition-new(spa-view) {
+    animation: 180ms cubic-bezier(0.22, 1, 0.36, 1) both spaFadeIn;
+}
+
+/* Fallback CSS Keyframes */
+@keyframes spaFadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+}
+
+@keyframes spaFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.spa-fade-out {
+    animation: spaFadeOut 90ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+
+.spa-fade-in {
+    animation: spaFadeIn 180ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+
