@@ -165,10 +165,10 @@ class Math11AppTests(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         html_text = res.data.decode('utf-8')
         self.assertIn('sidebar-ch-btn', html_text)
-        self.assertIn('sidebar-ch-chevron', html_text)
         self.assertIn('sidebar-accordion-collapse', html_text)
         self.assertIn('data-chapter-id="1"', html_text)
         self.assertIn('data-chapter-target="collapse-ch-1"', html_text)
+        self.assertIn('accordion-button', html_text)
         res.close()
 
 if __name__ == '__main__':

@@ -716,22 +716,23 @@ function initSidebarAccordion() {
         document.querySelectorAll('.sidebar-accordion-collapse').forEach(collapseEl => {
             const chId = collapseEl.getAttribute('data-chapter-id');
             const targetId = collapseEl.id;
-            const btn = document.querySelector(`.sidebar-ch-btn[data-chapter-target="${targetId}"]`) ||
-                        document.querySelector(`.sidebar-ch-btn[data-chapter-id="${chId}"]`);
+            const buttons = document.querySelectorAll(
+                `.sidebar-ch-btn[data-chapter-target="${targetId}"], .sidebar-ch-btn[data-chapter-id="${chId}"]`
+            );
             const isOpen = openIds.includes(String(chId)) || openIds.includes(Number(chId));
 
             if (isOpen) {
                 collapseEl.classList.add('show');
-                if (btn) {
+                buttons.forEach(btn => {
                     btn.classList.remove('collapsed');
                     btn.setAttribute('aria-expanded', 'true');
-                }
+                });
             } else {
                 collapseEl.classList.remove('show');
-                if (btn) {
+                buttons.forEach(btn => {
                     btn.classList.add('collapsed');
                     btn.setAttribute('aria-expanded', 'false');
-                }
+                });
             }
         });
 
@@ -740,12 +741,15 @@ function initSidebarAccordion() {
         console.warn('Sidebar state initialization error:', e);
     }
 
-    // 2. Delegate click handler on entire chapter header (including chevron & icons)
+    // 2. Delegate click handler on entire chapter header (including native chevron & icons)
     if (window._sidebarAccordionBound) return;
     window._sidebarAccordionBound = true;
 
     document.addEventListener('click', function(e) {
-        const btn = e.target.closest('.sidebar-ch-btn');
+        const header = e.target.closest('.accordion-header') || e.target.closest('.sidebar-ch-btn');
+        if (!header) return;
+
+        const btn = header.classList.contains('sidebar-ch-btn') ? header : header.querySelector('.sidebar-ch-btn');
         if (!btn) return;
 
         e.preventDefault();
@@ -753,7 +757,8 @@ function initSidebarAccordion() {
 
         const chapterId = btn.getAttribute('data-chapter-id') || 
                           btn.closest('.accordion-item')?.getAttribute('data-chapter-id');
-        const targetId = btn.getAttribute('data-chapter-target');
+        const targetId = btn.getAttribute('data-chapter-target') || (chapterId ? `collapse-ch-${chapterId}` : null);
+        if (!targetId && !chapterId) return;
 
         // Locate target collapse container in the current accordion-item
         const accordionItem = btn.closest('.accordion-item');
