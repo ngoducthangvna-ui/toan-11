@@ -54,7 +54,7 @@
                         <canvas id="geometry3dCanvas"></canvas>
                         
                         <!-- Floating Hint Overlay -->
-                        <div class="position-absolute bottom-0 start-0 m-3 p-2 rounded-3 bg-dark bg-opacity-75 text-white small" style="backdrop-filter: blur(6px); font-size: 0.75rem;">
+                        <div class="position-absolute bottom-0 start-0 m-3 p-2 rounded-3 bg-dark bg-opacity-75 text-white small" style="backdrop-filter: blur(6px); font-size: 0.75rem; pointer-events: none;">
                             <i class="bi bi-mouse me-1 text-warning"></i> Giữ chuột trái: <strong>Xoay</strong> | Cuộn chuột: <strong>Zoom</strong>
                         </div>
                     </div>
@@ -152,8 +152,8 @@
 {% endblock %}
 
 {% block scripts %}
-<!-- Three.js Library & OrbitControls -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+<!-- Three.js Library & OrbitControls (Verified r128 build) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="{{ url_for('static', filename='js/geometry3d.js') }}"></script>
 {% endblock %}

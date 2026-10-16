@@ -13,6 +13,8 @@ Kèm Bảng ma trận, Chiến thuật Casio fx-580VNX/fx-880BTG và Lời giả
 """
 
 from data.exams_gk2 import EXAMS_GK2
+from data.exams_ck1 import EXAMS_CK1
+from data.exams_ck2 import EXAMS_CK2
 
 EXAM_LIST = [
     # =========================================================================
@@ -1035,8 +1037,10 @@ EXAM_LIST = [
     }
 ]
 
-# Gộp thêm 3 Đề Giữa Kì 2
+# Gộp thêm Đề Cuối Kì 1 (Đề 2), 3 Đề Giữa Kì 2 và 3 Đề Cuối Kì 2
+EXAM_LIST.extend(EXAMS_CK1)
 EXAM_LIST.extend(EXAMS_GK2)
+EXAM_LIST.extend(EXAMS_CK2)
 
 def get_exam(exam_id):
     """Lấy thông tin đề thi theo id hoặc slug"""

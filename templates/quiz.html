@@ -399,6 +399,22 @@
             const totalScore = Math.min(10.0, p1Score + p2Score + p3Score);
             const percent = Math.round((totalScore / 10.0) * 100);
 
+            // Lưu điểm cao nhất vào LocalStorage
+            try {
+                const chapterId = document.querySelector('.quiz-page')?.dataset?.chapterId;
+                if (chapterId) {
+                    const scores = JSON.parse(localStorage.getItem('toan11_chapter_scores') || '{}');
+                    const numScore = parseFloat(totalScore.toFixed(1));
+                    const prevBest = parseFloat(scores[chapterId] || 0);
+                    if (numScore > prevBest) {
+                        scores[chapterId] = numScore;
+                        localStorage.setItem('toan11_chapter_scores', JSON.stringify(scores));
+                    }
+                }
+            } catch (e) {
+                console.error('Error saving chapter score:', e);
+            }
+
             // Cập nhật banner kết quả
             document.getElementById('resultScore').innerText = `${totalScore.toFixed(2)} / 10 điểm`;
             document.getElementById('resultProgressBar').style.width = percent + '%';

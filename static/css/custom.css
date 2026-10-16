@@ -392,6 +392,10 @@ body {
     height: 480px;
     display: block;
     cursor: grab;
+    pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 #geometry3dCanvas:active {

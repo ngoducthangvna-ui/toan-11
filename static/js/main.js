@@ -161,6 +161,25 @@ function initProgress() {
                 chBar.style.width = chPercent + '%';
             }
         });
+
+        // Update Chapter Quiz Best Scores from localStorage
+        try {
+            const chapterScores = JSON.parse(localStorage.getItem('toan11_chapter_scores') || '{}');
+            document.querySelectorAll('.chapter-best-score').forEach(badge => {
+                const chId = badge.dataset.chapterId;
+                if (chId && chapterScores[chId] !== undefined) {
+                    badge.classList.remove('d-none');
+                    const scoreVal = badge.querySelector('.score-val');
+                    if (scoreVal) {
+                        scoreVal.innerText = `Điểm cao nhất: ${chapterScores[chId]}/10`;
+                    }
+                } else {
+                    badge.classList.add('d-none');
+                }
+            });
+        } catch (e) {
+            console.error('Error rendering chapter scores:', e);
+        }
     }
 }
 
@@ -170,8 +189,18 @@ function initProgress() {
 function initContinueLearning() {
     const LAST_LESSON_KEY = 'toan11_last_lesson';
     const COMPLETED_KEY = 'toan11_completed_lessons';
-    let completedLessons = JSON.parse(localStorage.getItem(COMPLETED_KEY) || '[]');
-    let savedLast = localStorage.getItem(LAST_LESSON_KEY) || localStorage.getItem('lastVisitedLesson');
+    let completedLessons = [];
+    try {
+        completedLessons = JSON.parse(localStorage.getItem(COMPLETED_KEY) || '[]');
+    } catch (_) {
+        completedLessons = [];
+    }
+    let savedLast = null;
+    try {
+        savedLast = localStorage.getItem(LAST_LESSON_KEY) || localStorage.getItem('lastVisitedLesson');
+    } catch (_) {
+        savedLast = null;
+    }
 
     // 1. If currently on a lesson page, save it as the latest lesson
     if (window.location.pathname.includes('/lesson/')) {
@@ -181,8 +210,10 @@ function initContinueLearning() {
             title: lessonTitle,
             url: window.location.pathname
         };
-        localStorage.setItem(LAST_LESSON_KEY, JSON.stringify(currentData));
-        localStorage.setItem('lastVisitedLesson', JSON.stringify(currentData));
+        try {
+            localStorage.setItem(LAST_LESSON_KEY, JSON.stringify(currentData));
+            localStorage.setItem('lastVisitedLesson', JSON.stringify(currentData));
+        } catch (_) {}
     }
 
     // 2. Global listener: when user clicks on any lesson link, remember it
@@ -193,8 +224,10 @@ function initContinueLearning() {
             const url = lessonLink.getAttribute('href');
             if (url && url !== '#') {
                 const data = { title: title, url: url };
-                localStorage.setItem(LAST_LESSON_KEY, JSON.stringify(data));
-                localStorage.setItem('lastVisitedLesson', JSON.stringify(data));
+                try {
+                    localStorage.setItem(LAST_LESSON_KEY, JSON.stringify(data));
+                    localStorage.setItem('lastVisitedLesson', JSON.stringify(data));
+                } catch (_) {}
             }
         }
     });
@@ -206,7 +239,7 @@ function initContinueLearning() {
         // New user condition: no completed lessons AND no visited lesson yet
         if (completedLessons.length === 0 && !savedLast) {
             heroPrimaryBtn.href = '/chapter/1/lesson/1';
-            heroBtnText.innerText = 'Bắt đầu học: Bài 1 - Góc lượng giác';
+            heroBtnText.innerText = 'Bắt đầu học ngay: Chương 1 - Bài 1';
             heroPrimaryBtn.className = 'btn btn-light btn-lg px-4 fw-bold text-primary d-inline-flex align-items-center justify-content-center gap-2 shadow-sm';
         } else if (savedLast) {
             try {
@@ -223,7 +256,7 @@ function initContinueLearning() {
                 }
             } catch (err) {
                 heroPrimaryBtn.href = '/chapter/1/lesson/1';
-                heroBtnText.innerText = 'Bắt đầu học: Bài 1 - Góc lượng giác';
+                heroBtnText.innerText = 'Bắt đầu học ngay: Chương 1 - Bài 1';
             }
         }
     }
@@ -259,21 +292,21 @@ function initSearch() {
         clearTimeout(debounceTimer);
         const query = this.value.trim();
 
-        // 1. Live Filter on Homepage Cards
-        if (isHomepage) {
-            filterHomepageCards(query);
-        }
-
-        // 2. Dropdown search suggestion via API
-        if (query.length < 2) {
-            if (dropdown) {
-                dropdown.style.display = 'none';
-                dropdown.innerHTML = '';
-            }
-            return;
-        }
-
         debounceTimer = setTimeout(async () => {
+            // 1. Live Filter on Homepage Cards
+            if (isHomepage) {
+                filterHomepageCards(query);
+            }
+
+            // 2. Dropdown search suggestion via API
+            if (query.length < 2) {
+                if (dropdown) {
+                    dropdown.style.display = 'none';
+                    dropdown.innerHTML = '';
+                }
+                return;
+            }
+
             try {
                 const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
                 const data = await res.json();
@@ -281,7 +314,7 @@ function initSearch() {
             } catch (err) {
                 console.error("Search error:", err);
             }
-        }, 220);
+        }, 250);
     });
 
     // Helper: Vietnamese search normalization (remove accents)
@@ -450,6 +483,23 @@ function initQuiz() {
         const score = ((correctCount / total) * 10).toFixed(1);
         const percent = Math.round((correctCount / total) * 100);
 
+        // Save best score to localStorage
+        try {
+            const quizPage = document.querySelector('.quiz-page');
+            const chapterId = quizPage?.dataset?.chapterId || (window.location.pathname.match(/\/chapter\/(\d+)\/quiz/)?.[1]);
+            if (chapterId) {
+                const scores = JSON.parse(localStorage.getItem('toan11_chapter_scores') || '{}');
+                const numScore = parseFloat(score);
+                const prevBest = parseFloat(scores[chapterId] || 0);
+                if (numScore > prevBest) {
+                    scores[chapterId] = numScore;
+                    localStorage.setItem('toan11_chapter_scores', JSON.stringify(scores));
+                }
+            }
+        } catch (e) {
+            console.error('Error saving chapter score:', e);
+        }
+
         // Update Result Banner
         document.getElementById('resultScore').innerText = `${score} / 10 điểm`;
         document.getElementById('resultProgressBar').style.width = percent + '%';
@@ -490,9 +540,10 @@ function initQuiz() {
         // Smooth scroll up to result card
         resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-        // Typeset explanations with MathJax
-        if (window.MathJax) {
-            MathJax.typesetPromise();
+        // Typeset explanations with MathJax (scoped)
+        if (window.MathJax && MathJax.typesetPromise) {
+            const quizContainer = document.getElementById('quizForm') || document.querySelector('.quiz-page');
+            MathJax.typesetPromise(quizContainer ? [quizContainer] : []).catch(() => {});
         }
     });
 
@@ -602,7 +653,9 @@ function initWorkout() {
             </div>
         `;
 
-        if (window.MathJax) MathJax.typesetPromise();
+        if (window.MathJax && MathJax.typesetPromise) {
+            MathJax.typesetPromise([container]).catch(() => {});
+        }
 
         // Bind clicks
         container.querySelectorAll('.workout-opt-btn').forEach(btn => {

@@ -103,15 +103,21 @@ class Math11AppTests(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIn('MÔ HÌNH HÌNH HỌC KHÔNG GIAN 3D'.encode('utf-8'), res.data)
 
-    def test_all_6_midterm_exams(self):
-        exam_ids = [
-            'de-giua-ki-1', 'de-giua-ki-1-de-2', 'de-giua-ki-1-de-3',
-            'de-giua-ki-2-de-1', 'de-giua-ki-2-de-2', 'de-giua-ki-2-de-3'
-        ]
-        for eid in exam_ids:
+    def test_healthz(self):
+        res = self.app.get('/healthz')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data.decode('utf-8'), "OK")
+
+    def test_all_11_exams(self):
+        from data.exams import EXAM_LIST
+        self.assertEqual(len(EXAM_LIST), 11)
+        for ex in EXAM_LIST:
+            eid = ex['id']
             res = self.app.get(f'/exam/{eid}')
             self.assertEqual(res.status_code, 200, f"Exam {eid} failed")
-            self.assertIn('Học Kì'.encode('utf-8'), res.data)
+            self.assertEqual(len(ex['part1']), 12, f"Exam {eid} Part 1 must have 12 questions")
+            self.assertEqual(len(ex['part2']), 4, f"Exam {eid} Part 2 must have 4 questions")
+            self.assertEqual(len(ex['part3']), 6, f"Exam {eid} Part 3 must have 6 questions")
 
 if __name__ == '__main__':
     unittest.main()

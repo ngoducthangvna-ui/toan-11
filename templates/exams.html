@@ -24,7 +24,7 @@
         </div>
         <h2 class="fw-bold mb-2">HỆ THỐNG ĐỀ THI GIỮA KÌ & CUỐI KÌ TOÁN 11</h2>
         <p class="mb-0 text-light opacity-90 fs-6">
-            Gồm <strong>3 Đề Giữa Kì 1</strong>, <strong>3 Đề Giữa Kì 2</strong> và đề thi Cuối kì. Mô phỏng áp lực phòng thi thật 90 phút với ma trận 3 phần chuẩn Bộ GD&ĐT: Trắc nghiệm 4 lựa chọn, Trắc nghiệm Đúng/Sai lũy tiến, và Trả lời ngắn. Chấm điểm tự động và có chiến thuật bấm máy Casio fx-580/fx-880.
+            Gồm <strong>3 Đề Giữa Kì 1</strong>, <strong>2 Đề Cuối Kì 1</strong>, <strong>3 Đề Giữa Kì 2</strong> và <strong>3 Đề Cuối Kì 2</strong> (Trọn bộ 11 đề). Mô phỏng áp lực phòng thi thật 90 phút với ma trận 3 phần chuẩn Bộ GD&ĐT: Trắc nghiệm 4 lựa chọn, Trắc nghiệm Đúng/Sai lũy tiến, và Trả lời ngắn. Chấm điểm tự động và có chiến thuật bấm máy Casio fx-580/fx-880.
         </p>
     </div>
 
@@ -74,19 +74,20 @@
         </div>
     </div>
 
-    <!-- Filter Buttons (Tất cả, Giữa Kì 1, Giữa Kì 2, Cuối Kì) -->
+    <!-- Filter Buttons (Tất cả, Giữa Kì 1, Cuối Kì 1, Giữa Kì 2, Cuối Kì 2) -->
     <div class="d-flex flex-wrap gap-2 mb-4 align-items-center">
         <span class="small fw-bold text-muted text-uppercase me-2"><i class="bi bi-funnel me-1"></i>Lọc kì thi:</span>
         <button type="button" class="btn btn-sm btn-primary exam-filter-btn active" data-filter="all">Tất cả ({{ exams|length }} đề)</button>
         <button type="button" class="btn btn-sm btn-outline-primary exam-filter-btn" data-filter="gk1">Giữa Kì 1 (3 Đề)</button>
+        <button type="button" class="btn btn-sm btn-outline-info exam-filter-btn" data-filter="ck1">Cuối Kì 1 (2 Đề)</button>
         <button type="button" class="btn btn-sm btn-outline-success exam-filter-btn" data-filter="gk2">Giữa Kì 2 (3 Đề)</button>
-        <button type="button" class="btn btn-sm btn-outline-secondary exam-filter-btn" data-filter="ck">Cuối Kì</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary exam-filter-btn" data-filter="ck2">Cuối Kì 2 (3 Đề)</button>
     </div>
 
     <!-- Danh sách các đề thi -->
     <div class="row g-4" id="examsListContainer">
         {% for exam in exams %}
-        {% set exam_category = 'gk1' if 'giua-ki-1' in exam.id else ('gk2' if 'giua-ki-2' in exam.id else 'ck') %}
+        {% set exam_category = 'gk1' if 'giua-ki-1' in exam.id else ('ck1' if 'cuoi-ki-1' in exam.id else ('gk2' if 'giua-ki-2' in exam.id else 'ck2')) %}
         <div class="col-lg-6 exam-card-item" data-category="{{ exam_category }}">
             <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden bg-body transition-hover">
                 <div class="card-header bg-body border-bottom p-4">

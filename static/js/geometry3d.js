@@ -29,14 +29,71 @@ document.addEventListener("DOMContentLoaded", function() {
     dirLight.position.set(5, 10, 7);
     scene.add(dirLight);
 
-    // OrbitControls
-    let controls;
+    // OrbitControls & Interaction
+    let controls = null;
+    let fallbackActive = false;
+    const target = new THREE.Vector3(0, 1, 0);
+
     if (typeof THREE.OrbitControls !== 'undefined') {
         controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
-        controls.maxDistance = 20;
+        controls.maxDistance = 25;
         controls.minDistance = 2;
+        controls.enableRotate = true;
+        controls.enableZoom = true;
+        controls.enablePan = true;
+        controls.target.copy(target);
+        controls.update();
+    } else {
+        fallbackActive = true;
+        let isPointerDown = false;
+        let prevPointer = { x: 0, y: 0 };
+        let radius = camera.position.distanceTo(target);
+        let theta = Math.atan2(camera.position.x - target.x, camera.position.z - target.z);
+        let phi = Math.acos(Math.max(-1, Math.min(1, (camera.position.y - target.y) / radius)));
+
+        function updateCameraFromAngles() {
+            camera.position.x = target.x + radius * Math.sin(phi) * Math.sin(theta);
+            camera.position.y = target.y + radius * Math.cos(phi);
+            camera.position.z = target.z + radius * Math.sin(phi) * Math.cos(theta);
+            camera.lookAt(target);
+        }
+
+        canvas.addEventListener('pointerdown', (e) => {
+            isPointerDown = true;
+            try { canvas.setPointerCapture(e.pointerId); } catch(_) {}
+            prevPointer = { x: e.clientX, y: e.clientY };
+        });
+
+        window.addEventListener('pointermove', (e) => {
+            if (!isPointerDown) return;
+            const deltaX = e.clientX - prevPointer.x;
+            const deltaY = e.clientY - prevPointer.y;
+            prevPointer = { x: e.clientX, y: e.clientY };
+
+            theta -= deltaX * 0.008;
+            phi -= deltaY * 0.008;
+            const eps = 0.05;
+            phi = Math.max(eps, Math.min(Math.PI - eps, phi));
+            updateCameraFromAngles();
+        });
+
+        const stopDrag = (e) => {
+            if (isPointerDown) {
+                isPointerDown = false;
+                try { canvas.releasePointerCapture(e.pointerId); } catch(_) {}
+            }
+        };
+        window.addEventListener('pointerup', stopDrag);
+        window.addEventListener('pointercancel', stopDrag);
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            radius += e.deltaY * 0.006;
+            radius = Math.max(2, Math.min(25, radius));
+            updateCameraFromAngles();
+        }, { passive: false });
     }
 
     // Grid Floor Helper (subtle)
@@ -385,7 +442,9 @@ document.addEventListener("DOMContentLoaded", function() {
         if (titleEl) titleEl.innerText = exp.title;
         if (explainBody) {
             explainBody.innerHTML = exp.body;
-            if (window.MathJax) MathJax.typesetPromise();
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise([explainBody]).catch(() => {});
+            }
         }
     }
 
@@ -399,18 +458,27 @@ document.addEventListener("DOMContentLoaded", function() {
     // Reset Camera
     document.getElementById('btnResetView')?.addEventListener('click', () => {
         camera.position.set(5, 4, 6);
-        camera.lookAt(0, 1, 0);
-        if (controls) controls.target.set(0, 1, 0);
+        target.set(0, 1, 0);
+        camera.lookAt(target);
+        if (controls) {
+            controls.target.copy(target);
+            controls.update();
+        }
     });
 
     document.getElementById('btnTopView')?.addEventListener('click', () => {
-        camera.position.set(0.1, 7, 0.1);
-        camera.lookAt(0, 0, 0);
-        if (controls) controls.target.set(0, 0, 0);
+        camera.position.set(0.01, 7, 0.01);
+        target.set(0, 0, 0);
+        camera.lookAt(target);
+        if (controls) {
+            controls.target.copy(target);
+            controls.update();
+        }
     });
 
     // Resize Handler
     window.addEventListener('resize', () => {
+        if (!canvas.parentElement) return;
         const newWidth = canvas.parentElement.clientWidth;
         camera.aspect = newWidth / height;
         camera.updateProjectionMatrix();
@@ -418,8 +486,9 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Animation Loop
+    let animId = null;
     function animate() {
-        requestAnimationFrame(animate);
+        animId = requestAnimationFrame(animate);
         if (controls) controls.update();
         renderer.render(scene, camera);
     }

@@ -28,18 +28,35 @@ from data.exams import EXAM_LIST, get_exam
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'toan-11-antigravity-secret-key-2026'
 
+# In-memory caching for ultra-fast rendering & zero latency
+VOL1_CHAPTERS = [c for c in ALL_CHAPTERS if c['volume'] == 1]
+VOL2_CHAPTERS = [c for c in ALL_CHAPTERS if c['volume'] == 2]
+TOTAL_EXAMS = len(EXAM_LIST)
+TOTAL_ERROR_LOGS = len(ERROR_LOG_DATA)
+TOTAL_EXAM_QUESTIONS = sum(
+    len(e.get('part1', [])) + len(e.get('part2', [])) + len(e.get('part3', []))
+    for e in EXAM_LIST
+)
+TOTAL_ALL_QUESTIONS = TOTAL_QUESTIONS + TOTAL_EXAM_QUESTIONS
+
 @app.context_processor
 def inject_global_data():
-    """Truyền danh sách chương và thông số vào mọi template"""
+    """Truyền danh sách chương và thông số vào mọi template (Cached)"""
     return {
         'all_chapters': ALL_CHAPTERS,
         'total_lessons': TOTAL_LESSONS,
         'total_questions': TOTAL_QUESTIONS,
-        'vol1_chapters': [c for c in ALL_CHAPTERS if c['volume'] == 1],
-        'vol2_chapters': [c for c in ALL_CHAPTERS if c['volume'] == 2],
-        'total_exams': len(EXAM_LIST),
-        'total_error_logs': len(ERROR_LOG_DATA)
+        'total_all_questions': TOTAL_ALL_QUESTIONS,
+        'vol1_chapters': VOL1_CHAPTERS,
+        'vol2_chapters': VOL2_CHAPTERS,
+        'total_exams': TOTAL_EXAMS,
+        'total_error_logs': TOTAL_ERROR_LOGS
     }
+
+@app.route('/healthz')
+def healthz():
+    """Healthcheck endpoint cho Render / Uptime Robot / PaaS"""
+    return "OK", 200
 
 @app.route('/')
 def index():

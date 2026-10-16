@@ -30,14 +30,14 @@
                 </span>
                 <span class="stat-glass-badge badge rounded-pill d-inline-flex align-items-center gap-2">
                     <i class="bi bi-question-diamond text-warning"></i>
-                    <span><strong>{{ total_questions }}+</strong> Câu trắc nghiệm</span>
+                    <span><strong>{{ total_all_questions|default(314) }}+</strong> Câu trắc nghiệm</span>
                 </span>
             </div>
 
             <!-- 2 CTA buttons: Primary (Dynamic Continue Learning) & Secondary (Exams) -->
             <div class="d-flex flex-column flex-sm-row flex-wrap gap-3">
                 <a href="{{ url_for('lesson_detail', chapter_id=1, lesson_id=1) }}" id="heroPrimaryBtn" class="btn btn-light btn-lg px-4 fw-bold text-primary d-inline-flex align-items-center justify-content-center gap-2 shadow-sm">
-                    <i class="bi bi-play-circle-fill"></i> <span id="heroPrimaryBtnText">Bắt đầu học: Bài 1 - Góc lượng giác</span>
+                    <i class="bi bi-play-circle-fill"></i> <span id="heroPrimaryBtnText">Bắt đầu học ngay: Chương 1 - Bài 1</span>
                 </a>
                 <a href="{{ url_for('exams') }}" class="btn btn-outline-light btn-lg px-4 fw-semibold d-inline-flex align-items-center justify-content-center gap-2">
                     <i class="bi bi-clock-history"></i> Vào phòng thi thử 90 phút
@@ -76,15 +76,15 @@
                     <span class="badge bg-white text-primary fw-bold text-uppercase px-3 py-1">
                         <i class="bi bi-clock-history me-1"></i> PHÒNG THI THỬ 90 PHÚT
                     </span>
-                    <span class="badge bg-warning text-dark fw-bold px-2 py-1 feature-format-badge">3 ĐỀ GK1 + 3 ĐỀ GK2 HƯNG YÊN</span>
+                    <span class="badge bg-warning text-dark fw-bold px-2 py-1 feature-format-badge">6 ĐỀ GIỮA KÌ + 5 ĐỀ CUỐI KÌ HƯNG YÊN</span>
                 </div>
-                <h4 class="fw-bold mb-2">Đề Thi Giữa Kì 1 & Giữa Kì 2</h4>
+                <h4 class="fw-bold mb-2">Đề Thi Giữa Kì & Cuối Kì (11 Đề)</h4>
                 <p class="text-white-50 small mb-4 flex-grow-1">
-                    Trọn bộ 6 đề thi Giữa kì chuẩn format Sở GD&ĐT Hưng Yên: Phần I (12 câu MCQ), Phần II (4 câu Đúng/Sai lũy tiến), Phần III (6 câu Trả lời ngắn). Có đồng hồ bấm giờ 90 phút, tự chấm điểm và hướng dẫn bấm máy Casio fx-580/880!
+                    Trọn bộ 11 đề thi Giữa kì & Cuối kì chuẩn format Sở GD&ĐT Hưng Yên: Phần I (12 câu MCQ), Phần II (4 câu Đúng/Sai lũy tiến), Phần III (6 câu Trả lời ngắn). Có đồng hồ bấm giờ 90 phút, tự chấm điểm và hướng dẫn bấm máy Casio fx-580/880!
                 </p>
                 <div>
                     <a href="{{ url_for('exams') }}" class="btn btn-warning fw-bold text-dark px-4 rounded-3 d-inline-flex align-items-center gap-2 shadow-sm">
-                        <i class="bi bi-play-circle-fill"></i> Vào Phòng Thi Thử (6 Đề) <i class="bi bi-arrow-right"></i>
+                        <i class="bi bi-play-circle-fill"></i> Vào Phòng Thi Thử (11 Đề) <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -165,9 +165,14 @@
                             <a href="{{ url_for('chapter_detail', chapter_id=ch.id) }}" class="btn btn-outline-primary btn-detail fw-semibold">
                                 <i class="bi bi-book me-1"></i> Xem chi tiết
                             </a>
-                            <a href="{{ url_for('chapter_quiz', chapter_id=ch.id) }}" class="btn btn-danger btn-quiz fw-bold shadow-sm" title="Làm bài kiểm tra cuối chương">
-                                <i class="bi bi-pencil-square me-1"></i> Làm bài test
-                            </a>
+                            <div class="d-flex align-items-center gap-1 ms-auto flex-wrap justify-content-end">
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle chapter-best-score d-none" data-chapter-id="{{ ch.id }}" title="Điểm cao nhất bạn từng đạt được">
+                                    <i class="bi bi-trophy-fill text-warning me-1"></i><span class="score-val"></span>
+                                </span>
+                                <a href="{{ url_for('chapter_quiz', chapter_id=ch.id) }}" class="btn btn-danger btn-quiz fw-bold shadow-sm" title="Làm bài kiểm tra cuối chương">
+                                    <i class="bi bi-pencil-square me-1"></i> Làm bài test
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -243,9 +248,14 @@
                             <a href="{{ url_for('chapter_detail', chapter_id=ch.id) }}" class="btn btn-outline-success btn-detail fw-semibold">
                                 <i class="bi bi-book me-1"></i> Xem chi tiết
                             </a>
-                            <a href="{{ url_for('chapter_quiz', chapter_id=ch.id) }}" class="btn btn-danger btn-quiz fw-bold shadow-sm" title="Làm bài kiểm tra cuối chương">
-                                <i class="bi bi-pencil-square me-1"></i> Làm bài test
-                            </a>
+                            <div class="d-flex align-items-center gap-1 ms-auto flex-wrap justify-content-end">
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle chapter-best-score d-none" data-chapter-id="{{ ch.id }}" title="Điểm cao nhất bạn từng đạt được">
+                                    <i class="bi bi-trophy-fill text-warning me-1"></i><span class="score-val"></span>
+                                </span>
+                                <a href="{{ url_for('chapter_quiz', chapter_id=ch.id) }}" class="btn btn-danger btn-quiz fw-bold shadow-sm" title="Làm bài kiểm tra cuối chương">
+                                    <i class="bi bi-pencil-square me-1"></i> Làm bài test
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
