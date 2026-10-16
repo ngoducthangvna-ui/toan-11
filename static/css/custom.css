@@ -311,53 +311,16 @@ body {
     box-shadow: 0 14px 28px rgba(0,0,0,0.09) !important;
 }
 
+.chapter-title-link {
+    transition: color 0.15s ease-in-out;
+}
+
 .chapter-title-link:hover {
     color: #2563eb !important;
 }
 
-/* Header của Card: flex-nowrap & white-space: nowrap để không rớt số */
-.chapter-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: nowrap;
-    gap: 0.35rem;
-    margin-bottom: 0.5rem;
-}
-
-.chapter-card-header .badge,
-.chapter-card-header .chapter-number {
-    white-space: nowrap !important;
-    flex-shrink: 0;
-}
-
-/* Cụm nút bấm ở đáy Card: margin-top: auto để luôn thẳng hàng tuyệt đối */
-.chapter-card-actions {
-    margin-top: auto !important;
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--bs-border-color-translucent);
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    width: 100%;
-}
-
-.chapter-card-actions .btn {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    white-space: nowrap !important;
-    font-size: 0.8rem !important;
-    padding: 0.42rem 0.65rem !important;
-    line-height: 1.25 !important;
-}
-
-.chapter-card-actions .btn-detail {
-    flex: 1 1 0;
-}
-
-.chapter-card-actions .btn-quiz {
-    flex-shrink: 0;
+[data-bs-theme="dark"] .chapter-title-link:hover {
+    color: #38bdf8 !important;
 }
 
 /* Lesson Preview Link Hover Effect */
@@ -563,21 +526,6 @@ body {
     color: #1d4ed8 !important;
 }
 
-.hero-btn-workout {
-    background: rgba(255, 255, 255, 0.12) !important;
-    color: #f8fafc !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    transition: all 0.2s ease;
-}
-
-.hero-btn-workout:hover {
-    background: rgba(255, 255, 255, 0.22) !important;
-    color: #ffffff !important;
-    border-color: rgba(255, 255, 255, 0.5) !important;
-    transform: translateY(-2px);
-}
 
 /* 3D Geometry Canvas Container */
 .geometry-3d-wrapper {
