@@ -3,7 +3,7 @@
 {% block title %}{{ exam.title }} - Phòng Thi Thử Toán 11{% endblock %}
 
 {% block content %}
-<div class="exam-view-page" data-time-limit="{{ exam.time_minutes }}">
+<div class="exam-view-page" data-exam-id="{{ exam.id }}" data-time-limit="{{ exam.time_minutes }}">
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb small">
@@ -274,39 +274,165 @@
 {% block scripts %}
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // 1. MathJax typesetting
-    if (window.MathJax) {
-        MathJax.typesetPromise();
-    }
-
-    // 2. Timer Setup
-    let totalSeconds = parseInt(document.querySelector('.exam-view-page').dataset.timeLimit || 90) * 60;
+    const pageEl = document.querySelector('.exam-view-page');
+    const examId = pageEl ? (pageEl.dataset.examId || 'default') : 'default';
+    const timeLimitMinutes = parseInt(pageEl ? (pageEl.dataset.timeLimit || 90) : 90);
+    const totalDurationSeconds = timeLimitMinutes * 60;
     const timerDisplay = document.getElementById('countdownTimer');
+    const form = document.getElementById('examForm');
+
+    const STORAGE_KEY_ENDTIME = 'toan11_exam_endtime_' + examId;
+    const STORAGE_KEY_DRAFT = 'toan11_exam_draft_' + examId;
+    const STORAGE_KEY_SCORE = 'toan11_exam_score_' + examId;
+
     let examSubmitted = false;
 
-    const timerInterval = setInterval(function() {
-        if (examSubmitted) {
-            clearInterval(timerInterval);
-            return;
+    // 1. MathJax typesetting (scoped to exam container to avoid freezing)
+    if (window.MathJax && MathJax.typesetPromise && pageEl) {
+        MathJax.typesetPromise([pageEl]).catch(() => {});
+    }
+
+    // 2. Drift-Free Timer using Date.now() & localStorage
+    const now = Date.now();
+    let storedEndTime = localStorage.getItem(STORAGE_KEY_ENDTIME);
+    let endTime;
+
+    if (storedEndTime && !isNaN(parseInt(storedEndTime, 10))) {
+        endTime = parseInt(storedEndTime, 10);
+        // Reset if expired long ago (> 2 hours)
+        if (endTime < now - 7200000) {
+            endTime = now + totalDurationSeconds * 1000;
+            localStorage.setItem(STORAGE_KEY_ENDTIME, endTime.toString());
+        }
+    } else {
+        endTime = now + totalDurationSeconds * 1000;
+        localStorage.setItem(STORAGE_KEY_ENDTIME, endTime.toString());
+    }
+
+    function updateTimer() {
+        if (examSubmitted) return;
+
+        const currentNow = Date.now();
+        const remainingSeconds = Math.max(0, Math.round((endTime - currentNow) / 1000));
+
+        const mins = Math.floor(remainingSeconds / 60);
+        const secs = remainingSeconds % 60;
+        if (timerDisplay) {
+            timerDisplay.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            if (remainingSeconds < 600) { // Under 10 minutes
+                timerDisplay.classList.remove('text-warning');
+                timerDisplay.classList.add('text-danger');
+            } else {
+                timerDisplay.classList.remove('text-danger');
+                timerDisplay.classList.add('text-warning');
+            }
         }
 
-        totalSeconds--;
-        if (totalSeconds < 0) {
+        if (remainingSeconds <= 0) {
             clearInterval(timerInterval);
-            alert("⏰ Đã hết thời gian 90 phút làm bài! Hệ thống sẽ tự động thu bài và chấm điểm ngay bây giờ.");
+            alert("⏰ Đã hết thời gian làm bài! Hệ thống tự động thu bài và chấm điểm ngay bây giờ.");
             gradeExam();
-            return;
         }
+    }
 
-        const mins = Math.floor(totalSeconds / 60);
-        const secs = totalSeconds % 60;
-        timerDisplay.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    const timerInterval = setInterval(updateTimer, 1000);
+    updateTimer();
 
-        if (totalSeconds < 600) { // Under 10 minutes
-            timerDisplay.classList.remove('text-warning');
-            timerDisplay.classList.add('text-danger');
+    // 3. Draft Answers Auto-Save & Restore
+    function saveDraftAnswers() {
+        if (examSubmitted) return;
+        const draft = {
+            part1: {},
+            part2: {},
+            part3: {}
+        };
+
+        // Part 1
+        document.querySelectorAll('.exam-question-card[data-part="1"]').forEach(card => {
+            const qId = card.dataset.id;
+            const checked = card.querySelector(`input[name="p1_q${qId}"]:checked`);
+            if (checked) {
+                draft.part1[qId] = checked.value;
+            }
+        });
+
+        // Part 2
+        document.querySelectorAll('.exam-question-card[data-part="2"]').forEach(card => {
+            const qId = card.dataset.id;
+            const subItems = card.querySelectorAll('.sub-item');
+            draft.part2[qId] = {};
+            subItems.forEach((sub, subIdx) => {
+                const checked = sub.querySelector(`input[name="p2_q${qId}_sub${subIdx}"]:checked`);
+                if (checked) {
+                    draft.part2[qId][subIdx] = checked.value;
+                }
+            });
+        });
+
+        // Part 3
+        document.querySelectorAll('.exam-question-card[data-part="3"]').forEach(card => {
+            const qId = card.dataset.id;
+            const inputElem = document.getElementById(`input_p3_${qId}`);
+            if (inputElem && inputElem.value.trim()) {
+                draft.part3[qId] = inputElem.value.trim();
+            }
+        });
+
+        try {
+            localStorage.setItem(STORAGE_KEY_DRAFT, JSON.stringify(draft));
+        } catch (_) {}
+    }
+
+    function restoreDraftAnswers() {
+        try {
+            const draftStr = localStorage.getItem(STORAGE_KEY_DRAFT);
+            if (!draftStr) return;
+            const draft = JSON.parse(draftStr);
+
+            // Restore Part 1
+            if (draft.part1) {
+                Object.keys(draft.part1).forEach(qId => {
+                    const val = draft.part1[qId];
+                    const radio = document.querySelector(`input[name="p1_q${qId}"][value="${val}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                        const label = radio.closest('.p1-option-label');
+                        if (label) label.classList.add('selected');
+                    }
+                });
+            }
+
+            // Restore Part 2
+            if (draft.part2) {
+                Object.keys(draft.part2).forEach(qId => {
+                    const subs = draft.part2[qId];
+                    Object.keys(subs).forEach(subIdx => {
+                        const val = subs[subIdx];
+                        const radio = document.querySelector(`input[name="p2_q${qId}_sub${subIdx}"][value="${val}"]`);
+                        if (radio) radio.checked = true;
+                    });
+                });
+            }
+
+            // Restore Part 3
+            if (draft.part3) {
+                Object.keys(draft.part3).forEach(qId => {
+                    const inputElem = document.getElementById(`input_p3_${qId}`);
+                    if (inputElem) inputElem.value = draft.part3[qId];
+                });
+            }
+        } catch (e) {
+            console.error("Error restoring draft:", e);
         }
-    }, 1000);
+    }
+
+    restoreDraftAnswers();
+
+    // Auto-save draft on any user input
+    if (form) {
+        form.addEventListener('change', saveDraftAnswers);
+        form.addEventListener('input', saveDraftAnswers);
+    }
 
     // Option highlight for Part I
     document.querySelectorAll('.p1-option-label').forEach(label => {
@@ -330,6 +456,10 @@ document.addEventListener("DOMContentLoaded", function() {
     function gradeExam() {
         examSubmitted = true;
         clearInterval(timerInterval);
+        try {
+            localStorage.removeItem(STORAGE_KEY_ENDTIME);
+            localStorage.removeItem(STORAGE_KEY_DRAFT);
+        } catch (_) {}
 
         let p1Score = 0.0;
         let p2Score = 0.0;
@@ -461,6 +591,14 @@ document.addEventListener("DOMContentLoaded", function() {
             summaryText.innerText = "Đừng nản lòng! Hãy đọc kĩ Sổ tay lỗi sai và Lời giải chi tiết để nâng điểm trong lần thi sau.";
         }
 
+        // Lưu điểm cao nhất vào localStorage
+        try {
+            const currentBest = parseFloat(localStorage.getItem(STORAGE_KEY_SCORE) || '0');
+            if (totalScore > currentBest) {
+                localStorage.setItem(STORAGE_KEY_SCORE, totalScore.toFixed(2));
+            }
+        } catch (_) {}
+
         resultCard.classList.remove('d-none');
         resultCard.scrollIntoView({ behavior: 'smooth' });
 
@@ -472,6 +610,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const retakeBtn = document.getElementById('retakeExamBtn');
     if (retakeBtn) {
         retakeBtn.addEventListener('click', function() {
+            try {
+                localStorage.removeItem(STORAGE_KEY_ENDTIME);
+                localStorage.removeItem(STORAGE_KEY_DRAFT);
+            } catch (_) {}
             window.location.reload();
         });
     }

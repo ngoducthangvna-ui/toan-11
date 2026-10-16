@@ -240,7 +240,7 @@ function initContinueLearning() {
         if (completedLessons.length === 0 && !savedLast) {
             heroPrimaryBtn.href = '/chapter/1/lesson/1';
             heroBtnText.innerText = 'Bắt đầu học ngay: Chương 1 - Bài 1';
-            heroPrimaryBtn.className = 'btn btn-light btn-lg px-4 fw-bold text-primary d-inline-flex align-items-center justify-content-center gap-2 shadow-sm';
+            heroPrimaryBtn.className = 'btn hero-btn-primary btn-lg px-4 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm';
         } else if (savedLast) {
             try {
                 const lastLesson = JSON.parse(savedLast);
@@ -251,12 +251,13 @@ function initContinueLearning() {
                         displayTitle = displayTitle.substring(0, 34) + '...';
                     }
                     heroBtnText.innerText = `Học tiếp: ${displayTitle}`;
-                    heroPrimaryBtn.className = 'btn btn-warning text-dark btn-lg px-4 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm';
+                    heroPrimaryBtn.className = 'btn hero-btn-primary btn-lg px-4 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm';
                     heroPrimaryBtn.title = `Học tiếp: ${lastLesson.title}`;
                 }
             } catch (err) {
                 heroPrimaryBtn.href = '/chapter/1/lesson/1';
                 heroBtnText.innerText = 'Bắt đầu học ngay: Chương 1 - Bài 1';
+                heroPrimaryBtn.className = 'btn hero-btn-primary btn-lg px-4 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm';
             }
         }
     }
@@ -314,7 +315,7 @@ function initSearch() {
             } catch (err) {
                 console.error("Search error:", err);
             }
-        }, 250);
+        }, 180);
     });
 
     // Helper: Vietnamese search normalization (remove accents)
@@ -599,28 +600,34 @@ function initWorkout() {
 
     let currentIdx = 0;
     let score = 0;
-    let timeLeft = 15 * 60; // 15 mins
     let timerInterval = null;
 
     startBtn.addEventListener('click', function() {
         currentIdx = 0;
         score = 0;
-        timeLeft = 15 * 60;
         if (scoreEl) scoreEl.innerText = "0 / 10";
 
-        // Start countdown
+        // Drift-free countdown using Date.now()
+        const durationSeconds = 15 * 60;
+        const endTime = Date.now() + durationSeconds * 1000;
         clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            if (timeLeft <= 0) {
+
+        function updateWorkoutTimer() {
+            const remaining = Math.max(0, Math.round((endTime - Date.now()) / 1000));
+            if (remaining <= 0) {
                 clearInterval(timerInterval);
                 finishWorkout();
                 return;
             }
-            const mins = Math.floor(timeLeft / 60);
-            const secs = timeLeft % 60;
-            if (timerEl) timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        }, 1000);
+            const mins = Math.floor(remaining / 60);
+            const secs = remaining % 60;
+            if (timerEl) {
+                timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+        }
+
+        timerInterval = setInterval(updateWorkoutTimer, 1000);
+        updateWorkoutTimer();
 
         renderQuestion();
     });

@@ -108,6 +108,23 @@ class Math11AppTests(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.data.decode('utf-8'), "OK")
 
+    def test_health(self):
+        res = self.app.get('/health')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data.decode('utf-8'), "OK")
+
+    def test_performance_headers(self):
+        # Static caching
+        res_css = self.app.get('/static/css/custom.css')
+        self.assertIn('max-age=604800', res_css.headers.get('Cache-Control', ''))
+        res_css.close()
+
+        # Gzip compression
+        res_gzip = self.app.get('/', headers={'Accept-Encoding': 'gzip'})
+        self.assertEqual(res_gzip.status_code, 200)
+        self.assertEqual(res_gzip.headers.get('Content-Encoding'), 'gzip')
+        res_gzip.close()
+
     def test_all_11_exams(self):
         from data.exams import EXAM_LIST
         self.assertEqual(len(EXAM_LIST), 11)

@@ -413,9 +413,46 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     };
 
+    // Shared materials that should not be disposed per shape toggle
+    const SHARED_MATERIALS = new Set([
+        solidLineMaterial,
+        dashedLineMaterial,
+        heightLineMaterial,
+        angleLineMaterial,
+        sectionMaterial
+    ]);
+
+    // Free GPU buffers, materials and sprite canvas textures to prevent memory leaks
+    function disposeHierarchy(obj) {
+        if (!obj) return;
+        obj.traverse((child) => {
+            if (child.geometry) {
+                child.geometry.dispose();
+            }
+            if (child.material) {
+                if (Array.isArray(child.material)) {
+                    child.material.forEach(mat => {
+                        if (!SHARED_MATERIALS.has(mat)) {
+                            if (mat.map) mat.map.dispose();
+                            mat.dispose();
+                        }
+                    });
+                } else {
+                    if (!SHARED_MATERIALS.has(child.material)) {
+                        if (child.material.map) child.material.map.dispose();
+                        child.material.dispose();
+                    }
+                }
+            }
+        });
+    }
+
     function renderActiveShape() {
-        scene.remove(currentShapeGroup);
-        currentShapeGroup.clear();
+        if (currentShapeGroup) {
+            scene.remove(currentShapeGroup);
+            disposeHierarchy(currentShapeGroup);
+            currentShapeGroup.clear();
+        }
 
         const shapeType = document.getElementById('selectShape')?.value || 'pyramid_regular';
         let newGroup;
@@ -485,13 +522,62 @@ document.addEventListener("DOMContentLoaded", function() {
         renderer.setSize(newWidth, height);
     });
 
-    // Animation Loop
+    // Animation Loop with Visibility & Intersection Pausing
+    let isRenderingActive = true;
     let animId = null;
+
     function animate() {
+        if (!isRenderingActive) return;
         animId = requestAnimationFrame(animate);
         if (controls) controls.update();
         renderer.render(scene, camera);
     }
+
+    function resumeRendering() {
+        if (!isRenderingActive) {
+            isRenderingActive = true;
+            if (animId) cancelAnimationFrame(animId);
+            animate();
+        }
+    }
+
+    function pauseRendering() {
+        isRenderingActive = false;
+        if (animId) {
+            cancelAnimationFrame(animId);
+            animId = null;
+        }
+    }
+
+    // Tab Visibility API: pause when user switches browser tabs
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            pauseRendering();
+        } else {
+            resumeRendering();
+        }
+    });
+
+    // IntersectionObserver: pause rendering if 3D canvas is scrolled out of viewport
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    resumeRendering();
+                } else {
+                    pauseRendering();
+                }
+            });
+        }, { threshold: 0.05 });
+        observer.observe(canvas);
+    }
+
+    // Clean up on beforeunload
+    window.addEventListener('beforeunload', () => {
+        pauseRendering();
+        disposeHierarchy(scene);
+        renderer.dispose();
+    });
 
     renderActiveShape();
     animate();

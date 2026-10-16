@@ -10,8 +10,8 @@ import sys
 # Đảm bảo Python luôn tìm thấy thư mục gốc của dự án trên Linux / Render
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import gzip
 from flask import Flask, render_template, request, jsonify, redirect, url_for
-import sympy as sp
 from data.curriculum import (
     ALL_CHAPTERS,
     TOTAL_LESSONS,
@@ -53,6 +53,31 @@ def inject_global_data():
         'total_error_logs': TOTAL_ERROR_LOGS
     }
 
+@app.after_request
+def add_performance_headers(response):
+    """Tối ưu Cache-Control cho Static assets và nén Gzip"""
+    if request.path.startswith('/static/'):
+        response.headers['Cache-Control'] = 'public, max-age=604800'
+    
+    # Gzip response nếu client hỗ trợ và response là text/json/html > 500 bytes
+    accept_encoding = request.headers.get('Accept-Encoding', '')
+    if (
+        'gzip' in accept_encoding.lower()
+        and response.status_code == 200
+        and not response.direct_passthrough
+        and 'Content-Encoding' not in response.headers
+        and any(ct in (response.content_type or '') for ct in ['text/', 'application/json', 'application/javascript'])
+    ):
+        content = response.get_data()
+        if len(content) > 500:
+            compressed = gzip.compress(content, compresslevel=6)
+            response.set_data(compressed)
+            response.headers['Content-Encoding'] = 'gzip'
+            response.headers['Content-Length'] = len(compressed)
+            
+    return response
+
+@app.route('/health')
 @app.route('/healthz')
 def healthz():
     """Healthcheck endpoint cho Render / Uptime Robot / PaaS"""
@@ -145,6 +170,7 @@ def api_search():
 def api_calculate():
     """API giải toán sử dụng SymPy (Đạo hàm, Giới hạn, Giải phương trình)"""
     try:
+        import sympy as sp
         data = request.get_json() or {}
         calc_type = data.get('type')
         expr_str = data.get('expression', '').strip()
