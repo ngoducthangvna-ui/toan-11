@@ -1206,16 +1206,16 @@ VOLUME_1_CHAPTERS = [
         "badge": "Đại số & Giải tích",
         "icon": "bi-infinity",
         "color": "rose",
-        "summary": r"Giới hạn của dãy số, tổng cấp số nhân lùi vô hạn. Giới hạn của hàm số tại một điểm, tại vô cực, các dạng vô định $\\frac{0}{0}, \\frac{\\infty}{\\infty}, \\infty-\\infty$ và tính liên tục của hàm số.",
+        "summary": r"Giới hạn của dãy số, tổng cấp số nhân lùi vô hạn. Giới hạn của hàm số tại một điểm, tại vô cực, các dạng vô định $\frac{0}{0}, \frac{\infty}{\infty}, \infty - \infty$ và tính liên tục của hàm số.",
         "lessons": [
             {
                 "id": 1,
                 "slug": "gioi-han-day-so",
                 "title": "Bài 1: Giới hạn của dãy số",
                 "objectives": [
-                    r"Các giới hạn cơ bản: $\\lim \\frac{1}{n^k} = 0$, $\\lim q^n = 0$ ($|q| < 1$).",
+                    r"Các giới hạn cơ bản: $\lim \frac{1}{n^k} = 0$, $\lim q^n = 0$ ($|q| < 1$).",
                     "Các phép toán giới hạn tổng, hiệu, tích, thương.",
-                    r"Tổng cấp số nhân lùi vô hạn $S = \\frac{u_1}{1 - q}$."
+                    r"Tổng cấp số nhân lùi vô hạn $S = \frac{u_1}{1 - q}$."
                 ],
                 "content": r"""
 <div class="theory-section">

@@ -45,28 +45,20 @@
                 <span class="brand-text">TOÁN 11 MASTER</span>
             </a>
 
-            <!-- Search box in navbar -->
-            <div class="d-none d-md-block position-relative ms-4 flex-grow-1" style="max-width: 420px;">
+            <!-- Search box – expanded to center, visible on all sizes -->
+            <div class="position-relative mx-auto flex-grow-1 navbar-search-wrap px-2 px-md-3" style="max-width: 640px;">
                 <div class="input-group">
                     <span class="input-group-text bg-body-tertiary border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="text" id="globalSearchInput" class="form-control bg-body-tertiary border-start-0 ps-0" placeholder="Tìm kiếm bài học, công thức..." autocomplete="off">
+                    <input type="text" id="globalSearchInput" class="form-control bg-body-tertiary border-start-0 border-end-0 ps-0" placeholder="Tìm kiếm bài học, công thức..." autocomplete="off">
+                    <span class="input-group-text bg-body-tertiary border-start-0 text-muted d-none d-md-flex" style="font-size:0.72rem; letter-spacing:0.03em;">
+                        <kbd class="px-1 rounded" style="background:var(--bs-border-color-translucent);">Ctrl</kbd>&nbsp;<kbd class="px-1 rounded" style="background:var(--bs-border-color-translucent);">K</kbd>
+                    </span>
                 </div>
                 <div id="searchResultsDropdown" class="dropdown-menu w-100 shadow border-0 p-2 mt-1" style="display:none; max-height: 380px; overflow-y: auto;"></div>
             </div>
 
-            <div class="navbar-nav ms-auto flex-row align-items-center gap-2">
-                <a href="{{ url_for('error_log') }}" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1">
-                    <i class="bi bi-shield-fill-exclamation"></i> Sổ tay lỗi sai
-                </a>
-                <a href="{{ url_for('exams') }}" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1">
-                    <i class="bi bi-clock-history"></i> Thi thử 90'
-                </a>
-                <a href="{{ url_for('formulas') }}" class="btn btn-sm btn-outline-secondary d-none d-md-inline-flex align-items-center gap-1">
-                    <i class="bi bi-journal-bookmark-fill"></i> Sổ tay công thức
-                </a>
-                <a href="{{ url_for('calculator') }}" class="btn btn-sm btn-outline-success d-none d-lg-inline-flex align-items-center gap-1">
-                    <i class="bi bi-cpu-fill"></i> SymPy
-                </a>
+            <!-- Only dark-mode toggle remains in navbar -->
+            <div class="navbar-nav ms-auto ms-lg-0 flex-row align-items-center">
                 <button id="themeToggleBtn" class="btn btn-sm btn-outline-secondary rounded-circle" title="Chuyển chế độ sáng/tối">
                     <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
                 </button>
@@ -75,9 +67,9 @@
     </nav>
 
     <div class="container-fluid px-lg-4">
-        <div class="row">
-            <!-- Sidebar for Desktop -->
-            <aside class="col-lg-3 col-xl-2-5 d-none d-lg-block py-3 sidebar-sticky">
+        <div class="row g-0 g-lg-4">
+            <!-- Sidebar for Desktop (280px fixed width via CSS) -->
+            <aside class="sidebar-column d-none d-lg-block py-3 sidebar-sticky">
                 {% include 'includes/sidebar.html' %}
             </aside>
 
@@ -93,7 +85,7 @@
             </div>
 
             <!-- Main Content Area -->
-            <main class="col-lg-9 col-xl-9-5 py-4 main-content">
+            <main class="main-column py-4 main-content">
                 {% block content %}{% endblock %}
             </main>
         </div>

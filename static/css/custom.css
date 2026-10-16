@@ -31,59 +31,58 @@ body {
     font-size: 1.25rem;
 }
 
-/* Hero Section */
-.hero-card {
-    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #0284c7 100%);
+/* Top Navbar & Search Box */
+.navbar-search-wrap .input-group {
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid var(--bs-border-color);
+    background-color: var(--bs-tertiary-bg);
+    transition: all 0.2s ease;
 }
 
-.bg-gradient-header {
-    background: linear-gradient(to right, rgba(37, 99, 235, 0.08), rgba(59, 130, 246, 0.02));
+.navbar-search-wrap .input-group:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-.bg-gradient-quiz {
-    background: var(--quiz-gradient);
+.navbar-search-wrap input:focus {
+    box-shadow: none;
+    background-color: transparent;
 }
 
-/* Stat Cards */
-.stat-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* Desktop Sidebar 280px width & Layout */
+@media (min-width: 992px) {
+    .sidebar-column {
+        width: 280px !important;
+        flex: 0 0 280px !important;
+        max-width: 280px !important;
+    }
+    .main-column {
+        width: calc(100% - 280px) !important;
+        flex: 0 0 calc(100% - 280px) !important;
+        max-width: calc(100% - 280px) !important;
+        min-width: 0 !important;
+    }
 }
 
-.stat-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.06) !important;
+/* Sidebar Wrapping - Never cut text with ... */
+.sidebar-wrapper .nav-link,
+.sidebar-wrapper .list-group-item,
+.sidebar-chapter-label,
+.lesson-link-text {
+    white-space: normal !important;
+    word-break: break-word !important;
+    line-height: 1.4 !important;
 }
 
-.stat-icon {
-    width: 54px;
-    height: 54px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.sidebar-wrapper .accordion-button {
+    padding-right: 2.25rem !important;
 }
 
-/* Chapter Card */
-.chapter-card {
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+.sidebar-wrapper .accordion-button div {
+    width: 100%;
 }
 
-.chapter-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.08) !important;
-}
-
-.hover-primary:hover {
-    color: #2563eb !important;
-    text-decoration: underline !important;
-}
-
-.hover-success:hover {
-    color: #10b981 !important;
-    text-decoration: underline !important;
-}
-
-/* Sidebar Sticky */
 .sidebar-sticky {
     position: sticky;
     top: 70px;
@@ -99,6 +98,80 @@ body {
 .sidebar-sticky::-webkit-scrollbar-thumb {
     background: rgba(0,0,0,0.15);
     border-radius: 4px;
+}
+
+/* Hero Section */
+.hero-card {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #0284c7 100%);
+}
+
+.hero-stats-strip .badge {
+    backdrop-filter: blur(8px);
+    font-size: 0.85rem;
+    transition: background-color 0.2s ease;
+}
+
+.hero-stats-strip .badge:hover {
+    background-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Featured Badge Overflow Fix */
+.feature-format-badge {
+    white-space: normal;
+    max-width: 100%;
+    line-height: 1.25;
+    text-align: right;
+}
+
+/* Chapter Card & Animations */
+.chapter-card {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease;
+}
+
+.chapter-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.09) !important;
+}
+
+.chapter-title-link:hover {
+    color: #2563eb !important;
+}
+
+/* Lesson Preview Link Hover Effect */
+.lesson-preview-link {
+    transition: all 0.15s ease-in-out;
+}
+
+.lesson-preview-link:hover {
+    background-color: rgba(37, 99, 235, 0.08);
+    transform: translateX(3px);
+}
+
+.lesson-preview-link:hover .lesson-card-name {
+    color: #2563eb !important;
+    font-weight: 600;
+}
+
+[data-bs-theme="dark"] .lesson-preview-link:hover {
+    background-color: rgba(59, 130, 246, 0.18);
+}
+
+.lesson-card-icon {
+    font-size: 0.8rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+/* Search Highlights */
+.search-highlight {
+    background-color: #fef08a !important;
+    color: #854d0e !important;
+    padding: 0.1rem 0.25rem;
+    border-radius: 4px;
+}
+
+.chapter-card-col.search-matched .card {
+    border: 2px solid #2563eb !important;
+    box-shadow: 0 0 16px rgba(37, 99, 235, 0.2) !important;
 }
 
 /* Lesson Content & Theory Sections */
@@ -199,12 +272,51 @@ body {
     border-color: rgba(16, 185, 129, 0.3);
 }
 
-/* Animation */
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.02); }
+/* Mobile & Tablet Responsiveness */
+@media (max-width: 991.98px) {
+    .sidebar-sticky {
+        height: auto;
+        position: static;
+    }
 }
 
-.animate-pulse {
-    animation: pulse 2s infinite ease-in-out;
+@media (max-width: 767.98px) {
+    .hero-card h1 {
+        font-size: 1.65rem !important;
+    }
+    .hero-card p.lead {
+        font-size: 0.95rem !important;
+    }
+    .hero-stats-strip .badge {
+        font-size: 0.78rem;
+        padding: 0.4rem 0.65rem !important;
+    }
+    .navbar-brand .brand-text {
+        font-size: 1.05rem;
+    }
+    .navbar-search-wrap {
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .hero-card {
+        border-radius: 1rem !important;
+    }
+    .hero-card .card-body {
+        padding: 1.25rem !important;
+    }
+    .hero-card .btn-lg {
+        font-size: 1rem;
+        padding: 0.65rem 1rem !important;
+        width: 100%;
+    }
+    .chapter-card .card-body {
+        padding: 1rem !important;
+    }
+    .timer-box {
+        width: 100% !important;
+        display: block !important;
+    }
 }

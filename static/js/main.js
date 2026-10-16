@@ -1,11 +1,12 @@
 /**
  * Main JavaScript for TOAN 11 MASTER
- * Handles Dark Mode, Learning Progress, Live Search, and Interactive Quiz Engine
+ * Handles Dark Mode, Learning Progress, Continue Learning, Live Search Filter, and Interactive Quiz Engine
  */
 
 document.addEventListener("DOMContentLoaded", function() {
     initTheme();
     initProgress();
+    initContinueLearning();
     initSearch();
     initQuiz();
 });
@@ -42,7 +43,7 @@ function initTheme() {
 }
 
 /* ==========================================================================
-   2. Progress Tracker (Local Storage)
+   2. Progress Tracker & Chapter Card Sync (Local Storage)
    ========================================================================== */
 function initProgress() {
     const STORAGE_KEY = 'toan11_completed_lessons';
@@ -76,10 +77,10 @@ function initProgress() {
         function setBtnCompleted(isDone) {
             if (isDone) {
                 markBtn.className = 'btn btn-success btn-sm d-inline-flex align-items-center gap-1';
-                markText.innerText = 'Đã hoàn thành bài này';
+                if (markText) markText.innerText = 'Đã hoàn thành bài này';
             } else {
                 markBtn.className = 'btn btn-outline-success btn-sm d-inline-flex align-items-center gap-1';
-                markText.innerText = 'Đánh dấu đã học xong';
+                if (markText) markText.innerText = 'Đánh dấu đã học xong';
             }
         }
     }
@@ -95,7 +96,8 @@ function initProgress() {
                 updateProgressUI();
                 if (markBtn) {
                     markBtn.className = 'btn btn-outline-success btn-sm d-inline-flex align-items-center gap-1';
-                    document.getElementById('markCompleteText').innerText = 'Đánh dấu đã học xong';
+                    const markText = document.getElementById('markCompleteText');
+                    if (markText) markText.innerText = 'Đánh dấu đã học xong';
                 }
             }
         });
@@ -125,26 +127,141 @@ function initProgress() {
                 }
             }
         });
+
+        // Sync progress on Homepage Chapter Cards
+        document.querySelectorAll('.chapter-card-col').forEach(col => {
+            const chId = col.dataset.chapterId;
+            const lessonIcons = col.querySelectorAll('.lesson-card-icon');
+            let chDoneCount = 0;
+            const chTotal = lessonIcons.length;
+
+            lessonIcons.forEach(icon => {
+                const lesId = icon.dataset.lessonId;
+                if (lesId && completedLessons.includes(lesId)) {
+                    chDoneCount++;
+                    icon.className = 'bi bi-check-circle-fill text-success lesson-card-icon flex-shrink-0';
+                } else {
+                    icon.className = 'bi bi-circle text-muted lesson-card-icon flex-shrink-0';
+                }
+            });
+
+            // Update Chapter badge and progress bar
+            const badge = col.querySelector('.chapter-progress-badge');
+            if (badge) {
+                badge.innerText = `${chDoneCount}/${chTotal} bài`;
+                if (chDoneCount === chTotal && chTotal > 0) {
+                    badge.className = 'badge bg-success text-white border border-success chapter-progress-badge';
+                }
+            }
+
+            const chBar = col.querySelector('.chapter-progress-bar');
+            if (chBar) {
+                const chPercent = chTotal > 0 ? Math.round((chDoneCount / chTotal) * 100) : 0;
+                chBar.style.width = chPercent + '%';
+            }
+        });
     }
 }
 
 /* ==========================================================================
-   3. Search Functionality
+   3. Continue Learning Feature (localStorage: toan11_last_lesson)
+   ========================================================================== */
+function initContinueLearning() {
+    const LAST_LESSON_KEY = 'toan11_last_lesson';
+
+    // 1. If currently on a lesson page, save it as the latest lesson
+    if (window.location.pathname.includes('/lesson/')) {
+        const titleEl = document.querySelector('h1.display-6, .lesson-header h1, h1');
+        const lessonTitle = titleEl ? titleEl.innerText.trim() : 'Bài học gần nhất';
+        const currentData = {
+            title: lessonTitle,
+            url: window.location.pathname
+        };
+        localStorage.setItem(LAST_LESSON_KEY, JSON.stringify(currentData));
+    }
+
+    // 2. Global listener: when user clicks on any lesson link, remember it
+    document.addEventListener('click', function(e) {
+        const lessonLink = e.target.closest('[data-lesson-id]');
+        if (lessonLink && lessonLink.getAttribute('href')) {
+            const title = lessonLink.dataset.lessonTitle || lessonLink.innerText.trim();
+            const url = lessonLink.getAttribute('href');
+            if (url && url !== '#') {
+                localStorage.setItem(LAST_LESSON_KEY, JSON.stringify({
+                    title: title,
+                    url: url
+                }));
+            }
+        }
+    });
+
+    // 3. On Homepage: update the Hero CTA button to "Học tiếp: [Tên bài]"
+    const heroPrimaryBtn = document.getElementById('heroPrimaryBtn');
+    const heroBtnText = document.getElementById('heroPrimaryBtnText');
+    if (heroPrimaryBtn && heroBtnText) {
+        const saved = localStorage.getItem(LAST_LESSON_KEY);
+        if (saved) {
+            try {
+                const lastLesson = JSON.parse(saved);
+                if (lastLesson && lastLesson.url && lastLesson.title) {
+                    heroPrimaryBtn.href = lastLesson.url;
+                    // Format title cleanly (limit to 35 chars if too long)
+                    let displayTitle = lastLesson.title;
+                    if (displayTitle.length > 36) {
+                        displayTitle = displayTitle.substring(0, 34) + '...';
+                    }
+                    heroBtnText.innerText = `Học tiếp: ${displayTitle}`;
+                    heroPrimaryBtn.className = 'btn btn-warning text-dark btn-lg px-4 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm';
+                    heroPrimaryBtn.title = `Học tiếp: ${lastLesson.title}`;
+                }
+            } catch (err) {
+                console.error("Error reading last lesson:", err);
+            }
+        }
+    }
+}
+
+/* ==========================================================================
+   4. Live Search & Filter (with Ctrl+K Shortcut)
    ========================================================================== */
 function initSearch() {
     const searchInput = document.getElementById('globalSearchInput');
     const dropdown = document.getElementById('searchResultsDropdown');
+    const homeAlert = document.getElementById('homeSearchAlert');
+    const homeKeyword = document.getElementById('homeSearchKeyword');
+    const clearHomeBtn = document.getElementById('clearHomeSearchBtn');
+    const isHomepage = document.querySelector('.homepage-container') !== null;
 
-    if (!searchInput || !dropdown) return;
+    if (!searchInput) return;
+
+    // Keyboard shortcut: Ctrl + K or Cmd + K
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+            e.preventDefault();
+            searchInput.focus();
+            searchInput.select();
+        }
+        if (e.key === 'Escape' && dropdown) {
+            dropdown.style.display = 'none';
+        }
+    });
 
     let debounceTimer;
     searchInput.addEventListener('input', function() {
         clearTimeout(debounceTimer);
         const query = this.value.trim();
 
+        // 1. Live Filter on Homepage Cards
+        if (isHomepage) {
+            filterHomepageCards(query);
+        }
+
+        // 2. Dropdown search suggestion via API
         if (query.length < 2) {
-            dropdown.style.display = 'none';
-            dropdown.innerHTML = '';
+            if (dropdown) {
+                dropdown.style.display = 'none';
+                dropdown.innerHTML = '';
+            }
             return;
         }
 
@@ -156,10 +273,63 @@ function initSearch() {
             } catch (err) {
                 console.error("Search error:", err);
             }
-        }, 250);
+        }, 220);
     });
 
+    // Helper: Vietnamese search normalization (remove accents)
+    function removeAccents(str) {
+        if (!str) return '';
+        return str.normalize('NFD')
+                  .replace(/[\u0300-\u036f]/g, '')
+                  .replace(/đ/g, 'd')
+                  .replace(/Đ/g, 'D')
+                  .toLowerCase();
+    }
+
+    // Filter Homepage Chapter Cards
+    function filterHomepageCards(rawQuery) {
+        const query = removeAccents(rawQuery.trim());
+        const chapterCols = document.querySelectorAll('.chapter-card-col');
+
+        if (!query) {
+            chapterCols.forEach(col => {
+                col.classList.remove('d-none', 'search-matched');
+            });
+            if (homeAlert) homeAlert.classList.add('d-none');
+            return;
+        }
+
+        let matchCount = 0;
+        chapterCols.forEach(col => {
+            const content = removeAccents(col.getAttribute('data-search-content') || col.innerText);
+            if (content.includes(query)) {
+                col.classList.remove('d-none');
+                col.classList.add('search-matched');
+                matchCount++;
+            } else {
+                col.classList.add('d-none');
+                col.classList.remove('search-matched');
+            }
+        });
+
+        if (homeAlert && homeKeyword) {
+            homeKeyword.innerText = rawQuery;
+            homeAlert.classList.remove('d-none');
+        }
+    }
+
+    if (clearHomeBtn) {
+        clearHomeBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            filterHomepageCards('');
+            if (dropdown) dropdown.style.display = 'none';
+            searchInput.focus();
+        });
+    }
+
     function renderSearchResults(results) {
+        if (!dropdown) return;
+
         if (!results || results.length === 0) {
             dropdown.innerHTML = '<div class="p-3 text-center text-muted small"><i class="bi bi-emoji-neutral me-1"></i> Không tìm thấy bài học phù hợp</div>';
             dropdown.style.display = 'block';
@@ -171,7 +341,7 @@ function initSearch() {
             const icon = item.type === 'chapter' ? 'bi-journal-richtext text-primary' : 'bi-file-earmark-text text-success';
             html += `
                 <a href="${item.url}" class="dropdown-item py-2 px-3 d-flex align-items-center gap-2 rounded-2">
-                    <i class="bi ${icon} fs-5"></i>
+                    <i class="bi ${icon} fs-5 flex-shrink-0"></i>
                     <div class="text-truncate">
                         <div class="fw-semibold small text-truncate text-body">${item.title}</div>
                         <div class="text-muted small text-truncate" style="font-size: 0.75rem;">${item.subtitle}</div>
@@ -186,14 +356,14 @@ function initSearch() {
 
     // Close on outside click
     document.addEventListener('click', function(e) {
-        if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+        if (dropdown && !searchInput.contains(e.target) && !dropdown.contains(e.target)) {
             dropdown.style.display = 'none';
         }
     });
 }
 
 /* ==========================================================================
-   4. Interactive Quiz Engine
+   5. Interactive Quiz Engine
    ========================================================================== */
 function initQuiz() {
     const quizForm = document.getElementById('quizForm');
@@ -247,7 +417,9 @@ function initQuiz() {
             card.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
 
             // Highlight the truly correct answer
-            labels[correctVal].classList.add('correct-choice');
+            if (labels[correctVal]) {
+                labels[correctVal].classList.add('correct-choice');
+            }
 
             if (checked) {
                 const userVal = parseInt(checked.value);
@@ -255,7 +427,7 @@ function initQuiz() {
                     correctCount++;
                     statusBox.innerHTML = '<span class="badge bg-success"><i class="bi bi-check-lg"></i> Chính xác!</span>';
                 } else {
-                    labels[userVal].classList.add('wrong-choice');
+                    if (labels[userVal]) labels[userVal].classList.add('wrong-choice');
                     statusBox.innerHTML = '<span class="badge bg-danger"><i class="bi bi-x-lg"></i> Chưa chính xác</span>';
                 }
             } else {

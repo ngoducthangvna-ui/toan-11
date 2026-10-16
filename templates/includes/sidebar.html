@@ -24,14 +24,14 @@
             <span class="fw-medium">Trang chủ tổng quan</span>
         </a>
         <a href="{{ url_for('error_log') }}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 py-2 text-danger fw-semibold bg-danger-subtle">
-            <i class="bi bi-shield-fill-exclamation text-danger"></i>
-            <span class="flex-grow-1 text-truncate">Sổ tay lỗi sai (Error Log)</span>
-            <span class="badge bg-danger rounded-pill">10 bẫy</span>
+            <i class="bi bi-shield-fill-exclamation text-danger flex-shrink-0"></i>
+            <span class="flex-grow-1">Sổ tay lỗi sai (Error Log)</span>
+            <span class="badge bg-danger rounded-pill flex-shrink-0">10 bẫy</span>
         </a>
         <a href="{{ url_for('exams') }}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 py-2 text-primary fw-semibold bg-primary-subtle">
-            <i class="bi bi-clock-history text-primary"></i>
-            <span class="flex-grow-1 text-truncate">Phòng thi thử 90 phút</span>
-            <span class="badge bg-primary rounded-pill">Hưng Yên</span>
+            <i class="bi bi-clock-history text-primary flex-shrink-0"></i>
+            <span class="flex-grow-1">Phòng thi thử 90 phút</span>
+            <span class="badge bg-primary rounded-pill flex-shrink-0">Hưng Yên</span>
         </a>
         <a href="{{ url_for('formulas') }}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 py-2">
             <i class="bi bi-journal-bookmark-fill text-warning"></i>
@@ -54,9 +54,9 @@
         <div class="accordion-item border-0 mb-2 rounded-3 shadow-sm overflow-hidden">
             <h2 class="accordion-header" id="heading-ch-{{ ch.id }}">
                 <button class="accordion-button py-2 px-3 {% if chapter and chapter.id == ch.id %}{% else %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-ch-{{ ch.id }}">
-                    <div class="d-flex align-items-center gap-2 text-truncate">
-                        <i class="bi {{ ch.icon }} text-primary"></i>
-                        <span class="fw-semibold small text-truncate">{{ ch.short_title }}</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi {{ ch.icon }} text-primary flex-shrink-0"></i>
+                        <span class="fw-semibold small sidebar-chapter-label">{{ ch.short_title }}</span>
                     </div>
                 </button>
             </h2>
@@ -68,7 +68,7 @@
                             <a href="{{ url_for('lesson_detail', chapter_id=ch.id, lesson_id=les.id) }}" 
                                class="nav-link py-1 px-2 small d-flex align-items-center justify-content-between rounded-2 {% if chapter and lesson and chapter.id == ch.id and lesson.id == les.id %}active{% endif %}"
                                data-lesson-id="ch{{ ch.id }}_les{{ les.id }}">
-                                <span class="text-truncate">{{ les.title }}</span>
+                                <span class="lesson-link-text flex-grow-1">{{ les.title }}</span>
                                 <i class="bi bi-check-circle-fill lesson-check-icon text-success d-none ms-1"></i>
                             </a>
                         </li>
@@ -95,9 +95,9 @@
         <div class="accordion-item border-0 mb-2 rounded-3 shadow-sm overflow-hidden">
             <h2 class="accordion-header" id="heading-ch-{{ ch.id }}">
                 <button class="accordion-button py-2 px-3 {% if chapter and chapter.id == ch.id %}{% else %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-ch-{{ ch.id }}">
-                    <div class="d-flex align-items-center gap-2 text-truncate">
-                        <i class="bi {{ ch.icon }} text-success"></i>
-                        <span class="fw-semibold small text-truncate">{{ ch.short_title }}</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi {{ ch.icon }} text-success flex-shrink-0"></i>
+                        <span class="fw-semibold small sidebar-chapter-label">{{ ch.short_title }}</span>
                     </div>
                 </button>
             </h2>
@@ -109,7 +109,7 @@
                             <a href="{{ url_for('lesson_detail', chapter_id=ch.id, lesson_id=les.id) }}" 
                                class="nav-link py-1 px-2 small d-flex align-items-center justify-content-between rounded-2 {% if chapter and lesson and chapter.id == ch.id and lesson.id == les.id %}active{% endif %}"
                                data-lesson-id="ch{{ ch.id }}_les{{ les.id }}">
-                                <span class="text-truncate">{{ les.title }}</span>
+                                <span class="lesson-link-text flex-grow-1">{{ les.title }}</span>
                                 <i class="bi bi-check-circle-fill lesson-check-icon text-success d-none ms-1"></i>
                             </a>
                         </li>
