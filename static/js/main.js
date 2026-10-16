@@ -75,8 +75,6 @@ document.addEventListener("DOMContentLoaded", function() {
     initSearch();
     initQuiz();
     initWorkout();
-    initQuickCheck();
-    initSolutionToggles();
     initSidebarAccordion();
     initSidebarScrollTracking();
     initKeyboardShortcuts();
@@ -849,86 +847,7 @@ function initWorkout() {
     }
 }
 
-/* ==========================================================================
-   6.1. Interactive Lesson Features (Quick Check & Solution Toggles)
-   ========================================================================== */
-function initQuickCheck() {
-    const cards = document.querySelectorAll('.quick-check-card');
-    cards.forEach(card => {
-        if (card.dataset.bound) return;
-        card.dataset.bound = 'true';
 
-        const correctIdx = parseInt(card.dataset.correct, 10);
-        const optBtns = card.querySelectorAll('.quick-opt-btn');
-        const expBox = card.querySelector('.quick-explanation');
-        const expTitle = card.querySelector('.explanation-title');
-
-        optBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const chosenIdx = parseInt(btn.dataset.index, 10);
-                optBtns.forEach(b => {
-                    b.disabled = true;
-                    b.classList.remove('btn-outline-secondary');
-                });
-
-                if (chosenIdx === correctIdx) {
-                    btn.classList.add('btn-success', 'text-white');
-                    const icon = btn.querySelector('.opt-status-icon');
-                    if (icon) {
-                        icon.className = 'bi bi-check-circle-fill text-white ms-2';
-                        icon.classList.remove('d-none');
-                    }
-                    if (expBox) {
-                        expBox.classList.remove('d-none');
-                        expBox.className = 'quick-explanation p-3 rounded-3 border border-success bg-success-subtle text-success-emphasis mt-3';
-                        if (expTitle) expTitle.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Chính xác! Bạn đã chọn đáp án đúng.';
-                    }
-                    showToast('Chính xác! Bạn đã hiểu đúng bài học.', 'success');
-                } else {
-                    btn.classList.add('btn-danger', 'text-white');
-                    const icon = btn.querySelector('.opt-status-icon');
-                    if (icon) {
-                        icon.className = 'bi bi-x-circle-fill text-white ms-2';
-                        icon.classList.remove('d-none');
-                    }
-                    const correctBtn = card.querySelector(`.quick-opt-btn[data-index="${correctIdx}"]`);
-                    if (correctBtn) {
-                        correctBtn.classList.add('btn-success', 'text-white');
-                        const cIcon = correctBtn.querySelector('.opt-status-icon');
-                        if (cIcon) {
-                            cIcon.className = 'bi bi-check-circle-fill text-white ms-2';
-                            cIcon.classList.remove('d-none');
-                        }
-                    }
-                    if (expBox) {
-                        expBox.classList.remove('d-none');
-                        expBox.className = 'quick-explanation p-3 rounded-3 border border-danger bg-danger-subtle text-danger-emphasis mt-3';
-                        if (expTitle) expTitle.innerHTML = '<i class="bi bi-info-circle-fill me-1"></i> Chưa chính xác. Xem hướng dẫn & giải thích:';
-                    }
-                }
-
-                // Render math in explanation
-                if (expBox) renderMath(expBox);
-            });
-        });
-    });
-}
-
-function initSolutionToggles() {
-    document.querySelectorAll('.solution-toggle-btn').forEach(btn => {
-        if (btn.dataset.bound) return;
-        btn.dataset.bound = 'true';
-        btn.addEventListener('click', function() {
-            const toggleText = btn.querySelector('.toggle-text');
-            setTimeout(() => {
-                const isExpanded = btn.getAttribute('aria-expanded') === 'true';
-                if (toggleText) {
-                    toggleText.innerText = isExpanded ? 'Thu gọn lời giải' : 'Xem lời giải chi tiết';
-                }
-            }, 60);
-        });
-    });
-}
 
 function initKeyboardShortcuts() {
     if (window._keyboardShortcutsInitialized) return;
@@ -1020,13 +939,14 @@ function initSidebarAccordion() {
 function initSidebarScrollTracking() {
     const desktop = document.getElementById('desktopSidebar');
     if (!desktop) return;
+    const scroller = desktop.querySelector('#curriculumAccordion') || desktop;
 
     let scrollTimeout = null;
-    desktop.addEventListener('scroll', function() {
+    scroller.addEventListener('scroll', function() {
         clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(() => {
             try {
-                sessionStorage.setItem('toan11_sidebar_scroll', desktop.scrollTop);
+                sessionStorage.setItem('toan11_sidebar_scroll', scroller.scrollTop);
             } catch (_) {}
         }, 60);
     }, { passive: true });
@@ -1370,8 +1290,6 @@ function initSpaRouter() {
             try { initContinueLearning(); } catch (_) {}
             try { initQuiz(); } catch (_) {}
             try { initWorkout(); } catch (_) {}
-            try { initQuickCheck(); } catch (_) {}
-            try { initSolutionToggles(); } catch (_) {}
 
             // 9. If navigated to 3D page, ensure 3D scene starts
             if (targetUrl.pathname === '/hinh-hoc-3d') {

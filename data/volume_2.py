@@ -20,11 +20,6 @@ VOLUME_2_CHAPTERS = [
                 "id": 1,
                 "slug": "phep-tinh-luy-thua",
                 "title": "Bài 1: Phép tính lũy thừa với số mũ thực",
-                "objectives": [
-                    "Nắm vững các tính chất của lũy thừa với số mũ nguyên, hữu tỉ và thực.",
-                    r"Biến đổi căn bậc $n$ về lũy thừa số mũ hữu tỉ: $\\sqrt[n]{a^m} = a^{\\frac{m}{n}}$.",
-                    "So sánh các lũy thừa cùng cơ số hoặc cùng số mũ."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Tính chất của lũy thừa với số mũ thực</h4>
@@ -49,11 +44,6 @@ VOLUME_2_CHAPTERS = [
                 "id": 2,
                 "slug": "phep-tinh-logarit",
                 "title": "Bài 2: Phép tính logarit",
-                "objectives": [
-                    r"Định nghĩa logarit cơ số $a$ của $b$: $\\log_a b = \alpha \\iff a^{\\alpha} = b$.",
-                    "Các quy tắc logarit của tích, thương, lũy thừa.",
-                    r"Công thức đổi cơ số, logarit tự nhiên $\\ln$ và logarit thập phân $\\log$."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Định nghĩa</h4>
@@ -82,11 +72,6 @@ VOLUME_2_CHAPTERS = [
                 "id": 3,
                 "slug": "ham-so-mu-va-logarit",
                 "title": "Bài 3: Hàm số mũ và Hàm số logarit",
-                "objectives": [
-                    r"Khảo sát và vẽ đồ thị hàm số mũ $y = a^x$ và hàm số logarit $y = \\log_a x$.",
-                    "Xác định tập xác định, tập giá trị và chiều biến thiên.",
-                    "Nhận biết tính đối xứng của đồ thị qua đường thẳng $y = x$."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Bảng so sánh Hàm số Mũ và Hàm số Logarit</h4>
@@ -112,11 +97,6 @@ VOLUME_2_CHAPTERS = [
                 "id": 4,
                 "slug": "phuong-trinh-bat-phuong-trinh-mu-logarit",
                 "title": "Bài 4: Phương trình và Bất phương trình mũ, logarit cơ bản",
-                "objectives": [
-                    r"Giải phương trình mũ $a^x = b$ và logarit $\\log_a x = b$.",
-                    "Giải bất phương trình mũ và logarit cơ bản (lưu ý đổi chiều khi cơ số $0 < a < 1$).",
-                    "Đặt điều kiện xác định cho biểu thức logarit."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Phương trình mũ & logarit cơ bản</h4>
@@ -241,11 +221,6 @@ VOLUME_2_CHAPTERS = [
                 "id": 1,
                 "slug": "dinh-nghia-va-y-nghia-dao-ham",
                 "title": "Bài 1: Định nghĩa và ý nghĩa của đạo hàm",
-                "objectives": [
-                    "Định nghĩa đạo hàm qua giới hạn tỉ số số gia.",
-                    "Ý nghĩa hình học: Hệ số góc và phương trình tiếp tuyến của đồ thị.",
-                    "Ý nghĩa vật lí: Vận tốc tức thời trong chuyển động thẳng $v(t) = s'(t)$."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Định nghĩa đạo hàm tại một điểm</h4>
@@ -274,11 +249,6 @@ VOLUME_2_CHAPTERS = [
                 "id": 2,
                 "slug": "cac-quy-tac-tinh-dao-ham",
                 "title": "Bài 2: Các quy tắc tính đạo hàm và đạo hàm hàm hợp",
-                "objectives": [
-                    "Bảng đạo hàm của các hàm số sơ cấp cơ bản.",
-                    "Đạo hàm của tổng, hiệu, tích, thương.",
-                    r"Công thức đạo hàm của hàm số hợp $y'_x = y'_u \cdot u'_x$."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Bảng đạo hàm các hàm sơ cấp cơ bản</h4>
@@ -315,10 +285,6 @@ VOLUME_2_CHAPTERS = [
                 "id": 3,
                 "slug": "dao-ham-cap-hai",
                 "title": "Bài 3: Đạo hàm cấp hai",
-                "objectives": [
-                    "Định nghĩa đạo hàm cấp hai: $f''(x) = (f'(x))'$.",
-                    "Ý nghĩa vật lí của đạo hàm cấp hai: Gia tốc tức thời $a(t) = s''(t)$."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Định nghĩa</h4>
@@ -414,10 +380,6 @@ VOLUME_2_CHAPTERS = [
                 "id": 1,
                 "slug": "hai-duong-thang-vuong-goc",
                 "title": "Bài 1: Góc giữa hai đường thẳng và hai đường thẳng vuông góc",
-                "objectives": [
-                    r"Định nghĩa góc giữa hai đường thẳng trong không gian ($0^\circ \le \varphi \le 90^\circ$).",
-                    "Điều kiện hai đường thẳng vuông góc: tích vô hướng hai VTCP bằng 0."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Góc giữa hai đường thẳng</h4>
@@ -439,11 +401,6 @@ VOLUME_2_CHAPTERS = [
                 "id": 2,
                 "slug": "duong-thang-vuong-goc-voi-mat-phang",
                 "title": "Bài 2: Đường thẳng vuông góc với mặt phẳng",
-                "objectives": [
-                    "Điều kiện để đường thẳng vuông góc với mặt phẳng.",
-                    "Tính chất: Đường thẳng vuông góc mp thì vuông góc với mọi đường thẳng trong mp đó.",
-                    "Định lí ba đường vuông góc."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Điều kiện để đường thẳng vuông góc với mặt phẳng</h4>
@@ -467,11 +424,6 @@ VOLUME_2_CHAPTERS = [
                 "id": 3,
                 "slug": "hai-mat-phang-vuong-goc",
                 "title": "Bài 3: Hai mặt phẳng vuông góc",
-                "objectives": [
-                    "Định nghĩa góc giữa hai mặt phẳng.",
-                    "Điều kiện để hai mặt phẳng vuông góc.",
-                    "Định lí giao tuyến của hai mặt phẳng vuông góc."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Điều kiện để hai mặt phẳng vuông góc</h4>
@@ -490,11 +442,6 @@ VOLUME_2_CHAPTERS = [
                 "id": 4,
                 "slug": "khoang-cach-va-goc",
                 "title": "Bài 4: Khoảng cách và Góc trong không gian",
-                "objectives": [
-                    "Khoảng cách từ một điểm đến một mặt phẳng.",
-                    "Khoảng cách giữa hai đường thẳng chéo nhau (đoạn vuông góc chung).",
-                    "Góc giữa đường thẳng và mặt phẳng."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Khoảng cách từ điểm $M$ đến mặt phẳng $(P)$</h4>
@@ -621,11 +568,6 @@ VOLUME_2_CHAPTERS = [
                 "id": 1,
                 "slug": "bien-co-giao-va-quy-tac-nhan-xac-suat",
                 "title": "Bài 1: Biến cố giao và quy tắc nhân xác suất",
-                "objectives": [
-                    r"Định nghĩa biến cố giao $AB = A \cap B$.",
-                    "Khái niệm hai biến cố độc lập.",
-                    r"Công thức nhân xác suất cho hai biến cố độc lập: $P(AB) = P(A) \cdot P(B)$."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Biến cố giao</h4>
@@ -652,11 +594,6 @@ VOLUME_2_CHAPTERS = [
                 "id": 2,
                 "slug": "bien-co-hop-va-quy-tac-cong-xac-suat",
                 "title": "Bài 2: Biến cố hợp và quy tắc cộng xác suất",
-                "objectives": [
-                    r"Định nghĩa biến cố hợp $A \cup B$.",
-                    r"Khái niệm hai biến cố xung khắc ($A \cap B = \emptyset$).",
-                    "Quy tắc cộng xác suất tổng quát và trường hợp biến cố xung khắc."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Biến cố hợp</h4>

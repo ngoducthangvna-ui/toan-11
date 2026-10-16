@@ -20,11 +20,6 @@ VOLUME_1_CHAPTERS = [
                 "id": 1,
                 "slug": "gia-tri-luong-giac-cua-goc-luong-giac",
                 "title": "Bài 1: Giá trị lượng giác của góc lượng giác",
-                "objectives": [
-                    "Hiểu khái niệm góc lượng giác, đơn vị radian và liên hệ với độ.",
-                    "Xác định giá trị lượng giác của góc trên đường tròn lượng giác.",
-                    "Vận dụng các hệ thức lượng giác cơ bản và công thức cung liên kết."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Góc lượng giác và đơn vị Radian</h4>
@@ -90,11 +85,6 @@ VOLUME_1_CHAPTERS = [
                 "id": 2,
                 "slug": "cong-thuc-luong-giac",
                 "title": "Bài 2: Các công thức lượng giác trọng tâm",
-                "objectives": [
-                    "Thành thạo công thức cộng, công thức nhân đôi, nhân ba.",
-                    "Áp dụng công thức hạ bậc trong tính toán tích phân và lượng giác.",
-                    "Sử dụng công thức biến đổi tích thành tổng và tổng thành tích."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Công thức cộng</h4>
@@ -147,11 +137,6 @@ VOLUME_1_CHAPTERS = [
                 "id": 3,
                 "slug": "ham-so-luong-giac",
                 "title": "Bài 3: Hàm số lượng giác và đồ thị",
-                "objectives": [
-                    "Hiểu bản chất dao động tuần hoàn của sin, cos (chu kì lặp lại) và ý nghĩa giới hạn của tan, cot dưới góc nhìn kỹ thuật thực tế.",
-                    "Nắm vững Checklist 3 bước tìm Tập xác định và Checklist 4 bước xét Tính chẵn - lẻ mà không bao giờ bị sót điều kiện.",
-                    "Thành thạo kỹ thuật tìm Giá trị lớn nhất / nhỏ nhất bằng phương pháp kẹp biên độ dao động [-1; 1]."
-                ],
                 "content": r"""
 <div class="theory-section">
     <!-- Lời tựa từ kỹ sư 30 năm kinh nghiệm -->
@@ -373,11 +358,6 @@ VOLUME_1_CHAPTERS = [
                 "id": 4,
                 "slug": "phuong-trinh-luong-giac-co-ban",
                 "title": "Bài 4: Phương trình lượng giác cơ bản",
-                "objectives": [
-                    "Nắm vững công thức nghiệm của phương trình lượng giác cơ bản.",
-                    r"Hiểu điều kiện có nghiệm của $\sin x = m$ và $\cos x = m$.",
-                    r"Sử dụng thành thạo đơn vị radian và chu kì $k2\pi, k\pi$ ($k \in \mathbb{Z}$)."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Phương trình $\sin x = m$</h4>
@@ -683,11 +663,6 @@ VOLUME_1_CHAPTERS = [
                 "id": 1,
                 "slug": "day-so",
                 "title": "Bài 1: Dãy số và các tính chất",
-                "objectives": [
-                    "Hiểu định nghĩa dãy số hữu hạn và vô hạn.",
-                    "Xét tính tăng, giảm của dãy số ($u_{n+1} - u_n$ hoặc so sánh với 1).",
-                    "Xét tính bị chặn trên, bị chặn dưới và bị chặn của dãy số."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Định nghĩa dãy số</h4>
@@ -713,11 +688,6 @@ VOLUME_1_CHAPTERS = [
                 "id": 2,
                 "slug": "cap-so-cong",
                 "title": "Bài 2: Cấp số cộng (CSC)",
-                "objectives": [
-                    "Định nghĩa cấp số cộng và công sai $d$.",
-                    "Số hạng tổng quát: $u_n = u_1 + (n-1)d$.",
-                    "Công thức tính tổng $n$ số hạng đầu $S_n$."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Định nghĩa</h4>
@@ -754,11 +724,6 @@ VOLUME_1_CHAPTERS = [
                 "id": 3,
                 "slug": "cap-so-nhan",
                 "title": "Bài 3: Cấp số nhân (CSN)",
-                "objectives": [
-                    "Định nghĩa cấp số nhân và công bội $q$.",
-                    r"Số hạng tổng quát: $u_n = u_1 \cdot q^{n-1}$.",
-                    "Tổng $n$ số hạng đầu tiên và tính chất của CSN."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Định nghĩa</h4>
@@ -874,11 +839,6 @@ VOLUME_1_CHAPTERS = [
                 "id": 1,
                 "slug": "mau-so-lieu-ghep-nhom",
                 "title": "Bài 1: Thu thập và ghép nhóm số liệu",
-                "objectives": [
-                    "Hiểu cấu trúc mẫu số liệu ghép nhóm $[a_i; a_{i+1})$.",
-                    "Xác định độ dài nhóm và giá trị đại diện của từng nhóm.",
-                    "Lập bảng phân bố tần số ghép nhóm."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Khái niệm mẫu số liệu ghép nhóm</h4>
@@ -898,11 +858,6 @@ VOLUME_1_CHAPTERS = [
                 "id": 2,
                 "slug": "cac-so-dac-trung",
                 "title": "Bài 2: Các số đặc trưng đo xu thế trung tâm",
-                "objectives": [
-                    "Tính số trung bình của mẫu số liệu ghép nhóm.",
-                    "Xác định trung vị ($M_e$), tứ phân vị ($Q_1, Q_2, Q_3$).",
-                    "Xác định nhóm chứa mốt và tính giá trị mốt ($M_o$)."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Số trung bình ($\bar{x}$)</h4>
@@ -1006,11 +961,6 @@ VOLUME_1_CHAPTERS = [
                 "id": 1,
                 "slug": "dai-cuong-duong-thang-va-mat-phang",
                 "title": "Bài 1: Điểm, đường thẳng và mặt phẳng trong không gian",
-                "objectives": [
-                    "Các cách xác định một mặt phẳng trong không gian.",
-                    "Các tiên đề hình học không gian.",
-                    "Vị trí tương đối của hai đường thẳng (cắt nhau, song song, trùng nhau, chéo nhau)."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Các cách xác định mặt phẳng</h4>
@@ -1043,11 +993,6 @@ VOLUME_1_CHAPTERS = [
                 "id": 2,
                 "slug": "hai-duong-thang-song-song",
                 "title": "Bài 2: Hai đường thẳng song song",
-                "objectives": [
-                    "Định nghĩa và tính chất của hai đường thẳng song song.",
-                    "Định lí giao tuyến của 3 mặt phẳng.",
-                    "Định lí về hai đường thẳng phân biệt cùng song song với đường thẳng thứ ba."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Định lí 1 (Tính chất bắc cầu)</h4>
@@ -1065,10 +1010,6 @@ VOLUME_1_CHAPTERS = [
                 "id": 3,
                 "slug": "duong-thang-va-mat-phang-song-song",
                 "title": "Bài 3: Đường thẳng song song với mặt phẳng",
-                "objectives": [
-                    "Dấu hiệu nhận biết đường thẳng song song với mặt phẳng.",
-                    "Tính chất và định lí giao tuyến liên quan."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Dấu hiệu nhận biết đường thẳng song song mặt phẳng</h4>
@@ -1087,11 +1028,6 @@ VOLUME_1_CHAPTERS = [
                 "id": 4,
                 "slug": "hai-mat-phang-song-song",
                 "title": "Bài 4: Hai mặt phẳng song song",
-                "objectives": [
-                    "Dấu hiệu nhận biết hai mặt phẳng song song.",
-                    "Định lí Thales trong không gian.",
-                    "Khái niệm hình lăng trụ, hình hộp."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Dấu hiệu nhận biết hai mặt phẳng song song</h4>
@@ -1212,11 +1148,6 @@ VOLUME_1_CHAPTERS = [
                 "id": 1,
                 "slug": "gioi-han-day-so",
                 "title": "Bài 1: Giới hạn của dãy số",
-                "objectives": [
-                    r"Các giới hạn cơ bản: $\lim \frac{1}{n^k} = 0$, $\lim q^n = 0$ ($|q| < 1$).",
-                    "Các phép toán giới hạn tổng, hiệu, tích, thương.",
-                    r"Tổng cấp số nhân lùi vô hạn $S = \frac{u_1}{1 - q}$."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Các giới hạn cơ bản</h4>
@@ -1244,11 +1175,6 @@ VOLUME_1_CHAPTERS = [
                 "id": 2,
                 "slug": "gioi-han-ham-so",
                 "title": "Bài 2: Giới hạn của hàm số và các dạng vô định",
-                "objectives": [
-                    "Giới hạn hữu hạn tại một điểm và giới hạn tại vô cực.",
-                    r"Giới hạn một bên: bên trái ($x \to x_0^-$) và bên phải ($x \to x_0^+$).",
-                    r"Phương pháp khử các dạng vô định $\\frac{0}{0}, \\frac{\\infty}{\\infty}, \\infty - \\infty$."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Giới hạn một bên</h4>
@@ -1290,11 +1216,6 @@ VOLUME_1_CHAPTERS = [
                 "id": 3,
                 "slug": "ham-so-lien-tuc",
                 "title": "Bài 3: Hàm số liên tục",
-                "objectives": [
-                    r"Khái niệm hàm số liên tục tại điểm $x_0$: $\\lim_{x \\to x_0} f(x) = f(x_0)$.",
-                    "Hàm số liên tục trên khoảng, đoạn.",
-                    "Định lí Bolzano (giá trị trung gian) chứng minh phương trình có nghiệm."
-                ],
                 "content": r"""
 <div class="theory-section">
     <h4>1. Hàm số liên tục tại một điểm</h4>

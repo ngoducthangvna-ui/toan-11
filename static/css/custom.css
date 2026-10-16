@@ -153,30 +153,82 @@ body {
     -webkit-backdrop-filter: none !important;
 }
 
-/* Scrollbar Sidebar mỏng 5px, màu #334155 chuẩn Dark Mode */
+/* Sidebar Sticky Container & Smooth Vertical Scroll */
 .sidebar-sticky {
     position: sticky;
-    top: 70px;
-    height: calc(100vh - 80px);
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #334155 transparent;
+    top: 56px;
+    height: calc(100vh - 56px);
+    max-height: calc(100vh - 56px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding-top: 1rem !important;
+    padding-bottom: 0.5rem !important;
 }
 
+.sidebar-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.sidebar-wrapper > .card,
+.sidebar-wrapper > .list-group {
+    flex-shrink: 0;
+}
+
+#curriculumAccordion {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 2.5rem;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Scrollbar Sidebar mỏng 5px, thích ứng hoàn hảo Dark / Light Mode */
+#curriculumAccordion,
+.sidebar-sticky {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+#curriculumAccordion::-webkit-scrollbar,
 .sidebar-sticky::-webkit-scrollbar {
     width: 5px;
 }
 
+#curriculumAccordion::-webkit-scrollbar-track,
 .sidebar-sticky::-webkit-scrollbar-track {
     background: transparent;
 }
 
+#curriculumAccordion::-webkit-scrollbar-thumb,
 .sidebar-sticky::-webkit-scrollbar-thumb {
-    background: #334155;
+    background: rgba(148, 163, 184, 0.4);
     border-radius: 999px;
 }
 
+#curriculumAccordion::-webkit-scrollbar-thumb:hover,
 .sidebar-sticky::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 116, 139, 0.7);
+}
+
+[data-bs-theme="dark"] #curriculumAccordion,
+[data-bs-theme="dark"] .sidebar-sticky {
+    scrollbar-color: #334155 transparent;
+}
+
+[data-bs-theme="dark"] #curriculumAccordion::-webkit-scrollbar-thumb,
+[data-bs-theme="dark"] .sidebar-sticky::-webkit-scrollbar-thumb {
+    background: #334155;
+}
+
+[data-bs-theme="dark"] #curriculumAccordion::-webkit-scrollbar-thumb:hover,
+[data-bs-theme="dark"] .sidebar-sticky::-webkit-scrollbar-thumb:hover {
     background: #475569;
 }
 
@@ -682,9 +734,7 @@ mjx-container[jax="CHTML"][display="true"] {
 }
 
 /* Anti-FOUC gentle fade in for math contents */
-.lesson-page .theory-section,
-.lesson-page .example-item,
-.lesson-page .quick-check-card {
+.lesson-page .theory-section {
     transition: opacity 0.2s ease-in;
 }
 
@@ -717,16 +767,12 @@ mjx-container[jax="CHTML"][display="true"] {
    Subtle Hover Effects & Micro-interactions
    ========================================================================== */
 .formula-card,
-.math-box,
-.example-item,
-.quick-check-card {
+.math-box {
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
 }
 
 .formula-card:hover,
-.math-box:hover,
-.example-item:hover,
-.quick-check-card:hover {
+.math-box:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08) !important;
 }
@@ -737,32 +783,6 @@ mjx-container[jax="CHTML"][display="true"] {
 
 .lesson-nav-footer .btn:hover {
     transform: translateY(-2px);
-}
-
-/* Solution Toggle Chevron Rotation */
-.solution-toggle-btn[aria-expanded="true"] .transition-transform {
-    transform: rotate(180deg);
-}
-
-.transition-transform {
-    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
-    display: inline-block;
-}
-
-/* Quick Check Interactive Buttons */
-.quick-opt-btn {
-    transition: all 0.18s ease;
-    border-width: 1.5px;
-}
-
-.quick-opt-btn:hover:not(:disabled) {
-    background-color: rgba(13, 110, 253, 0.08);
-    border-color: var(--bs-primary);
-    transform: translateX(3px);
-}
-
-.quick-explanation {
-    transition: all 0.25s ease;
 }
 
 /* Search Dropdown Keyboard Highlight */
@@ -784,9 +804,7 @@ mjx-container[jax="CHTML"][display="true"] {
     .lesson-nav-footer,
     #markCompleteBtn,
     button[onclick="window.print()"],
-    .quick-check-section,
     .toast-container,
-    .solution-toggle-btn,
     .footer,
     .breadcrumb,
     #themeToggleBtn {
@@ -813,18 +831,8 @@ mjx-container[jax="CHTML"][display="true"] {
         background: transparent !important;
     }
 
-    /* Keep solutions open when printing */
-    .collapse.solution-collapse {
-        display: block !important;
-        height: auto !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-
     .formula-card,
-    .math-box,
-    .example-item,
-    .solution-card {
+    .math-box {
         border: 1px solid #ccc !important;
         background-color: #fafafa !important;
         color: #000000 !important;

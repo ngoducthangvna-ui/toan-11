@@ -7,7 +7,6 @@ Tổng hợp 9 chương, đầy đủ lý thuyết các bài học và bài ki�
 import unicodedata
 from .volume_1 import VOLUME_1_CHAPTERS
 from .volume_2 import VOLUME_2_CHAPTERS
-from .lesson_extras import get_lesson_extras
 
 ALL_CHAPTERS = VOLUME_1_CHAPTERS + VOLUME_2_CHAPTERS
 
@@ -29,18 +28,12 @@ def get_chapter(chapter_id):
     return None
 
 def get_lesson(chapter_id, lesson_id):
-    """Lấy thông tin chi tiết một bài học kèm ví dụ vận dụng và câu hỏi trắc nghiệm nhanh"""
+    """Lấy thông tin chi tiết một bài học theo ID"""
     ch = get_chapter(chapter_id)
     if not ch:
         return None, None
     for les in ch["lessons"]:
         if les["id"] == int(lesson_id):
-            extras = get_lesson_extras(int(chapter_id), int(lesson_id))
-            if extras:
-                les_copy = dict(les)
-                les_copy["examples"] = extras.get("examples", [])
-                les_copy["quick_check"] = extras.get("quick_check", [])
-                return ch, les_copy
             return ch, les
     return ch, None
 
@@ -78,11 +71,9 @@ def search_curriculum(query):
         for les in ch["lessons"]:
             les_title_norm = normalize_text(les["title"])
             les_content_norm = normalize_text(les.get("content", ""))
-            les_objs_norm = normalize_text(" ".join(les.get("objectives", [])))
 
             if (raw_query in les["title"].lower() or norm_query in les_title_norm or
-                raw_query in les.get("content", "").lower() or norm_query in les_content_norm or
-                norm_query in les_objs_norm):
+                raw_query in les.get("content", "").lower() or norm_query in les_content_norm):
                 results.append({
                     "type": "lesson",
                     "chapter_id": ch["id"],

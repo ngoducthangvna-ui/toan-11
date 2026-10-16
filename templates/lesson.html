@@ -29,111 +29,12 @@
         </div>
     </div>
 
-    <!-- Objectives Callout -->
-    {% if lesson.objectives %}
-    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-light-subtle border-start border-4 border-primary">
-        <div class="card-body p-3 p-md-4">
-            <h6 class="fw-bold text-primary mb-2 d-flex align-items-center gap-2">
-                <i class="bi bi-bullseye"></i> Mục tiêu cần đạt của bài học:
-            </h6>
-            <ul class="mb-0 ps-3 small text-secondary">
-                {% for obj in lesson.objectives %}
-                <li class="mb-1">{{ obj }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-    {% endif %}
-
     <!-- Main Lesson Content (MathJax & Formatted HTML) -->
     <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 mb-4 lesson-content-card bg-body">
         <article class="lesson-article text-body">
             {{ lesson.content | safe }}
         </article>
     </div>
-
-    <!-- Applied Examples Section (Ví dụ vận dụng có Accordion xem lời giải) -->
-    {% if lesson.examples %}
-    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-body example-section">
-        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-1">
-            <div class="d-flex align-items-center gap-2">
-                <div class="feature-icon-badge bg-warning-subtle text-warning-emphasis p-2 rounded-3">
-                    <i class="bi bi-lightbulb-fill fs-5"></i>
-                </div>
-                <div>
-                    <h5 class="fw-bold mb-0 text-body">Ví dụ vận dụng trọng tâm</h5>
-                    <p class="text-muted small mb-0">Rèn luyện tư duy và quy trình giải toán chi tiết từng bước</p>
-                </div>
-            </div>
-        </div>
-        <div class="card-body p-4 pt-3">
-            {% for ex in lesson.examples %}
-            <div class="example-item p-3 p-md-4 mb-3 rounded-4 border bg-body-tertiary">
-                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 fw-semibold">
-                        <i class="bi bi-pencil-square me-1"></i>{{ ex.title or ('Ví dụ ' ~ loop.index) }}
-                    </span>
-                    <button class="btn btn-sm btn-outline-primary solution-toggle-btn d-inline-flex align-items-center gap-1 rounded-pill px-3" type="button" data-bs-toggle="collapse" data-bs-target="#solutionCollapse_{{ loop.index }}" aria-expanded="false">
-                        <i class="bi bi-chevron-down transition-transform"></i> <span class="toggle-text">Xem lời giải chi tiết</span>
-                    </button>
-                </div>
-                <div class="example-problem fw-medium text-body mb-3">
-                    {{ ex.problem | safe }}
-                </div>
-                <div class="collapse solution-collapse" id="solutionCollapse_{{ loop.index }}">
-                    <div class="solution-card p-3 p-md-4 rounded-3 border-start border-4 border-success bg-success-subtle text-success-emphasis shadow-sm">
-                        <h6 class="fw-bold text-success mb-2 d-flex align-items-center gap-2">
-                            <i class="bi bi-check-circle-fill"></i> Lời giải chi tiết:
-                        </h6>
-                        <div class="solution-body text-body-secondary">
-                            {{ ex.solution | safe }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Quick Check Section (Câu hỏi trắc nghiệm nhanh kiểm tra tức thì) -->
-    {% if lesson.quick_check %}
-    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-body quick-check-section">
-        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-1">
-            <div class="d-flex align-items-center gap-2">
-                <div class="feature-icon-badge bg-danger-subtle text-danger p-2 rounded-3">
-                    <i class="bi bi-lightning-charge-fill fs-5"></i>
-                </div>
-                <div>
-                    <h5 class="fw-bold mb-0 text-body">Trắc nghiệm phản xạ nhanh (Quick Check)</h5>
-                    <p class="text-muted small mb-0">Củng cố ngay kiến thức cốt lõi trước khi sang bài tiếp theo</p>
-                </div>
-            </div>
-        </div>
-        <div class="card-body p-4 pt-3">
-            {% for q in lesson.quick_check %}
-            <div class="quick-check-card p-3 p-md-4 mb-3 rounded-4 border bg-body-tertiary" data-correct="{{ q.answer }}">
-                <div class="d-flex align-items-start gap-2 mb-3">
-                    <span class="badge bg-danger text-white rounded-pill px-2 py-1 flex-shrink-0">Câu {{ loop.index }}</span>
-                    <div class="fw-semibold text-body flex-grow-1">{{ q.question | safe }}</div>
-                </div>
-                <div class="quick-options d-grid gap-2 mb-2">
-                    {% for opt in q.options %}
-                    <button type="button" class="btn btn-outline-secondary text-start quick-opt-btn py-2 px-3 rounded-3 d-flex align-items-center justify-content-between" data-index="{{ loop.index0 }}">
-                        <span>{{ opt | safe }}</span>
-                        <i class="bi opt-status-icon d-none"></i>
-                    </button>
-                    {% endfor %}
-                </div>
-                <div class="quick-explanation p-3 rounded-3 border d-none mt-3">
-                    <div class="explanation-title fw-bold small mb-1"></div>
-                    <div class="explanation-text small">{{ q.explanation | safe }}</div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
 
     <!-- Lesson Navigation Footer -->
     <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-body lesson-nav-footer">

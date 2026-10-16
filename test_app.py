@@ -146,5 +146,19 @@ class Math11AppTests(unittest.TestCase):
             self.assertIn('id="spaScriptsContainer"', html_text, f"{path} missing spaScriptsContainer")
             res.close()
 
+    def test_lesson_streamlined_content(self):
+        """Kiểm tra trang bài học đã được tinh gọn (xóa mục tiêu, ví dụ, trắc nghiệm phản xạ) và bảo toàn kiểm tra chương"""
+        res = self.app.get('/chapter/1/lesson/1')
+        self.assertEqual(res.status_code, 200)
+        html_text = res.data.decode('utf-8')
+        self.assertNotIn('Mục tiêu cần đạt của bài học', html_text)
+        self.assertNotIn('Trắc nghiệm phản xạ nhanh', html_text)
+        self.assertNotIn('Ví dụ vận dụng trọng tâm', html_text)
+        self.assertIn('lesson-content-card', html_text)
+        self.assertIn('id="curriculumAccordion"', html_text)
+        self.assertIn('Kiểm tra Chương 1', html_text)
+        res.close()
+
 if __name__ == '__main__':
     unittest.main()
+
