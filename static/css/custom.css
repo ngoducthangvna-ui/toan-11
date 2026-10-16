@@ -83,36 +83,67 @@ body {
     width: 100%;
 }
 
+/* Scrollbar Sidebar mỏng 5px, màu #334155 chuẩn Dark Mode */
 .sidebar-sticky {
     position: sticky;
     top: 70px;
     height: calc(100vh - 80px);
     overflow-y: auto;
     scrollbar-width: thin;
+    scrollbar-color: #334155 transparent;
 }
 
 .sidebar-sticky::-webkit-scrollbar {
     width: 5px;
 }
 
+.sidebar-sticky::-webkit-scrollbar-track {
+    background: transparent;
+}
+
 .sidebar-sticky::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.15);
-    border-radius: 4px;
+    background: #334155;
+    border-radius: 999px;
+}
+
+.sidebar-sticky::-webkit-scrollbar-thumb:hover {
+    background: #475569;
 }
 
 /* Hero Section */
 .hero-card {
-    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #0284c7 100%);
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0369a1 100%);
 }
 
+/* Dark Glassmorphism cho 4 ô thống kê Hero */
+.hero-stats-strip .stat-glass-badge,
 .hero-stats-strip .badge {
-    backdrop-filter: blur(8px);
+    background: rgba(30, 41, 59, 0.75) !important;
+    border: 1px solid rgba(148, 163, 184, 0.2) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #e2e8f0 !important;
     font-size: 0.85rem;
-    transition: background-color 0.2s ease;
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 0.5rem 0.85rem !important;
 }
 
+.hero-stats-strip .stat-glass-badge strong,
+.hero-stats-strip .badge strong,
+.hero-stats-strip .stat-number {
+    color: #38bdf8 !important;
+    font-weight: 700;
+    font-size: 0.98rem;
+}
+
+.hero-stats-strip .stat-glass-badge:hover,
 .hero-stats-strip .badge:hover {
-    background-color: rgba(255, 255, 255, 0.25) !important;
+    background: rgba(30, 41, 59, 0.95) !important;
+    border-color: rgba(56, 189, 248, 0.45) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 0 12px rgba(56, 189, 248, 0.2);
 }
 
 /* Featured Badge Overflow Fix */
@@ -126,6 +157,14 @@ body {
 /* Chapter Card & Animations */
 .chapter-card {
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.chapter-card .card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .chapter-card:hover {
@@ -135,6 +174,51 @@ body {
 
 .chapter-title-link:hover {
     color: #2563eb !important;
+}
+
+/* Header của Card: flex-nowrap & white-space: nowrap để không rớt số */
+.chapter-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+    margin-bottom: 0.5rem;
+}
+
+.chapter-card-header .badge,
+.chapter-card-header .chapter-number {
+    white-space: nowrap !important;
+    flex-shrink: 0;
+}
+
+/* Cụm nút bấm ở đáy Card: margin-top: auto để luôn thẳng hàng tuyệt đối */
+.chapter-card-actions {
+    margin-top: auto !important;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--bs-border-color-translucent);
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    width: 100%;
+}
+
+.chapter-card-actions .btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    font-size: 0.8rem !important;
+    padding: 0.42rem 0.65rem !important;
+    line-height: 1.25 !important;
+}
+
+.chapter-card-actions .btn-detail {
+    flex: 1 1 0;
+}
+
+.chapter-card-actions .btn-quiz {
+    flex-shrink: 0;
 }
 
 /* Lesson Preview Link Hover Effect */
@@ -272,6 +356,48 @@ body {
     border-color: rgba(16, 185, 129, 0.3);
 }
 
+/* Flashcard Che Công Thức */
+.formula-secret-hidden {
+    filter: blur(8px);
+    user-select: none;
+    cursor: pointer;
+    transition: filter 0.25s ease, background-color 0.25s ease;
+    background: rgba(148, 163, 184, 0.1);
+    border-radius: 6px;
+    padding: 2px 6px;
+    display: inline-block;
+}
+
+.formula-secret-hidden:hover {
+    filter: blur(4px);
+    background: rgba(148, 163, 184, 0.2);
+}
+
+.formula-secret-revealed {
+    filter: none !important;
+    background: transparent !important;
+}
+
+/* 3D Geometry Canvas Container */
+.geometry-3d-wrapper {
+    background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
+    border-radius: 20px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    overflow: hidden;
+    position: relative;
+}
+
+#geometry3dCanvas {
+    width: 100%;
+    height: 480px;
+    display: block;
+    cursor: grab;
+}
+
+#geometry3dCanvas:active {
+    cursor: grabbing;
+}
+
 /* Mobile & Tablet Responsiveness */
 @media (max-width: 991.98px) {
     .sidebar-sticky {
@@ -297,6 +423,9 @@ body {
     .navbar-search-wrap {
         padding-left: 0.25rem !important;
         padding-right: 0.25rem !important;
+    }
+    #geometry3dCanvas {
+        height: 360px;
     }
 }
 

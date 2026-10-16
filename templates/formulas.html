@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Sổ Tay Công Thức Toán 11 Toàn Tập - Tra Cứu Nhanh{% endblock %}
+{% block title %}Sổ Tay Công Thức Toán 11 Toàn Tập - Tra Cứu Nhanh & Flashcard{% endblock %}
 
 {% block content %}
 <div class="formulas-page">
@@ -8,16 +8,34 @@
     <div class="card border-0 shadow-sm rounded-4 mb-4 bg-primary text-white p-4">
         <div class="d-flex align-items-center gap-2 mb-2">
             <span class="badge bg-white text-primary fw-bold text-uppercase">Tài liệu ôn thi</span>
+            <span class="badge bg-warning text-dark fw-bold">CHẾ ĐỘ FLASHCARD TỰ LUYỆN</span>
         </div>
         <h2 class="fw-bold mb-2"><i class="bi bi-journal-bookmark-fill me-2"></i>Sổ Tay Công Thức Toán 11 Toàn Tập</h2>
-        <p class="mb-0 text-white-50">Tổng hợp toàn bộ công thức cốt lõi Đại số & Hình học lớp 11 giúp tra cứu nhanh trong quá trình học và làm bài kiểm tra.</p>
+        <p class="mb-0 text-white-50">Tổng hợp toàn bộ công thức cốt lõi Đại số & Hình học lớp 11 giúp tra cứu nhanh và tự kiểm tra trí nhớ bằng chế độ che công thức.</p>
     </div>
 
-    <!-- Live Formula Search -->
+    <!-- Live Formula Search & Flashcard Toggle -->
     <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-body">
-        <div class="input-group">
-            <span class="input-group-text bg-body-tertiary border-0 text-muted"><i class="bi bi-search"></i></span>
-            <input type="text" id="formulaFilterInput" class="form-control bg-body-tertiary border-0" placeholder="Lọc nhanh công thức (VD: lượng giác, đạo hàm, cấp số nhân, nhị thức, tiếp tuyến...)" autocomplete="off">
+        <div class="row align-items-center g-3">
+            <div class="col-md-7">
+                <div class="input-group">
+                    <span class="input-group-text bg-body-tertiary border-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" id="formulaFilterInput" class="form-control bg-body-tertiary border-0" placeholder="Lọc nhanh công thức (VD: lượng giác, đạo hàm, cấp số nhân, nhị thức, tiếp tuyến...)" autocomplete="off">
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="d-flex align-items-center justify-content-md-end gap-3 flex-wrap">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" role="switch" id="toggleFlashcardMode" style="cursor: pointer;">
+                        <label class="form-check-label small fw-bold text-primary" for="toggleFlashcardMode" style="cursor: pointer;">
+                            <i class="bi bi-eye-slash-fill me-1"></i> Che công thức (Flashcard)
+                        </label>
+                    </div>
+                    <button type="button" id="btnFilterHard" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-bookmark-x me-1"></i>Hay quên (<span id="countHard">0</span>)
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -34,10 +52,24 @@
                 <div class="card-body p-4">
                     <div class="d-flex flex-column gap-3">
                         {% for item in cat.formulas %}
-                        <div class="formula-item p-3 rounded-3 bg-body-tertiary border border-light-subtle">
-                            <h6 class="fw-bold text-secondary mb-2">{{ item.name }}</h6>
-                            <div class="formula-latex-display fs-5 text-body">
+                        {% set formula_key = cat.title ~ '_' ~ item.name %}
+                        <div class="formula-item p-3 rounded-3 bg-body-tertiary border border-light-subtle position-relative" data-formula-key="{{ formula_key }}">
+                            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                                <h6 class="fw-bold text-secondary mb-0">{{ item.name }}</h6>
+                                <div class="flashcard-actions d-none">
+                                    <button type="button" class="btn btn-sm btn-outline-success btn-mark-known me-1" title="Đã thuộc công thức này">
+                                        <i class="bi bi-check2-circle"></i> Đã thuộc
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-mark-hard" title="Đánh dấu hay quên để ôn lại">
+                                        <i class="bi bi-exclamation-triangle"></i> Hay quên
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="formula-latex-display fs-5 text-body text-center p-2 rounded-2 position-relative">
                                 $${{ item.latex }}$$
+                            </div>
+                            <div class="click-to-reveal-hint text-center small text-primary d-none mt-1" style="font-size: 0.78rem;">
+                                <i class="bi bi-hand-index-thumb me-1"></i>Bấm vào công thức để lật mở xem đáp án
                             </div>
                         </div>
                         {% endfor %}
@@ -52,18 +84,112 @@
 
 {% block scripts %}
 <script>
-    // Live filter formulas
-    document.getElementById('formulaFilterInput')?.addEventListener('input', function(e) {
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Live Filter
+    const filterInput = document.getElementById('formulaFilterInput');
+    const categoryCards = document.querySelectorAll('.formula-category-card');
+
+    filterInput?.addEventListener('input', function(e) {
         const query = e.target.value.toLowerCase().trim();
-        const cards = document.querySelectorAll('.formula-category-card');
-        cards.forEach(card => {
+        categoryCards.forEach(card => {
             const text = card.innerText.toLowerCase();
-            if (text.includes(query)) {
-                card.style.display = '';
+            card.style.display = text.includes(query) ? '' : 'none';
+        });
+    });
+
+    // 2. Flashcard Mode (Che công thức)
+    const flashcardToggle = document.getElementById('toggleFlashcardMode');
+    const formulaItems = document.querySelectorAll('.formula-item');
+    const HARD_KEY = 'toan11_hard_formulas';
+    let hardList = JSON.parse(localStorage.getItem(HARD_KEY) || '[]');
+
+    updateHardCount();
+
+    flashcardToggle?.addEventListener('change', function() {
+        const isFlashcard = this.checked;
+        formulaItems.forEach(item => {
+            const display = item.querySelector('.formula-latex-display');
+            const hint = item.querySelector('.click-to-reveal-hint');
+            const actions = item.querySelector('.flashcard-actions');
+
+            if (isFlashcard) {
+                display.classList.add('formula-secret-hidden');
+                display.classList.remove('formula-secret-revealed');
+                if (hint) hint.classList.remove('d-none');
+                if (actions) actions.classList.remove('d-none');
             } else {
-                card.style.display = 'none';
+                display.classList.remove('formula-secret-hidden', 'formula-secret-revealed');
+                if (hint) hint.classList.add('d-none');
+                if (actions) actions.classList.add('d-none');
             }
         });
     });
+
+    // Click to Reveal
+    formulaItems.forEach(item => {
+        const display = item.querySelector('.formula-latex-display');
+        display?.addEventListener('click', function() {
+            if (flashcardToggle?.checked) {
+                this.classList.toggle('formula-secret-revealed');
+            }
+        });
+
+        // Mark Hard
+        const btnHard = item.querySelector('.btn-mark-hard');
+        const btnKnown = item.querySelector('.btn-mark-known');
+        const fKey = item.dataset.formulaKey;
+
+        if (hardList.includes(fKey)) {
+            item.classList.add('border-danger', 'border-2');
+            btnHard?.classList.replace('btn-outline-danger', 'btn-danger');
+        }
+
+        btnHard?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (!hardList.includes(fKey)) {
+                hardList.push(fKey);
+                item.classList.add('border-danger', 'border-2');
+                this.classList.replace('btn-outline-danger', 'btn-danger');
+            } else {
+                hardList = hardList.filter(k => k !== fKey);
+                item.classList.remove('border-danger', 'border-2');
+                this.classList.replace('btn-danger', 'btn-outline-danger');
+            }
+            localStorage.setItem(HARD_KEY, JSON.stringify(hardList));
+            updateHardCount();
+        });
+
+        btnKnown?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            hardList = hardList.filter(k => k !== fKey);
+            localStorage.setItem(HARD_KEY, JSON.stringify(hardList));
+            item.classList.remove('border-danger', 'border-2');
+            item.querySelector('.btn-mark-hard')?.classList.replace('btn-danger', 'btn-outline-danger');
+            updateHardCount();
+        });
+    });
+
+    // Filter Hard Button
+    let showingHardOnly = false;
+    document.getElementById('btnFilterHard')?.addEventListener('click', function() {
+        showingHardOnly = !showingHardOnly;
+        this.classList.toggle('btn-danger', showingHardOnly);
+        this.classList.toggle('btn-outline-danger', !showingHardOnly);
+
+        formulaItems.forEach(item => {
+            const fKey = item.dataset.formulaKey;
+            if (showingHardOnly) {
+                item.style.display = hardList.includes(fKey) ? '' : 'none';
+            } else {
+                item.style.display = '';
+            }
+        });
+    });
+
+    function updateHardCount() {
+        const countEl = document.getElementById('countHard');
+        if (countEl) countEl.innerText = hardList.length;
+    }
+});
 </script>
 {% endblock %}

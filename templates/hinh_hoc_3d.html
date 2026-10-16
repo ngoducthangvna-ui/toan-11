@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}Mô Hình Không Gian 3D Tương Tác - Toán 11{% endblock %}
+
+{% block content %}
+<div class="hinh-hoc-3d-page">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('chapter_detail', chapter_id=4) }}" class="text-decoration-none">Chương 4: Quan hệ song song</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Phòng Thí Nghiệm 3D Không Gian</li>
+        </ol>
+    </nav>
+
+    <!-- Header Banner -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 text-white p-4" style="background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-2">
+            <span class="badge bg-white text-teal fw-bold px-3 py-1 text-uppercase" style="color: #0f766e;">
+                <i class="bi bi-box me-1"></i> PHÒNG THÍ NGHIỆM HÌNH HỌC KHÔNG GIAN 3D
+            </span>
+            <span class="badge bg-light text-dark fw-bold px-3 py-1">
+                Dùng cho Chương 4 & Chương 8
+            </span>
+        </div>
+        <h2 class="fw-bold mb-2">MÔ HÌNH HÌNH HỌC KHÔNG GIAN 3D TƯƠNG TÁC</h2>
+        <p class="mb-0 text-light opacity-90 fs-6">
+            Dùng chuột (hoặc chạm tay trên điện thoại) để xoay 360°, phóng to/thu nhỏ. Bật/tắt đường cao, mặt phẳng thiết diện, góc phẳng và quan sát chuẩn nét liền - nét đứt giúp đánh tan nỗi sợ hình học không gian!
+        </p>
+    </div>
+
+    <!-- 3D Viewer & Controls Container -->
+    <div class="row g-4 mb-4">
+        <!-- 3D Canvas Column -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-body h-100">
+                <div class="card-header bg-body border-bottom p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="fw-bold text-body d-flex align-items-center gap-2">
+                        <i class="bi bi-display text-primary"></i>
+                        <span id="shapeTitleLabel">Chóp Tứ Giác Đều S.ABCD</span>
+                    </div>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" id="btnResetView" class="btn btn-outline-secondary" title="Đặt lại góc nhìn">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Góc Nhìn
+                        </button>
+                        <button type="button" id="btnTopView" class="btn btn-outline-secondary" title="Xem từ đỉnh">
+                            <i class="bi bi-eye me-1"></i>Nhìn Đáy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body p-0 position-relative">
+                    <div class="geometry-3d-wrapper">
+                        <canvas id="geometry3dCanvas"></canvas>
+                        
+                        <!-- Floating Hint Overlay -->
+                        <div class="position-absolute bottom-0 start-0 m-3 p-2 rounded-3 bg-dark bg-opacity-75 text-white small" style="backdrop-filter: blur(6px); font-size: 0.75rem;">
+                            <i class="bi bi-mouse me-1 text-warning"></i> Giữ chuột trái: <strong>Xoay</strong> | Cuộn chuột: <strong>Zoom</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Column -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-body h-100">
+                <h5 class="fw-bold mb-3 text-body d-flex align-items-center gap-2">
+                    <i class="bi bi-sliders text-primary"></i> Tùy Chỉnh Khối Hình
+                </h5>
+
+                <!-- Choose Shape -->
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-muted text-uppercase">1. Chọn khối hình không gian:</label>
+                    <select id="selectShape" class="form-select form-select-sm fw-semibold">
+                        <option value="pyramid_regular" selected>Chóp tứ giác đều S.ABCD</option>
+                        <option value="pyramid_sa_bottom">Chóp S.ABCD (SA ⊥ đáy)</option>
+                        <option value="pyramid_triangle">Chóp tam giác S.ABC</option>
+                        <option value="prism_triangle">Lăng trụ tam giác ABC.A'B'C'</option>
+                    </select>
+                </div>
+
+                <!-- Feature Checkboxes -->
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-muted text-uppercase">2. Hiển thị các yếu tố hình học:</label>
+                    <div class="list-group list-group-flush border rounded-3 overflow-hidden small">
+                        <label class="list-group-item d-flex align-items-center justify-content-between p-2">
+                            <span><i class="bi bi-arrow-down-up text-danger me-2"></i>Đường cao khối chóp</span>
+                            <input class="form-check-input me-1" type="checkbox" id="chkHeight" checked>
+                        </label>
+                        <label class="list-group-item d-flex align-items-center justify-content-between p-2">
+                            <span><i class="bi bi-layers-half text-warning me-2"></i>Mặt phẳng thiết diện (P)</span>
+                            <input class="form-check-input me-1" type="checkbox" id="chkCrossSection" checked>
+                        </label>
+                        <label class="list-group-item d-flex align-items-center justify-content-between p-2">
+                            <span><i class="bi bi-compass text-info me-2"></i>Góc đường thẳng & mặt phẳng</span>
+                            <input class="form-check-input me-1" type="checkbox" id="chkAngle" checked>
+                        </label>
+                        <label class="list-group-item d-flex align-items-center justify-content-between p-2">
+                            <span><i class="bi bi-dash-lg text-secondary me-2"></i>Phân biệt nét đứt nét liền</span>
+                            <input class="form-check-input me-1" type="checkbox" id="chkDashed" checked>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Interactive Explanation Card -->
+                <div class="mt-auto p-3 rounded-3 bg-body-tertiary border">
+                    <div class="small fw-bold text-primary mb-1" id="shapeExplainTitle">
+                        <i class="bi bi-lightbulb-fill text-warning me-1"></i> Đặc điểm cốt lõi:
+                    </div>
+                    <div class="small text-secondary" id="shapeExplainBody">
+                        • Đáy $ABCD$ là hình vuông tâm $O$.<br>
+                        • $SO \perp (ABCD)$ là đường cao.<br>
+                        • Các cạnh bên bằng nhau: $SA = SB = SC = SD$.<br>
+                        • Góc giữa $SC$ và đáy là góc $\widehat{SCO}$.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Navigation to Lessons -->
+    <div class="row g-3">
+        <div class="col-md-6">
+            <a href="{{ url_for('chapter_detail', chapter_id=4) }}" class="card border-0 shadow-sm rounded-4 p-3 text-decoration-none bg-body hover-card">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-primary-subtle text-primary p-3 fs-4">
+                        <i class="bi bi-bounding-box-circles"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-body">Chương 4: Quan Hệ Song Song</div>
+                        <div class="small text-muted">Đường thẳng & mặt phẳng song song, phép chiếu song song</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="{{ url_for('chapter_detail', chapter_id=8) }}" class="card border-0 shadow-sm rounded-4 p-3 text-decoration-none bg-body hover-card">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-success-subtle text-success p-3 fs-4">
+                        <i class="bi bi-symmetry-vertical"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-body">Chương 8: Quan Hệ Vuông Góc</div>
+                        <div class="small text-muted">Đường vuông góc mặt phẳng, hai mặt phẳng vuông góc, khoảng cách & thể tích</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Three.js Library & OrbitControls -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+<script src="{{ url_for('static', filename='js/geometry3d.js') }}"></script>
+{% endblock %}

@@ -14,74 +14,77 @@
                 Tổng hợp đầy đủ lý thuyết, công thức trọng tâm, ví dụ mẫu có lời giải chi tiết cho toàn bộ 9 chương sách giáo khoa Toán 11 kèm hệ thống bài kiểm tra trắc nghiệm tự chấm điểm ở cuối mỗi chương.
             </p>
 
-            <!-- Inline Stats Strip -->
+            <!-- Inline Stats Strip (Dark Glassmorphism Style) -->
             <div class="d-flex flex-wrap gap-2 gap-md-3 mb-4 hero-stats-strip">
-                <span class="badge bg-white bg-opacity-15 text-white fw-normal px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2 border border-white border-opacity-25">
+                <span class="stat-glass-badge badge rounded-pill d-inline-flex align-items-center gap-2">
                     <i class="bi bi-journal-richtext text-warning"></i>
                     <span><strong>{{ all_chapters|length }}</strong> Chương sách chuẩn</span>
                 </span>
-                <span class="badge bg-white bg-opacity-15 text-white fw-normal px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2 border border-white border-opacity-25">
+                <span class="stat-glass-badge badge rounded-pill d-inline-flex align-items-center gap-2">
                     <i class="bi bi-book-half text-info"></i>
                     <span><strong>{{ total_lessons }}</strong> Bài học lý thuyết</span>
                 </span>
-                <span class="badge bg-white bg-opacity-15 text-white fw-normal px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2 border border-white border-opacity-25">
+                <span class="stat-glass-badge badge rounded-pill d-inline-flex align-items-center gap-2">
                     <i class="bi bi-check2-circle text-danger"></i>
                     <span><strong>{{ all_chapters|length }}</strong> Bài kiểm tra</span>
                 </span>
-                <span class="badge bg-white bg-opacity-15 text-white fw-normal px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2 border border-white border-opacity-25">
+                <span class="stat-glass-badge badge rounded-pill d-inline-flex align-items-center gap-2">
                     <i class="bi bi-question-diamond text-warning"></i>
                     <span><strong>{{ total_questions }}+</strong> Câu trắc nghiệm</span>
                 </span>
             </div>
 
-            <!-- Only 2 CTA buttons: Primary & Secondary -->
+            <!-- 2 CTA buttons: Primary (Dynamic Continue Learning) & Secondary (Exams) -->
             <div class="d-flex flex-column flex-sm-row flex-wrap gap-3">
-                <a href="{{ url_for('chapter_detail', chapter_id=1) }}" id="heroPrimaryBtn" class="btn btn-light btn-lg px-4 fw-bold text-primary d-inline-flex align-items-center justify-content-center gap-2 shadow-sm">
-                    <i class="bi bi-play-circle-fill"></i> <span id="heroPrimaryBtnText">Bắt đầu học ngay</span>
+                <a href="{{ url_for('lesson_detail', chapter_id=1, lesson_id=1) }}" id="heroPrimaryBtn" class="btn btn-light btn-lg px-4 fw-bold text-primary d-inline-flex align-items-center justify-content-center gap-2 shadow-sm">
+                    <i class="bi bi-play-circle-fill"></i> <span id="heroPrimaryBtnText">Bắt đầu học: Bài 1 - Góc lượng giác</span>
                 </a>
                 <a href="{{ url_for('exams') }}" class="btn btn-outline-light btn-lg px-4 fw-semibold d-inline-flex align-items-center justify-content-center gap-2">
                     <i class="bi bi-clock-history"></i> Vào phòng thi thử 90 phút
                 </a>
+                <button type="button" class="btn btn-warning text-dark btn-lg px-4 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#workoutModal">
+                    <i class="bi bi-lightning-charge-fill"></i> Luyện phản xạ 15 phút
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Featured Highlights: Error Log & Exam Center -->
+    <!-- Featured Highlights: 3D Geometry & Exam Center (Removed Error Log as requested) -->
     <div class="row g-3 g-md-4 mb-5">
         <div class="col-lg-6">
-            <div class="card border-0 shadow-sm rounded-4 p-4 text-white h-100 position-relative overflow-hidden" style="background: linear-gradient(135deg, #b02a37 0%, #dc3545 100%);">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-white h-100 position-relative overflow-hidden" style="background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);">
                 <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap mb-2">
-                    <span class="badge bg-white text-danger fw-bold text-uppercase px-3 py-1">
-                        <i class="bi bi-shield-fill-exclamation me-1"></i> BẢO HIỂM ĐIỂM SỐ
+                    <span class="badge bg-white text-teal fw-bold text-uppercase px-3 py-1" style="color: #0f766e;">
+                        <i class="bi bi-box me-1"></i> TRỰC QUAN HÓA 3D
                     </span>
-                    <span class="badge bg-danger-subtle text-white border border-white-50 px-2 py-1">10 BẪY KINH ĐIỂN</span>
+                    <span class="badge bg-light text-dark border border-white-50 px-2 py-1">XOAY 360° THIẾT DIỆN</span>
                 </div>
-                <h4 class="fw-bold mb-2">Sổ Tay Lỗi Sai (Error Log)</h4>
+                <h4 class="fw-bold mb-2">Mô Hình Không Gian 3D Tương Tác</h4>
                 <p class="text-white-50 small mb-4 flex-grow-1">
-                    Tổng hợp 10 bẫy điểm liệt phổ biến nhất ở Chương 1 (Lượng giác) và Chương 4 (Hình không gian). Đi kèm mô phỏng cảnh báo hệ thống và thần chú giúp học sinh không bao giờ lặp lại sai lầm!
+                    Công cụ mô phỏng 3D tương tác đa chiều cho Chương 4 & 8: Chóp tam giác S.ABC, chóp đều S.ABCD, chóp có SA vuông góc đáy và lăng trụ. Cho phép bật/tắt đường cao, mặt phẳng thiết diện, góc phẳng và phân biệt rõ nét liền/nét đứt!
                 </p>
                 <div>
-                    <a href="{{ url_for('error_log') }}" class="btn btn-light fw-bold text-danger px-4 rounded-3 d-inline-flex align-items-center gap-2">
-                        <i class="bi bi-eye-fill"></i> Mở Sổ Tay Lỗi Sai <i class="bi bi-arrow-right"></i>
+                    <a href="{{ url_for('hinh_hoc_3d') }}" class="btn btn-light fw-bold text-success px-4 rounded-3 d-inline-flex align-items-center gap-2 shadow-sm" style="color: #0f766e !important;">
+                        <i class="bi bi-bounding-box"></i> Mở Phòng Thí Nghiệm 3D <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>
         </div>
         <div class="col-lg-6">
-            <div class="card border-0 shadow-sm rounded-4 p-4 text-white h-100 position-relative overflow-hidden" style="background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-white h-100 position-relative overflow-hidden" style="background: linear-gradient(135deg, #1e3a8a 0%, #4338ca 100%);">
                 <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap mb-2">
                     <span class="badge bg-white text-primary fw-bold text-uppercase px-3 py-1">
                         <i class="bi bi-clock-history me-1"></i> PHÒNG THI THỬ 90 PHÚT
                     </span>
-                    <span class="badge bg-warning text-dark fw-bold px-2 py-1 feature-format-badge">CHUẨN FORMAT HƯNG YÊN</span>
+                    <span class="badge bg-warning text-dark fw-bold px-2 py-1 feature-format-badge">3 ĐỀ GK1 + 3 ĐỀ GK2 HƯNG YÊN</span>
                 </div>
-                <h4 class="fw-bold mb-2">Đề Thi Giữa Kì & Cuối Kì 1</h4>
+                <h4 class="fw-bold mb-2">Đề Thi Giữa Kì 1 & Giữa Kì 2</h4>
                 <p class="text-white-50 small mb-4 flex-grow-1">
-                    Cấu trúc ma trận chuẩn Bộ GD&ĐT: Phần I (12 câu MCQ), Phần II (4 câu Đúng/Sai), Phần III (6 câu Trả lời ngắn). Có đồng hồ đếm ngược 90 phút, chấm điểm tự động và hướng dẫn bấm máy Casio fx-580/880.
+                    Trọn bộ 6 đề thi Giữa kì chuẩn format Sở GD&ĐT Hưng Yên: Phần I (12 câu MCQ), Phần II (4 câu Đúng/Sai lũy tiến), Phần III (6 câu Trả lời ngắn). Có đồng hồ bấm giờ 90 phút, tự chấm điểm và hướng dẫn bấm máy Casio fx-580/880!
                 </p>
                 <div>
-                    <a href="{{ url_for('exams') }}" class="btn btn-warning fw-bold text-dark px-4 rounded-3 d-inline-flex align-items-center gap-2">
-                        <i class="bi bi-play-circle-fill"></i> Vào Phòng Thi Thử <i class="bi bi-arrow-right"></i>
+                    <a href="{{ url_for('exams') }}" class="btn btn-warning fw-bold text-dark px-4 rounded-3 d-inline-flex align-items-center gap-2 shadow-sm">
+                        <i class="bi bi-play-circle-fill"></i> Vào Phòng Thi Thử (6 Đề) <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -113,11 +116,11 @@
             {% for ch in vol1_chapters %}
             <div class="col-12 col-md-6 col-xl-4 chapter-card-col" data-chapter-id="{{ ch.id }}" data-search-content="{{ ch.title }} {{ ch.summary }} {% for les in ch.lessons %}{{ les.title }} {% endfor %}">
                 <div class="card h-100 border-0 shadow-sm rounded-4 chapter-card transition-hover position-relative">
-                    <div class="card-body p-3 p-md-4 d-flex flex-column">
-                        <!-- Top Header with Badge & Chapter Progress -->
-                        <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="card-body p-3 p-md-4">
+                        <!-- Top Header with Badge & Chapter Progress (Flex-nowrap to prevent line breaks) -->
+                        <div class="chapter-card-header">
                             <span class="badge bg-light text-secondary border">{{ ch.badge }}</span>
-                            <div class="d-flex align-items-center gap-2">
+                            <div class="d-flex align-items-center gap-1">
                                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle chapter-progress-badge" data-chapter-id="{{ ch.id }}">0/{{ ch.lessons|length }} bài</span>
                                 <span class="chapter-number text-primary fw-bold">Chương {{ ch.id }}</span>
                             </div>
@@ -139,6 +142,9 @@
                         <div class="lesson-preview mb-3">
                             <div class="small fw-semibold text-muted mb-2 d-flex align-items-center justify-content-between">
                                 <span><i class="bi bi-list-task me-1"></i>Các bài học trong chương:</span>
+                                {% if ch.id == 4 %}
+                                <a href="{{ url_for('hinh_hoc_3d') }}" class="badge bg-teal text-white text-decoration-none" style="background-color: #0f766e;"><i class="bi bi-box me-1"></i>Mô hình 3D</a>
+                                {% endif %}
                             </div>
                             <div class="lesson-items-list d-flex flex-column gap-1">
                                 {% for les in ch.lessons %}
@@ -154,13 +160,13 @@
                             </div>
                         </div>
 
-                        <!-- Distinct Action Buttons -->
-                        <div class="pt-2 border-top d-flex gap-2">
-                            <a href="{{ url_for('chapter_detail', chapter_id=ch.id) }}" class="btn btn-outline-primary btn-sm flex-grow-1 fw-semibold d-inline-flex align-items-center justify-content-center gap-1">
-                                <i class="bi bi-book"></i> Xem chi tiết
+                        <!-- Distinct Action Buttons (margin-top: auto keeps them perfectly aligned) -->
+                        <div class="chapter-card-actions">
+                            <a href="{{ url_for('chapter_detail', chapter_id=ch.id) }}" class="btn btn-outline-primary btn-detail fw-semibold">
+                                <i class="bi bi-book me-1"></i> Xem chi tiết
                             </a>
-                            <a href="{{ url_for('chapter_quiz', chapter_id=ch.id) }}" class="btn btn-danger btn-sm px-3 fw-bold d-inline-flex align-items-center justify-content-center gap-1 shadow-sm" title="Làm bài kiểm tra cuối chương">
-                                <i class="bi bi-pencil-square"></i> Làm bài test
+                            <a href="{{ url_for('chapter_quiz', chapter_id=ch.id) }}" class="btn btn-danger btn-quiz fw-bold shadow-sm" title="Làm bài kiểm tra cuối chương">
+                                <i class="bi bi-pencil-square me-1"></i> Làm bài test
                             </a>
                         </div>
                     </div>
@@ -186,11 +192,11 @@
             {% for ch in vol2_chapters %}
             <div class="col-12 col-md-6 col-xl-6 chapter-card-col" data-chapter-id="{{ ch.id }}" data-search-content="{{ ch.title }} {{ ch.summary }} {% for les in ch.lessons %}{{ les.title }} {% endfor %}">
                 <div class="card h-100 border-0 shadow-sm rounded-4 chapter-card transition-hover position-relative">
-                    <div class="card-body p-3 p-md-4 d-flex flex-column">
-                        <!-- Top Header with Badge & Chapter Progress -->
-                        <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="card-body p-3 p-md-4">
+                        <!-- Top Header with Badge & Chapter Progress (Flex-nowrap) -->
+                        <div class="chapter-card-header">
                             <span class="badge bg-light text-secondary border">{{ ch.badge }}</span>
-                            <div class="d-flex align-items-center gap-2">
+                            <div class="d-flex align-items-center gap-1">
                                 <span class="badge bg-success-subtle text-success border border-success-subtle chapter-progress-badge" data-chapter-id="{{ ch.id }}">0/{{ ch.lessons|length }} bài</span>
                                 <span class="chapter-number text-success fw-bold">Chương {{ ch.id }}</span>
                             </div>
@@ -212,6 +218,9 @@
                         <div class="lesson-preview mb-3">
                             <div class="small fw-semibold text-muted mb-2 d-flex align-items-center justify-content-between">
                                 <span><i class="bi bi-list-task me-1"></i>Các bài học trong chương:</span>
+                                {% if ch.id == 8 %}
+                                <a href="{{ url_for('hinh_hoc_3d') }}" class="badge bg-teal text-white text-decoration-none" style="background-color: #0f766e;"><i class="bi bi-box me-1"></i>Mô hình 3D</a>
+                                {% endif %}
                             </div>
                             <div class="row g-1">
                                 {% for les in ch.lessons %}
@@ -229,19 +238,53 @@
                             </div>
                         </div>
 
-                        <!-- Distinct Action Buttons -->
-                        <div class="pt-2 border-top d-flex gap-2">
-                            <a href="{{ url_for('chapter_detail', chapter_id=ch.id) }}" class="btn btn-outline-success btn-sm flex-grow-1 fw-semibold d-inline-flex align-items-center justify-content-center gap-1">
-                                <i class="bi bi-book"></i> Xem chi tiết
+                        <!-- Distinct Action Buttons (margin-top: auto keeps them aligned) -->
+                        <div class="chapter-card-actions">
+                            <a href="{{ url_for('chapter_detail', chapter_id=ch.id) }}" class="btn btn-outline-success btn-detail fw-semibold">
+                                <i class="bi bi-book me-1"></i> Xem chi tiết
                             </a>
-                            <a href="{{ url_for('chapter_quiz', chapter_id=ch.id) }}" class="btn btn-danger btn-sm px-3 fw-bold d-inline-flex align-items-center justify-content-center gap-1 shadow-sm" title="Làm bài kiểm tra cuối chương">
-                                <i class="bi bi-pencil-square"></i> Làm bài test
+                            <a href="{{ url_for('chapter_quiz', chapter_id=ch.id) }}" class="btn btn-danger btn-quiz fw-bold shadow-sm" title="Làm bài kiểm tra cuối chương">
+                                <i class="bi bi-pencil-square me-1"></i> Làm bài test
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
             {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal Workout Luyện phản xạ 15 phút (10 câu) -->
+<div class="modal fade" id="workoutModal" tabindex="-1" aria-labelledby="workoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header bg-warning text-dark border-0 py-3">
+                <h5 class="modal-title fw-bold" id="workoutModalLabel">
+                    <i class="bi bi-lightning-charge-fill me-2"></i> Workout Luyện Phản Xạ 15 Phút (10 Câu Nhanh)
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-body-tertiary rounded-3">
+                    <div>
+                        <span class="small text-muted">Thời gian còn lại:</span>
+                        <div id="workoutTimer" class="fs-4 fw-bold font-monospace text-danger">15:00</div>
+                    </div>
+                    <div class="text-end">
+                        <span class="small text-muted">Điểm số:</span>
+                        <div id="workoutScore" class="fs-4 fw-bold text-success">0 / 10</div>
+                    </div>
+                </div>
+                <div id="workoutContainer">
+                    <!-- Populated dynamically via JS -->
+                    <div class="text-center py-4">
+                        <button type="button" id="startWorkoutBtn" class="btn btn-primary btn-lg px-4 fw-bold rounded-pill shadow-sm">
+                            <i class="bi bi-play-circle-fill me-2"></i> Bắt đầu làm bài 15 phút
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

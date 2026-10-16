@@ -86,17 +86,22 @@ def chapter_quiz(chapter_id):
 
 @app.route('/formulas')
 def formulas():
-    """Trang tra cứu sổ tay công thức toàn bộ Toán 11"""
+    """Trang tra cứu sổ tay công thức toàn bộ Toán 11 kèm Flashcard"""
     return render_template('formulas.html', categories=FORMULA_CATEGORIES)
+
+@app.route('/hinh-hoc-3d')
+def hinh_hoc_3d():
+    """Phòng thí nghiệm hình học không gian 3D tương tác (Chương 4 & 8)"""
+    return render_template('hinh_hoc_3d.html')
 
 @app.route('/calculator')
 def calculator():
-    """Trang máy tính toán học thông minh hỗ trợ giải bài tập Toán 11"""
+    """Máy tính toán học (Chuyển tiếp hoặc hỗ trợ)"""
     return render_template('calculator.html')
 
 @app.route('/error-log')
 def error_log():
-    """Trang Sổ tay lỗi sai - Error Log: Tổng hợp các bẫy đề thi và mẹo ghi nhớ"""
+    """Trang Sổ tay lỗi sai (Hỗ trợ tương thích)"""
     return render_template('error_log.html', error_logs=ERROR_LOG_DATA)
 
 @app.route('/exams')

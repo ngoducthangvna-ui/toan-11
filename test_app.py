@@ -98,5 +98,20 @@ class Math11AppTests(unittest.TestCase):
         self.assertIn('GÓC NHÌN TỪ KỸ SƯ'.encode('utf-8'), res.data)
         self.assertIn('Checklist'.encode('utf-8'), res.data)
 
+    def test_hinh_hoc_3d_page(self):
+        res = self.app.get('/hinh-hoc-3d')
+        self.assertEqual(res.status_code, 200)
+        self.assertIn('MÔ HÌNH HÌNH HỌC KHÔNG GIAN 3D'.encode('utf-8'), res.data)
+
+    def test_all_6_midterm_exams(self):
+        exam_ids = [
+            'de-giua-ki-1', 'de-giua-ki-1-de-2', 'de-giua-ki-1-de-3',
+            'de-giua-ki-2-de-1', 'de-giua-ki-2-de-2', 'de-giua-ki-2-de-3'
+        ]
+        for eid in exam_ids:
+            res = self.app.get(f'/exam/{eid}')
+            self.assertEqual(res.status_code, 200, f"Exam {eid} failed")
+            self.assertIn('Học Kì'.encode('utf-8'), res.data)
+
 if __name__ == '__main__':
     unittest.main()
