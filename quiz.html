@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ quiz.title }} - Toán 11{% endblock %}
+
+{% block content %}
+<div class="quiz-page" data-chapter-id="{{ chapter.id }}">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('chapter_detail', chapter_id=chapter.id) }}" class="text-decoration-none">{{ chapter.short_title }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Bài kiểm tra</li>
+        </ol>
+    </nav>
+
+    <!-- Quiz Header -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-gradient-quiz text-white p-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-2">
+            <span class="badge bg-white text-danger fw-bold px-3 py-1 text-uppercase">BÀI KIỂM TRA CHƯƠNG {{ chapter.id }}</span>
+            <div class="d-flex align-items-center gap-3 small">
+                <span><i class="bi bi-question-circle me-1"></i><strong>{{ quiz.questions|length }}</strong> câu hỏi trắc nghiệm</span>
+                <span><i class="bi bi-clock me-1"></i>Thời gian: <strong>{{ quiz.time_minutes }} phút</strong></span>
+            </div>
+        </div>
+        <h2 class="fw-bold mb-2">{{ quiz.title }}</h2>
+        <p class="mb-0 text-light-50">Chọn đáp án đúng nhất cho từng câu hỏi bên dưới. Nhấn <strong>"Nộp bài & Chấm điểm"</strong> để xem điểm số ngay lập tức cùng lời giải chi tiết từng bước.</p>
+    </div>
+
+    <!-- Quiz Result Banner (Hidden until submitted) -->
+    <div id="quizResultCard" class="card border-0 shadow rounded-4 mb-4 d-none">
+        <div class="card-body p-4 text-center">
+            <div id="resultIcon" class="mb-2"></div>
+            <h3 id="resultTitle" class="fw-bold mb-1">Kết quả bài làm</h3>
+            <div class="display-5 fw-extrabold my-2" id="resultScore">0 / 10</div>
+            <p id="resultFeedback" class="text-muted mb-3"></p>
+            <div class="progress mb-3 mx-auto" style="height: 10px; max-width: 400px;">
+                <div id="resultProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+            </div>
+            <div class="d-flex justify-content-center gap-2 mt-3">
+                <button id="retryQuizBtn" class="btn btn-outline-primary d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-arrow-counterclockwise"></i> Làm lại bài kiểm tra
+                </button>
+                {% if chapter.id < 9 %}
+                <a href="{{ url_for('chapter_detail', chapter_id=chapter.id + 1) }}" class="btn btn-success d-inline-flex align-items-center gap-1">
+                    Học tiếp Chương {{ chapter.id + 1 }} <i class="bi bi-arrow-right"></i>
+                </a>
+                {% else %}
+                <a href="{{ url_for('index') }}" class="btn btn-success d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-check-all"></i> Hoàn thành toàn bộ khóa học!
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Form -->
+    <form id="quizForm" onsubmit="return false;">
+        <div class="questions-list d-flex flex-column gap-4">
+            {% for q in quiz.questions %}
+            <div class="card border-0 shadow-sm rounded-4 question-card p-4 bg-body" id="questionCard-{{ loop.index }}" data-question-id="{{ q.id }}" data-correct="{{ q.correct }}">
+                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                    <span class="badge bg-primary-subtle text-primary fw-bold px-3 py-1">Câu {{ loop.index }}</span>
+                    <span class="text-muted small">Điểm: {{ "%.2f"|format(10.0 / quiz.questions|length) }} đ</span>
+                </div>
+
+                <div class="question-title fw-semibold fs-5 mb-3 text-body">
+                    {{ q.question }}
+                </div>
+
+                <div class="options-container d-flex flex-column gap-2 mb-3">
+                    {% for opt in q.options %}
+                    <label class="option-label p-3 rounded-3 border d-flex align-items-center gap-3 cursor-pointer transition-all" for="q{{ q.id }}_opt{{ loop.index0 }}">
+                        <input class="form-check-input option-radio mt-0 flex-shrink-0" type="radio" name="q_{{ q.id }}" id="q{{ q.id }}_opt{{ loop.index0 }}" value="{{ loop.index0 }}">
+                        <span class="option-text flex-grow-1 text-body">{{ opt }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+
+                <!-- Explanation Box (revealed after submit) -->
+                <div class="explanation-box d-none alert alert-light border rounded-3 p-3 mt-2" id="explanation-{{ q.id }}">
+                    <div class="d-flex align-items-center gap-2 fw-bold mb-2 explanation-status"></div>
+                    <div class="explanation-content text-secondary small">
+                        <strong><i class="bi bi-lightbulb-fill text-warning me-1"></i>Lời giải chi tiết:</strong>
+                        <p class="mt-1 mb-0">{{ q.explanation }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Submit Button Toolbar -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mt-4 bg-body text-center sticky-bottom" style="bottom: 20px; z-index: 10;">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
+                <span class="text-muted small">
+                    <i class="bi bi-info-circle me-1"></i>Hãy kiểm tra kĩ tất cả các câu trước khi bấm nộp bài.
+                </span>
+                <button type="button" id="submitQuizBtn" class="btn btn-danger btn-lg px-5 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-send-check-fill"></i> Nộp bài & Chấm điểm
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Reparse MathJax after rendering
+    document.addEventListener("DOMContentLoaded", function() {
+        if (window.MathJax) {
+            MathJax.typesetPromise();
+        }
+    });
+</script>
+{% endblock %}
