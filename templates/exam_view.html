@@ -1,0 +1,480 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ exam.title }} - Phòng Thi Thử Toán 11{% endblock %}
+
+{% block content %}
+<div class="exam-view-page" data-time-limit="{{ exam.time_minutes }}">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('exams') }}" class="text-decoration-none">Phòng thi thử</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ exam.title }}</li>
+        </ol>
+    </nav>
+
+    <!-- Exam Header & Timer Widget -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-body p-4 position-relative overflow-hidden border-top border-4 border-primary">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-8">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <span class="badge bg-primary px-3 py-1 fw-bold text-uppercase">{{ exam.scope }}</span>
+                    <span class="badge bg-secondary-subtle text-secondary fw-semibold">Thời gian: {{ exam.time_minutes }} phút</span>
+                    <span class="badge bg-danger-subtle text-danger fw-semibold">Thang điểm 10</span>
+                </div>
+                <h3 class="fw-bold text-body mb-1">{{ exam.title }}</h3>
+                <p class="text-muted small mb-0">{{ exam.subtitle }}</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <!-- Floating Timer Box -->
+                <div class="timer-box p-3 rounded-4 bg-dark text-white d-inline-block shadow text-center" style="min-width: 200px;">
+                    <div class="small text-uppercase text-light opacity-75 mb-1" style="font-size: 0.75rem;">
+                        <i class="bi bi-stopwatch-fill me-1"></i> Thời gian còn lại
+                    </div>
+                    <div id="countdownTimer" class="fs-2 fw-extrabold font-monospace text-warning">
+                        90:00
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Strategy Guide & Casio Guide Accordion -->
+    <div class="accordion mb-4 shadow-sm rounded-4 overflow-hidden border-0" id="strategyAccordion">
+        <div class="accordion-item border-0">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed fw-bold py-3 bg-body" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStrategy">
+                    <i class="bi bi-lightbulb-fill text-warning me-2 fs-5"></i>
+                    Bấm để xem: Chiến thuật làm bài, Phân bổ thời gian & Bấm máy Casio fx-580 / fx-880
+                </button>
+            </h2>
+            <div id="collapseStrategy" class="accordion-collapse collapse" data-bs-parent="#strategyAccordion">
+                <div class="accordion-body p-4 bg-body-tertiary">
+                    {{ exam.strategy_guide|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam Result Banner (Hidden until submission) -->
+    <div id="examResultCard" class="card border-0 shadow-lg rounded-4 mb-4 d-none overflow-hidden">
+        <div class="card-header bg-gradient py-4 text-white text-center" id="resultHeader" style="background: linear-gradient(135deg, #198754, #0d6efd);">
+            <div id="resultIcon" class="mb-2"></div>
+            <h3 class="fw-bold mb-1" id="resultTitle">KẾT QUẢ THI THỬ</h3>
+            <div class="display-4 fw-extrabold my-2 font-monospace" id="resultTotalScore">0.0 / 10</div>
+            <p class="mb-0 text-white-50 small" id="resultSummaryText"></p>
+        </div>
+        <div class="card-body p-4 bg-body">
+            <div class="row g-3 text-center mb-3">
+                <div class="col-4">
+                    <div class="p-3 rounded-3 bg-body-tertiary border">
+                        <div class="text-muted small">Phần I (Trắc nghiệm)</div>
+                        <div class="fw-bold fs-5 text-primary" id="part1ScoreDisplay">0 / 3.0 đ</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="p-3 rounded-3 bg-body-tertiary border">
+                        <div class="text-muted small">Phần II (Đúng/Sai)</div>
+                        <div class="fw-bold fs-5 text-success" id="part2ScoreDisplay">0 / 4.0 đ</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="p-3 rounded-3 bg-body-tertiary border">
+                        <div class="text-muted small">Phần III (Trả lời ngắn)</div>
+                        <div class="fw-bold fs-5 text-warning" id="part3ScoreDisplay">0 / 3.0 đ</div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <button type="button" id="retakeExamBtn" class="btn btn-outline-primary px-4 fw-semibold">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Làm lại đề thi này
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Exam Form -->
+    <form id="examForm" onsubmit="return false;">
+        <!-- ==========================================
+             PHẦN I: TRẮC NGHIỆM NHIỀU LỰA CHỌN (12 CÂU)
+             ========================================== -->
+        <div class="part-section mb-5">
+            <div class="d-flex align-items-center justify-content-between p-3 rounded-4 bg-primary text-white mb-4 shadow-sm">
+                <div>
+                    <h5 class="fw-bold mb-0"><i class="bi bi-check2-circle me-2"></i>PHẦN I: CÂU TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN</h5>
+                    <span class="small opacity-75">Thí sinh trả lời từ câu 1 đến câu 12. Mỗi câu hỏi chọn 1 phương án đúng nhất. (Mỗi câu 0,25 điểm)</span>
+                </div>
+                <span class="badge bg-white text-primary fs-6 fw-bold">3,0 ĐIỂM</span>
+            </div>
+
+            <div class="d-flex flex-column gap-4">
+                {% for q in exam.part1 %}
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-body exam-question-card" id="card_p1_{{ q.id }}" data-part="1" data-id="{{ q.id }}" data-correct="{{ q.correct }}">
+                    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-primary-subtle text-primary fw-bold px-3 py-1">Câu {{ loop.index }}</span>
+                            <span class="badge bg-light text-muted border small">{{ q.method }}</span>
+                        </div>
+                        <span class="text-muted small">0,25 điểm</span>
+                    </div>
+
+                    <div class="question-text fw-semibold fs-5 mb-3 text-body">
+                        {{ q.question|safe }}
+                    </div>
+
+                    <div class="options-grid row g-2 mb-3">
+                        {% for opt in q.options %}
+                        <div class="col-md-6">
+                            <label class="p1-option-label p-3 rounded-3 border d-flex align-items-center gap-3 cursor-pointer w-100 transition-all" for="p1_q{{ q.id }}_opt{{ loop.index0 }}">
+                                <input class="form-check-input mt-0 flex-shrink-0" type="radio" name="p1_q{{ q.id }}" id="p1_q{{ q.id }}_opt{{ loop.index0 }}" value="{{ loop.index0 }}">
+                                <span class="option-text text-body">{{ opt }}</span>
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Lời giải sau khi nộp bài -->
+                    <div class="solution-box d-none alert alert-light border rounded-3 p-3 mt-2" id="sol_p1_{{ q.id }}">
+                        <div class="fw-bold mb-1 status-label"></div>
+                        <div class="small text-secondary">
+                            <strong><i class="bi bi-lightbulb-fill text-warning me-1"></i>Lời giải chi tiết & Chiến thuật:</strong>
+                            <div class="mt-1">{{ q.explanation|safe }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- ==========================================
+             PHẦN II: TRẮC NGHIỆM ĐÚNG / SAI (4 CÂU)
+             ========================================== -->
+        <div class="part-section mb-5">
+            <div class="d-flex align-items-center justify-content-between p-3 rounded-4 bg-success text-white mb-4 shadow-sm">
+                <div>
+                    <h5 class="fw-bold mb-0"><i class="bi bi-ui-checks-grid me-2"></i>PHẦN II: CÂU TRẮC NGHIỆM ĐÚNG SAI</h5>
+                    <span class="small opacity-75">Thí sinh trả lời từ câu 1 đến câu 4. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn Đúng hoặc Sai.</span>
+                </div>
+                <span class="badge bg-white text-success fs-6 fw-bold">4,0 ĐIỂM</span>
+            </div>
+
+            <div class="d-flex flex-column gap-4">
+                {% for q in exam.part2 %}
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-body exam-question-card" id="card_p2_{{ q.id }}" data-part="2" data-id="{{ q.id }}">
+                    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                        <span class="badge bg-success-subtle text-success fw-bold px-3 py-1">Câu {{ loop.index }} (Phần II)</span>
+                        <span class="text-muted small">Tối đa 1,0 điểm (Đúng 1 ý: 0.1đ | 2 ý: 0.25đ | 3 ý: 0.5đ | 4 ý: 1.0đ)</span>
+                    </div>
+
+                    <div class="question-text fw-semibold fs-5 mb-3 text-body">
+                        {{ q.context|safe }}
+                    </div>
+
+                    <div class="sub-items-container d-flex flex-column gap-3 mb-3">
+                        {% for item in q.sub_questions %}
+                        <div class="sub-item p-3 rounded-3 border bg-body-tertiary" id="sub_p2_{{ q.id }}_{{ loop.index0 }}" data-correct="{{ 'true' if item.correct else 'false' }}">
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                                <div class="sub-text fw-medium text-body flex-grow-1">
+                                    <strong class="text-primary me-1">{{ item.label }})</strong> {{ item.text|safe }}
+                                </div>
+                                <div class="sub-radios d-flex align-items-center gap-3 flex-shrink-0">
+                                    <label class="form-check-label px-3 py-1 rounded-pill border bg-body cursor-pointer d-flex align-items-center gap-1">
+                                        <input class="form-check-input" type="radio" name="p2_q{{ q.id }}_sub{{ loop.index0 }}" value="true">
+                                        <span class="small fw-semibold text-success">Đúng</span>
+                                    </label>
+                                    <label class="form-check-label px-3 py-1 rounded-pill border bg-body cursor-pointer d-flex align-items-center gap-1">
+                                        <input class="form-check-input" type="radio" name="p2_q{{ q.id }}_sub{{ loop.index0 }}" value="false">
+                                        <span class="small fw-semibold text-danger">Sai</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="sub-explanation d-none mt-2 pt-2 border-top small text-secondary">
+                                <strong>Đáp án đúng: <span class="badge {% if item.correct %}bg-success{% else %}bg-danger{% endif %}">{{ 'ĐÚNG' if item.correct else 'SAI' }}</span></strong> — {{ item.explanation|safe }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- ==========================================
+             PHẦN III: TRẮC NGHIỆM TRẢ LỜI NGẮN (6 CÂU)
+             ========================================== -->
+        <div class="part-section mb-5">
+            <div class="d-flex align-items-center justify-content-between p-3 rounded-4 text-white mb-4 shadow-sm" style="background-color: #d63384;">
+                <div>
+                    <h5 class="fw-bold mb-0"><i class="bi bi-pencil-square me-2"></i>PHẦN III: CÂU TRẮC NGHIỆM TRẢ LỜI NGẮN</h5>
+                    <span class="small opacity-75">Thí sinh trả lời từ câu 1 đến câu 6. Điền kết quả số cụ thể vào ô trả lời. (Mỗi câu 0,5 điểm)</span>
+                </div>
+                <span class="badge bg-white text-danger fs-6 fw-bold">3,0 ĐIỂM</span>
+            </div>
+
+            <div class="d-flex flex-column gap-4">
+                {% for q in exam.part3 %}
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-body exam-question-card" id="card_p3_{{ q.id }}" data-part="3" data-id="{{ q.id }}" data-correct="{{ q.answer }}">
+                    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge text-white fw-bold px-3 py-1" style="background-color: #d63384;">Câu {{ loop.index }} (Phần III)</span>
+                        </div>
+                        <span class="text-muted small">0,5 điểm</span>
+                    </div>
+
+                    <div class="question-text fw-semibold fs-5 mb-3 text-body">
+                        {{ q.question|safe }}
+                    </div>
+
+                    <div class="row align-items-center g-3 mb-3">
+                        <div class="col-sm-6 col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-body-tertiary fw-semibold">Đáp số:</span>
+                                <input type="text" class="form-control font-monospace p3-input" id="input_p3_{{ q.id }}" placeholder="Nhập số (VD: {{ q.answer }})">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-8 text-muted small">
+                            <i class="bi bi-info-circle me-1"></i>Viết số nguyên hoặc số thập phân chuẩn (dùng dấu chấm hoặc phẩy).
+                        </div>
+                    </div>
+
+                    <!-- Lời giải sau khi nộp bài -->
+                    <div class="solution-box d-none alert alert-light border rounded-3 p-3 mt-2" id="sol_p3_{{ q.id }}">
+                        <div class="fw-bold mb-1 status-label"></div>
+                        <div class="small text-secondary">
+                            <div class="mb-2"><strong><i class="bi bi-check2-circle text-success me-1"></i>Đáp án chính xác:</strong> <span class="badge bg-success font-monospace fs-6">{{ q.answer }}</span></div>
+                            <div class="fw-semibold text-primary mb-1"><i class="bi bi-diagram-3-fill me-1"></i>Các trạm trung chuyển giải chi tiết:</div>
+                            <ul class="ps-3 mb-0">
+                                {% for step in q.explanation_steps %}
+                                <li class="mb-1">{{ step|safe }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Sticky Submit Toolbar -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mt-4 bg-body text-center sticky-bottom" style="bottom: 20px; z-index: 10;">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
+                <span class="text-muted small">
+                    <i class="bi bi-shield-lock-fill text-primary me-1"></i>
+                    Đồng hồ sẽ tự động nộp bài khi hết 90 phút. Bạn có thể nộp sớm bất kì lúc nào.
+                </span>
+                <button type="button" id="submitExamBtn" class="btn btn-primary btn-lg px-5 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-send-check-fill"></i> Nộp bài thi & Chấm điểm
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. MathJax typesetting
+    if (window.MathJax) {
+        MathJax.typesetPromise();
+    }
+
+    // 2. Timer Setup
+    let totalSeconds = parseInt(document.querySelector('.exam-view-page').dataset.timeLimit || 90) * 60;
+    const timerDisplay = document.getElementById('countdownTimer');
+    let examSubmitted = false;
+
+    const timerInterval = setInterval(function() {
+        if (examSubmitted) {
+            clearInterval(timerInterval);
+            return;
+        }
+
+        totalSeconds--;
+        if (totalSeconds < 0) {
+            clearInterval(timerInterval);
+            alert("⏰ Đã hết thời gian 90 phút làm bài! Hệ thống sẽ tự động thu bài và chấm điểm ngay bây giờ.");
+            gradeExam();
+            return;
+        }
+
+        const mins = Math.floor(totalSeconds / 60);
+        const secs = totalSeconds % 60;
+        timerDisplay.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+        if (totalSeconds < 600) { // Under 10 minutes
+            timerDisplay.classList.remove('text-warning');
+            timerDisplay.classList.add('text-danger');
+        }
+    }, 1000);
+
+    // Option highlight for Part I
+    document.querySelectorAll('.p1-option-label').forEach(label => {
+        label.addEventListener('click', function() {
+            const card = this.closest('.exam-question-card');
+            card.querySelectorAll('.p1-option-label').forEach(l => l.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+
+    // 3. Submit & Grade Exam
+    const submitBtn = document.getElementById('submitExamBtn');
+    submitBtn.addEventListener('click', function() {
+        if (examSubmitted) return;
+        const confirmSubmit = confirm("Bạn có chắc chắn muốn nộp bài thi để chấm điểm không?");
+        if (confirmSubmit) {
+            gradeExam();
+        }
+    });
+
+    function gradeExam() {
+        examSubmitted = true;
+        clearInterval(timerInterval);
+
+        let p1Score = 0.0;
+        let p2Score = 0.0;
+        let p3Score = 0.0;
+
+        // --- Chấm Phần I (12 câu, mỗi câu 0.25đ) ---
+        const p1Cards = document.querySelectorAll('.exam-question-card[data-part="1"]');
+        p1Cards.forEach(card => {
+            const correctVal = parseInt(card.dataset.correct);
+            const qId = card.dataset.id;
+            const checked = card.querySelector(`input[name="p1_q${qId}"]:checked`);
+            const solBox = document.getElementById(`sol_p1_${qId}`);
+            const statusLabel = solBox.querySelector('.status-label');
+            const labels = card.querySelectorAll('.p1-option-label');
+
+            // Disable radio inputs
+            card.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+            labels[correctVal].classList.add('correct-choice');
+
+            if (checked) {
+                const userVal = parseInt(checked.value);
+                if (userVal === correctVal) {
+                    p1Score += 0.25;
+                    statusLabel.innerHTML = '<span class="badge bg-success"><i class="bi bi-check-lg"></i> Chính xác (+0,25đ)</span>';
+                } else {
+                    labels[userVal].classList.add('wrong-choice');
+                    statusLabel.innerHTML = '<span class="badge bg-danger"><i class="bi bi-x-lg"></i> Sai rồi (0đ)</span>';
+                }
+            } else {
+                statusLabel.innerHTML = '<span class="badge bg-secondary"><i class="bi bi-dash-circle"></i> Chưa làm (0đ)</span>';
+            }
+            solBox.classList.remove('d-none');
+        });
+
+        // --- Chấm Phần II (4 câu Đúng/Sai) ---
+        // 1 ý: 0.1đ | 2 ý: 0.25đ | 3 ý: 0.5đ | 4 ý: 1.0đ
+        const p2Cards = document.querySelectorAll('.exam-question-card[data-part="2"]');
+        p2Cards.forEach(card => {
+            const qId = card.dataset.id;
+            const subItems = card.querySelectorAll('.sub-item');
+            let correctSubs = 0;
+
+            subItems.forEach((sub, subIdx) => {
+                const isCorrect = sub.dataset.correct === 'true';
+                const checked = sub.querySelector(`input[name="p2_q${qId}_sub${subIdx}"]:checked`);
+                const explBox = sub.querySelector('.sub-explanation');
+
+                sub.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+                explBox.classList.remove('d-none');
+
+                if (checked) {
+                    const userVal = checked.value === 'true';
+                    if (userVal === isCorrect) {
+                        correctSubs++;
+                        sub.classList.add('border-success', 'bg-success-subtle');
+                    } else {
+                        sub.classList.add('border-danger', 'bg-danger-subtle');
+                    }
+                } else {
+                    sub.classList.add('border-secondary');
+                }
+            });
+
+            // MOET scoring matrix for True/False
+            let questionScore = 0.0;
+            if (correctSubs === 1) questionScore = 0.1;
+            else if (correctSubs === 2) questionScore = 0.25;
+            else if (correctSubs === 3) questionScore = 0.5;
+            else if (correctSubs === 4) questionScore = 1.0;
+
+            p2Score += questionScore;
+        });
+
+        // --- Chấm Phần III (6 câu Trả lời ngắn, mỗi câu 0.5đ) ---
+        const p3Cards = document.querySelectorAll('.exam-question-card[data-part="3"]');
+        p3Cards.forEach(card => {
+            const qId = card.dataset.id;
+            const targetVal = String(card.dataset.correct).trim().toLowerCase();
+            const inputElem = document.getElementById(`input_p3_${qId}`);
+            const userVal = inputElem ? inputElem.value.trim().toLowerCase().replace(',', '.') : '';
+            const solBox = document.getElementById(`sol_p3_${qId}`);
+            const statusLabel = solBox.querySelector('.status-label');
+
+            if (inputElem) inputElem.disabled = true;
+            solBox.classList.remove('d-none');
+
+            // So sánh linh hoạt số nguyên & số thập phân
+            const isMatch = (userVal === targetVal) || 
+                            (parseFloat(userVal) === parseFloat(targetVal) && !isNaN(parseFloat(userVal)));
+
+            if (isMatch) {
+                p3Score += 0.5;
+                statusLabel.innerHTML = `<span class="badge bg-success"><i class="bi bi-check-lg"></i> Chính xác: ${targetVal} (+0,5đ)</span>`;
+                if (inputElem) inputElem.classList.add('is-valid');
+            } else {
+                statusLabel.innerHTML = `<span class="badge bg-danger"><i class="bi bi-x-lg"></i> Sai (Đáp án đúng: ${targetVal})</span>`;
+                if (inputElem) inputElem.classList.add('is-invalid');
+            }
+        });
+
+        // Tổng điểm
+        const totalScore = Math.min(10.0, p1Score + p2Score + p3Score);
+
+        // Hiển thị kết quả
+        document.getElementById('resultTotalScore').innerText = `${totalScore.toFixed(2)} / 10`;
+        document.getElementById('part1ScoreDisplay').innerText = `${p1Score.toFixed(2)} / 3.0 đ`;
+        document.getElementById('part2ScoreDisplay').innerText = `${p2Score.toFixed(2)} / 4.0 đ`;
+        document.getElementById('part3ScoreDisplay').innerText = `${p3Score.toFixed(2)} / 3.0 đ`;
+
+        const resultCard = document.getElementById('examResultCard');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultIcon = document.getElementById('resultIcon');
+        const summaryText = document.getElementById('resultSummaryText');
+
+        if (totalScore >= 8.0) {
+            resultTitle.innerText = "🎉 XUẤT SẮC! ĐẠT CHUẨN ĐIỂM 9+";
+            resultIcon.innerHTML = '<i class="bi bi-trophy-fill text-warning fs-1"></i>';
+            summaryText.innerText = "Kiến thức và kỹ năng giải toán 11 của bạn cực kì vững vàng!";
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+            }
+        } else if (totalScore >= 5.0) {
+            resultTitle.innerText = "👍 KHÁ TỐT! ĐẠT YÊU CẦU";
+            resultIcon.innerHTML = '<i class="bi bi-award-fill text-white fs-1"></i>';
+            summaryText.innerText = "Bạn đã vượt qua bài thi! Hãy rà soát lại các câu sai ở phần giải chi tiết bên dưới.";
+        } else {
+            resultTitle.innerText = "💪 CẦN ÔN TẬP THÊM!";
+            resultIcon.innerHTML = '<i class="bi bi-exclamation-octagon-fill text-warning fs-1"></i>';
+            summaryText.innerText = "Đừng nản lòng! Hãy đọc kĩ Sổ tay lỗi sai và Lời giải chi tiết để nâng điểm trong lần thi sau.";
+        }
+
+        resultCard.classList.remove('d-none');
+        resultCard.scrollIntoView({ behavior: 'smooth' });
+
+        // Ẩn nút nộp bài
+        document.getElementById('submitExamBtn').style.display = 'none';
+    }
+
+    // Nút làm lại
+    const retakeBtn = document.getElementById('retakeExamBtn');
+    if (retakeBtn) {
+        retakeBtn.addEventListener('click', function() {
+            window.location.reload();
+        });
+    }
+});
+</script>
+{% endblock %}

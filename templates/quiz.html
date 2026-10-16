@@ -3,7 +3,7 @@
 {% block title %}{{ quiz.title }} - Toán 11{% endblock %}
 
 {% block content %}
-<div class="quiz-page" data-chapter-id="{{ chapter.id }}">
+<div class="quiz-page" data-chapter-id="{{ chapter.id }}" data-is-standard="{{ 'true' if quiz.format == 'standard_2025' else 'false' }}">
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb small">
@@ -16,14 +16,30 @@
     <!-- Quiz Header -->
     <div class="card border-0 shadow-sm rounded-4 mb-4 bg-gradient-quiz text-white p-4">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-2">
-            <span class="badge bg-white text-danger fw-bold px-3 py-1 text-uppercase">BÀI KIỂM TRA CHƯƠNG {{ chapter.id }}</span>
+            <span class="badge bg-white text-danger fw-bold px-3 py-1 text-uppercase">
+                {% if quiz.format == 'standard_2025' %}
+                <i class="bi bi-star-fill text-warning me-1"></i> FORMAT MỚI BỘ GD&ĐT (HƯNG YÊN 45 PHÚT)
+                {% else %}
+                BÀI KIỂM TRA CHƯƠNG {{ chapter.id }}
+                {% endif %}
+            </span>
             <div class="d-flex align-items-center gap-3 small">
-                <span><i class="bi bi-question-circle me-1"></i><strong>{{ quiz.questions|length }}</strong> câu hỏi trắc nghiệm</span>
+                {% if quiz.format == 'standard_2025' %}
+                <span><i class="bi bi-ui-checks-grid me-1"></i>3 Phần: <strong>12 MCQ + 2 Đúng/Sai + 3 Trả lời ngắn</strong></span>
+                {% else %}
+                <span><i class="bi bi-question-circle me-1"></i><strong>{{ quiz.questions|length }}</strong> câu trắc nghiệm</span>
+                {% endif %}
                 <span><i class="bi bi-clock me-1"></i>Thời gian: <strong>{{ quiz.time_minutes }} phút</strong></span>
             </div>
         </div>
         <h2 class="fw-bold mb-2">{{ quiz.title }}</h2>
-        <p class="mb-0 text-light-50">Chọn đáp án đúng nhất cho từng câu hỏi bên dưới. Nhấn <strong>"Nộp bài & Chấm điểm"</strong> để xem điểm số ngay lập tức cùng lời giải chi tiết từng bước.</p>
+        <p class="mb-0 text-light-50">
+            {% if quiz.format == 'standard_2025' %}
+            Bài kiểm tra chuẩn ma trận cấu trúc mới nhất: Phần I (Trắc nghiệm nhiều lựa chọn), Phần II (Đúng/Sai), Phần III (Trả lời ngắn). Kèm giải thích chi tiết ứng dụng phương pháp chia nhỏ trạm trung chuyển!
+            {% else %}
+            Chọn đáp án đúng nhất cho từng câu hỏi bên dưới. Nhấn <strong>"Nộp bài & Chấm điểm"</strong> để xem điểm số ngay lập tức cùng lời giải chi tiết từng bước.
+            {% endif %}
+        </p>
     </div>
 
     <!-- Quiz Result Banner (Hidden until submitted) -->
@@ -55,6 +71,159 @@
 
     <!-- Quiz Form -->
     <form id="quizForm" onsubmit="return false;">
+        {% if quiz.format == 'standard_2025' %}
+        <!-- ========================================================
+             FORMAT 2025: PHẦN I (12 CÂU) + PHẦN II (2 CÂU) + PHẦN III (3 CÂU)
+             ======================================================== -->
+        <!-- PHẦN I -->
+        <div class="mb-4">
+            <div class="d-flex align-items-center justify-content-between p-3 rounded-4 bg-primary text-white mb-3 shadow-sm">
+                <div>
+                    <h6 class="fw-bold mb-0"><i class="bi bi-check2-circle me-1"></i>PHẦN I: TRẮC NGHIỆM NHIỀU LỰA CHỌN (12 CÂU)</h6>
+                    <span class="small opacity-75">Mỗi câu 0,25 điểm</span>
+                </div>
+                <span class="badge bg-white text-primary fw-bold">3,0 ĐIỂM</span>
+            </div>
+
+            <div class="d-flex flex-column gap-3">
+                {% for q in quiz.part1 %}
+                <div class="card border-0 shadow-sm rounded-4 question-card p-4 bg-body" id="std_card_p1_{{ q.id }}" data-part="1" data-id="{{ q.id }}" data-correct="{{ q.correct }}">
+                    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                        <span class="badge bg-primary-subtle text-primary fw-bold px-3 py-1">Câu {{ loop.index }}</span>
+                        <span class="text-muted small">0,25 đ</span>
+                    </div>
+
+                    <div class="question-title fw-semibold fs-5 mb-3 text-body">
+                        {{ q.question|safe }}
+                    </div>
+
+                    <div class="options-container d-flex flex-column gap-2 mb-3">
+                        {% for opt in q.options %}
+                        <label class="option-label p-3 rounded-3 border d-flex align-items-center gap-3 cursor-pointer transition-all" for="std_p1_q{{ q.id }}_opt{{ loop.index0 }}">
+                            <input class="form-check-input option-radio mt-0 flex-shrink-0" type="radio" name="std_p1_q{{ q.id }}" id="std_p1_q{{ q.id }}_opt{{ loop.index0 }}" value="{{ loop.index0 }}">
+                            <span class="option-text flex-grow-1 text-body">{{ opt }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+
+                    <div class="explanation-box d-none alert alert-light border rounded-3 p-3 mt-2" id="std_expl_p1_{{ q.id }}">
+                        <div class="d-flex align-items-center gap-2 fw-bold mb-2 explanation-status"></div>
+                        <div class="explanation-content text-secondary small">
+                            <strong><i class="bi bi-lightbulb-fill text-warning me-1"></i>Lời giải chi tiết:</strong>
+                            <p class="mt-1 mb-0">{{ q.explanation|safe }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- PHẦN II -->
+        <div class="mb-4">
+            <div class="d-flex align-items-center justify-content-between p-3 rounded-4 bg-success text-white mb-3 shadow-sm">
+                <div>
+                    <h6 class="fw-bold mb-0"><i class="bi bi-ui-checks-grid me-1"></i>PHẦN II: TRẮC NGHIỆM ĐÚNG / SAI (2 CÂU)</h6>
+                    <span class="small opacity-75">Mỗi câu 2,0 điểm (1 ý đúng: 0.25đ | 2 ý: 0.5đ | 3 ý: 1.0đ | 4 ý: 2.0đ)</span>
+                </div>
+                <span class="badge bg-white text-success fw-bold">4,0 ĐIỂM</span>
+            </div>
+
+            <div class="d-flex flex-column gap-4">
+                {% for q in quiz.part2 %}
+                <div class="card border-0 shadow-sm rounded-4 question-card p-4 bg-body" id="std_card_p2_{{ q.id }}" data-part="2" data-id="{{ q.id }}">
+                    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                        <span class="badge bg-success-subtle text-success fw-bold px-3 py-1">Câu {{ loop.index }} (Phần II)</span>
+                        <span class="text-muted small">Tối đa 2,0 đ</span>
+                    </div>
+
+                    <div class="question-title fw-semibold fs-5 mb-3 text-body">
+                        {{ q.context|safe }}
+                    </div>
+
+                    <div class="d-flex flex-column gap-3 mb-3">
+                        {% for item in q.sub_questions %}
+                        <div class="p-3 rounded-3 border bg-body-tertiary std-sub-item" id="std_sub_{{ q.id }}_{{ loop.index0 }}" data-correct="{{ 'true' if item.correct else 'false' }}">
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
+                                <div class="fw-medium text-body flex-grow-1">
+                                    <strong class="text-primary me-1">{{ item.label }})</strong> {{ item.text|safe }}
+                                </div>
+                                <div class="d-flex align-items-center gap-3 flex-shrink-0">
+                                    <label class="form-check-label px-3 py-1 rounded-pill border bg-body cursor-pointer d-flex align-items-center gap-1">
+                                        <input class="form-check-input" type="radio" name="std_p2_q{{ q.id }}_sub{{ loop.index0 }}" value="true">
+                                        <span class="small fw-semibold text-success">Đúng</span>
+                                    </label>
+                                    <label class="form-check-label px-3 py-1 rounded-pill border bg-body cursor-pointer d-flex align-items-center gap-1">
+                                        <input class="form-check-input" type="radio" name="std_p2_q{{ q.id }}_sub{{ loop.index0 }}" value="false">
+                                        <span class="small fw-semibold text-danger">Sai</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="std-sub-explanation d-none mt-2 pt-2 border-top small text-secondary">
+                                <strong>Đáp án đúng: <span class="badge {% if item.correct %}bg-success{% else %}bg-danger{% endif %}">{{ 'ĐÚNG' if item.correct else 'SAI' }}</span></strong> — {{ item.explanation|safe }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- PHẦN III -->
+        <div class="mb-4">
+            <div class="d-flex align-items-center justify-content-between p-3 rounded-4 text-white mb-3 shadow-sm" style="background-color: #d63384;">
+                <div>
+                    <h6 class="fw-bold mb-0"><i class="bi bi-pencil-fill me-1"></i>PHẦN III: TRẢ LỜI NGẮN (3 CÂU)</h6>
+                    <span class="small opacity-75">Mỗi câu 1,0 điểm • Giải theo phương pháp chia nhỏ Trạm trung chuyển</span>
+                </div>
+                <span class="badge bg-white text-danger fw-bold">3,0 ĐIỂM</span>
+            </div>
+
+            <div class="d-flex flex-column gap-4">
+                {% for q in quiz.part3 %}
+                <div class="card border-0 shadow-sm rounded-4 question-card p-4 bg-body" id="std_card_p3_{{ q.id }}" data-part="3" data-id="{{ q.id }}" data-correct="{{ q.answer }}">
+                    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                        <span class="badge text-white fw-bold px-3 py-1" style="background-color: #d63384;">Câu {{ loop.index }} (Phần III)</span>
+                        <span class="text-muted small">1,0 đ</span>
+                    </div>
+
+                    <div class="question-title fw-semibold fs-5 mb-3 text-body">
+                        {{ q.question|safe }}
+                    </div>
+
+                    <div class="row align-items-center g-3 mb-3">
+                        <div class="col-sm-6 col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-body-tertiary fw-semibold">Đáp số:</span>
+                                <input type="text" class="form-control font-monospace std-p3-input" id="std_input_p3_{{ q.id }}" placeholder="Nhập số (VD: {{ q.answer }})">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-8 text-muted small">
+                            <i class="bi bi-info-circle me-1"></i>Điền con số cụ thể vào ô đáp án.
+                        </div>
+                    </div>
+
+                    <div class="explanation-box d-none alert alert-light border rounded-3 p-3 mt-2" id="std_expl_p3_{{ q.id }}">
+                        <div class="d-flex align-items-center gap-2 fw-bold mb-2 explanation-status"></div>
+                        <div class="explanation-content text-secondary small">
+                            <div class="mb-2"><strong><i class="bi bi-check2-circle text-success me-1"></i>Đáp án chính xác:</strong> <span class="badge bg-success font-monospace fs-6">{{ q.answer }}</span></div>
+                            <div class="fw-semibold text-primary mb-1"><i class="bi bi-diagram-3-fill me-1"></i>Các trạm trung chuyển giải chi tiết:</div>
+                            <ul class="ps-3 mb-0">
+                                {% for step in q.explanation_steps %}
+                                <li class="mb-1">{{ step|safe }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% else %}
+        <!-- ========================================================
+             FORMAT TIÊU CHUẨN 8 CÂU CHO CÁC CHƯƠNG KHÁC
+             ======================================================== -->
         <div class="questions-list d-flex flex-column gap-4">
             {% for q in quiz.questions %}
             <div class="card border-0 shadow-sm rounded-4 question-card p-4 bg-body" id="questionCard-{{ loop.index }}" data-question-id="{{ q.id }}" data-correct="{{ q.correct }}">
@@ -76,7 +245,7 @@
                     {% endfor %}
                 </div>
 
-                <!-- Explanation Box (revealed after submit) -->
+                <!-- Explanation Box -->
                 <div class="explanation-box d-none alert alert-light border rounded-3 p-3 mt-2" id="explanation-{{ q.id }}">
                     <div class="d-flex align-items-center gap-2 fw-bold mb-2 explanation-status"></div>
                     <div class="explanation-content text-secondary small">
@@ -87,6 +256,7 @@
             </div>
             {% endfor %}
         </div>
+        {% endif %}
 
         <!-- Submit Button Toolbar -->
         <div class="card border-0 shadow-sm rounded-4 p-4 mt-4 bg-body text-center sticky-bottom" style="bottom: 20px; z-index: 10;">
@@ -105,11 +275,169 @@
 
 {% block scripts %}
 <script>
-    // Reparse MathJax after rendering
     document.addEventListener("DOMContentLoaded", function() {
         if (window.MathJax) {
             MathJax.typesetPromise();
         }
+
+        const isStandard = document.querySelector('.quiz-page').dataset.isStandard === 'true';
+        if (isStandard) {
+            initStandardQuizEngine();
+        }
     });
+
+    function initStandardQuizEngine() {
+        const submitBtn = document.getElementById('submitQuizBtn');
+        const retryBtn = document.getElementById('retryQuizBtn');
+
+        // Part I option click
+        document.querySelectorAll('.question-card[data-part="1"] .option-label').forEach(label => {
+            label.addEventListener('click', function() {
+                const card = this.closest('.question-card');
+                card.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+                this.classList.add('selected');
+                const radio = this.querySelector('input[type="radio"]');
+                if (radio) radio.checked = true;
+            });
+        });
+
+        submitBtn.addEventListener('click', function() {
+            let p1Score = 0.0;
+            let p2Score = 0.0;
+            let p3Score = 0.0;
+
+            // 1. Chấm Phần I (12 câu, mỗi câu 0.25đ)
+            const p1Cards = document.querySelectorAll('.question-card[data-part="1"]');
+            p1Cards.forEach(card => {
+                const correctVal = parseInt(card.dataset.correct);
+                const qId = card.dataset.id;
+                const checked = card.querySelector(`input[name="std_p1_q${qId}"]:checked`);
+                const explBox = document.getElementById(`std_expl_p1_${qId}`);
+                const statusBox = explBox.querySelector('.explanation-status');
+                const labels = card.querySelectorAll('.option-label');
+
+                card.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+                labels[correctVal].classList.add('correct-choice');
+
+                if (checked) {
+                    const userVal = parseInt(checked.value);
+                    if (userVal === correctVal) {
+                        p1Score += 0.25;
+                        statusBox.innerHTML = '<span class="badge bg-success"><i class="bi bi-check-lg"></i> Chính xác (+0,25đ)</span>';
+                    } else {
+                        labels[userVal].classList.add('wrong-choice');
+                        statusBox.innerHTML = '<span class="badge bg-danger"><i class="bi bi-x-lg"></i> Sai (0đ)</span>';
+                    }
+                } else {
+                    statusBox.innerHTML = '<span class="badge bg-secondary"><i class="bi bi-dash-circle"></i> Chưa làm</span>';
+                }
+                explBox.classList.remove('d-none');
+            });
+
+            // 2. Chấm Phần II (2 câu Đúng/Sai, mỗi câu tối đa 2.0đ)
+            // 1 ý: 0.25đ | 2 ý: 0.5đ | 3 ý: 1.0đ | 4 ý: 2.0đ
+            const p2Cards = document.querySelectorAll('.question-card[data-part="2"]');
+            p2Cards.forEach(card => {
+                const qId = card.dataset.id;
+                const subItems = card.querySelectorAll('.std-sub-item');
+                let correctCount = 0;
+
+                subItems.forEach((sub, sIdx) => {
+                    const isCorrect = sub.dataset.correct === 'true';
+                    const checked = sub.querySelector(`input[name="std_p2_q${qId}_sub${sIdx}"]:checked`);
+                    const expl = sub.querySelector('.std-sub-explanation');
+
+                    sub.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+                    expl.classList.remove('d-none');
+
+                    if (checked) {
+                        const userVal = checked.value === 'true';
+                        if (userVal === isCorrect) {
+                            correctCount++;
+                            sub.classList.add('border-success', 'bg-success-subtle');
+                        } else {
+                            sub.classList.add('border-danger', 'bg-danger-subtle');
+                        }
+                    }
+                });
+
+                let qScore = 0.0;
+                if (correctCount === 1) qScore = 0.25;
+                else if (correctCount === 2) qScore = 0.5;
+                else if (correctCount === 3) qScore = 1.0;
+                else if (correctCount === 4) qScore = 2.0;
+
+                p2Score += qScore;
+            });
+
+            // 3. Chấm Phần III (3 câu Trả lời ngắn, mỗi câu 1.0đ)
+            const p3Cards = document.querySelectorAll('.question-card[data-part="3"]');
+            p3Cards.forEach(card => {
+                const qId = card.dataset.id;
+                const targetVal = String(card.dataset.correct).trim().toLowerCase();
+                const input = document.getElementById(`std_input_p3_${qId}`);
+                const userVal = input ? input.value.trim().toLowerCase().replace(',', '.') : '';
+                const explBox = document.getElementById(`std_expl_p3_${qId}`);
+                const statusBox = explBox.querySelector('.explanation-status');
+
+                if (input) input.disabled = true;
+                explBox.classList.remove('d-none');
+
+                const isMatch = (userVal === targetVal) || 
+                                (parseFloat(userVal) === parseFloat(targetVal) && !isNaN(parseFloat(userVal)));
+
+                if (isMatch) {
+                    p3Score += 1.0;
+                    statusBox.innerHTML = `<span class="badge bg-success"><i class="bi bi-check-lg"></i> Chính xác: ${targetVal} (+1,0đ)</span>`;
+                    if (input) input.classList.add('is-valid');
+                } else {
+                    statusBox.innerHTML = `<span class="badge bg-danger"><i class="bi bi-x-lg"></i> Sai (Đáp án đúng: ${targetVal})</span>`;
+                    if (input) input.classList.add('is-invalid');
+                }
+            });
+
+            const totalScore = Math.min(10.0, p1Score + p2Score + p3Score);
+            const percent = Math.round((totalScore / 10.0) * 100);
+
+            // Cập nhật banner kết quả
+            document.getElementById('resultScore').innerText = `${totalScore.toFixed(2)} / 10 điểm`;
+            document.getElementById('resultProgressBar').style.width = percent + '%';
+
+            const resultCard = document.getElementById('quizResultCard');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultFeedback = document.getElementById('resultFeedback');
+            const resultIcon = document.getElementById('resultIcon');
+
+            if (percent >= 80) {
+                resultTitle.innerText = "🎉 Xuất sắc! Nắm vững toàn diện Chương 1";
+                resultFeedback.innerText = `Điểm số: ${totalScore.toFixed(2)}/10đ (Phần I: ${p1Score.toFixed(2)}đ | Phần II: ${p2Score.toFixed(2)}đ | Phần III: ${p3Score.toFixed(2)}đ).`;
+                resultIcon.innerHTML = '<i class="bi bi-trophy-fill text-warning fs-1"></i>';
+                document.getElementById('resultProgressBar').className = 'progress-bar progress-bar-striped bg-success';
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+                }
+            } else if (percent >= 50) {
+                resultTitle.innerText = "👍 Khá tốt! Đạt chuẩn kiến thức";
+                resultFeedback.innerText = `Điểm số: ${totalScore.toFixed(2)}/10đ (Phần I: ${p1Score.toFixed(2)}đ | Phần II: ${p2Score.toFixed(2)}đ | Phần III: ${p3Score.toFixed(2)}đ).`;
+                resultIcon.innerHTML = '<i class="bi bi-award-fill text-primary fs-1"></i>';
+                document.getElementById('resultProgressBar').className = 'progress-bar progress-bar-striped bg-primary';
+            } else {
+                resultTitle.innerText = "💪 Hãy rà soát lại lý thuyết!";
+                resultFeedback.innerText = `Điểm số: ${totalScore.toFixed(2)}/10đ. Hãy mở Sổ tay lỗi sai để tránh lặp lại bẫy này nhé!`;
+                resultIcon.innerHTML = '<i class="bi bi-emoji-smile text-secondary fs-1"></i>';
+                document.getElementById('resultProgressBar').className = 'progress-bar progress-bar-striped bg-warning';
+            }
+
+            resultCard.classList.remove('d-none');
+            resultCard.scrollIntoView({ behavior: 'smooth' });
+            submitBtn.style.display = 'none';
+        });
+
+        if (retryBtn) {
+            retryBtn.addEventListener('click', function() {
+                window.location.reload();
+            });
+        }
+    }
 </script>
 {% endblock %}

@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}Sổ Tay Lỗi Sai (Error Log) - Tránh Bẫy Điểm Liệt Toán 11{% endblock %}
+
+{% block content %}
+<div class="error-log-page">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none">Trang chủ</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Sổ tay lỗi sai</li>
+        </ol>
+    </nav>
+
+    <!-- Header Banner -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 text-white p-4" style="background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-2">
+            <span class="badge bg-white text-danger fw-bold px-3 py-1 text-uppercase">
+                <i class="bi bi-shield-fill-exclamation me-1"></i> BẢO HIỂM ĐIỂM SỐ 9+
+            </span>
+            <span class="badge bg-white text-dark fw-semibold px-3 py-1">
+                {{ error_logs|length }} Bẫy Tử Thần Phổ Biến Nhất
+            </span>
+        </div>
+        <h2 class="fw-bold mb-2">SỔ TAY LỖI SAI (ERROR LOG)</h2>
+        <p class="mb-0 text-light opacity-90 fs-6">
+            Được đúc kết từ kinh nghiệm 30 năm sửa bài thi. Tổng hợp 10 lỗi kinh điển học sinh thường mất điểm oan nhất ở <strong>Chương 1 (Lượng giác)</strong> và <strong>Chương 4 (Hình học không gian)</strong>. Kèm theo hệ thống cảnh báo và thần chú ghi nhớ độc quyền!
+        </p>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-body">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-7">
+                <div class="btn-group flex-wrap" role="group" id="filterBtnGroup">
+                    <button type="button" class="btn btn-outline-danger btn-sm active px-3 filter-btn" data-filter="all">
+                        Tất cả ({{ error_logs|length }})
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-sm px-3 filter-btn" data-filter="ch1">
+                        <i class="bi bi-pie-chart-fill me-1"></i> Chương 1: Lượng giác (6)
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-sm px-3 filter-btn" data-filter="ch4">
+                        <i class="bi bi-box me-1"></i> Chương 4: Hình không gian (4)
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-body-tertiary border-end-0"><i class="bi bi-funnel"></i></span>
+                    <input type="text" id="errorSearchInput" class="form-control bg-body-tertiary border-start-0" placeholder="Lọc lỗi sai: k2pi, căn bậc hai, giao tuyến...">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Cards List -->
+    <div class="row g-4" id="errorLogContainer">
+        {% for err in error_logs %}
+        <div class="col-12 error-card-wrapper" data-chapter="ch{{ err.chapter_id }}" data-keywords="{{ err.title }} {{ err.scenario }} {{ err.category }} {{ err.mnemonic }}">
+            <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden border-start border-4 border-{{ err.warning_ui.type }}">
+                <!-- Card Header -->
+                <div class="card-header bg-body border-bottom py-3 px-4 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-{{ err.warning_ui.type }} text-white fw-bold px-2 py-1">
+                            #{{ loop.index }}
+                        </span>
+                        <span class="badge bg-secondary-subtle text-secondary fw-semibold">
+                            {{ err.chapter_title }}
+                        </span>
+                        <span class="badge bg-light text-muted border">
+                            {{ err.category }}
+                        </span>
+                    </div>
+                    <span class="small text-muted"><i class="bi bi-exclamation-triangle-fill text-warning me-1"></i>Tỉ lệ mắc lỗi: 70%</span>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-body mb-3">
+                        {{ err.title }}
+                    </h5>
+
+                    <!-- Tình huống sai lầm -->
+                    <div class="mb-3 p-3 rounded-3 bg-danger-subtle border border-danger-subtle">
+                        <div class="fw-bold text-danger mb-1 d-flex align-items-center gap-2">
+                            <i class="bi bi-x-circle-fill"></i> TÌNH HUỐNG HỌC SINH MẮC BẪY:
+                        </div>
+                        <div class="text-body-secondary small">
+                            {{ err.scenario }}
+                        </div>
+                    </div>
+
+                    <!-- Gợi ý giao diện/nội dung popup hệ thống cảnh báo -->
+                    <div class="mb-3">
+                        <div class="small fw-bold text-muted mb-1 text-uppercase">
+                            <i class="bi bi-bell-fill text-primary me-1"></i> Cảnh báo hệ thống hiển thị khi làm bài:
+                        </div>
+                        <div class="alert alert-{{ err.warning_ui.type }} mb-0 rounded-3 shadow-xs border">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="bi {% if err.warning_ui.type == 'danger' %}bi-shield-slash-fill fs-5{% elif err.warning_ui.type == 'warning' %}bi-exclamation-octagon-fill fs-5{% else %}bi-info-circle-fill fs-5{% endif %}"></i>
+                                <div>
+                                    <div class="fw-bold text-uppercase small">{{ err.warning_ui.badge }}: {{ err.warning_ui.title }}</div>
+                                    <div class="small mt-1">{{ err.warning_ui.message }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mẹo ghi nhớ độc quyền -->
+                    <div class="p-3 rounded-3 bg-warning-subtle border border-warning-subtle">
+                        <div class="fw-bold text-warning-emphasis mb-1 d-flex align-items-center gap-2">
+                            <i class="bi bi-lightbulb-fill text-warning"></i> THẦN CHÚ KHẮC CỐT GHI TÂM:
+                        </div>
+                        <div class="fw-semibold text-body small">
+                            {{ err.mnemonic }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Empty search notice -->
+    <div id="noResultsNotice" class="text-center py-5 d-none">
+        <i class="bi bi-search fs-1 text-muted"></i>
+        <h5 class="fw-bold text-muted mt-2">Không tìm thấy lỗi sai phù hợp</h5>
+        <p class="text-muted small">Hãy thử tìm kiếm với các từ khóa khác như "chu kỳ", "nghiệm", "mặt phẳng"...</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Typeset MathJax
+        if (window.MathJax) {
+            MathJax.typesetPromise();
+        }
+
+        // Filter buttons
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const cards = document.querySelectorAll('.error-card-wrapper');
+        const searchInput = document.getElementById('errorSearchInput');
+        const noResults = document.getElementById('noResultsNotice');
+
+        let activeFilter = 'all';
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                activeFilter = this.dataset.filter;
+                applyFilterAndSearch();
+            });
+        });
+
+        if (searchInput) {
+            searchInput.addEventListener('input', applyFilterAndSearch);
+        }
+
+        function applyFilterAndSearch() {
+            const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const chapter = card.dataset.chapter;
+                const keywords = card.dataset.keywords.toLowerCase();
+
+                const matchesFilter = (activeFilter === 'all') || (chapter === activeFilter);
+                const matchesSearch = query === '' || keywords.includes(query);
+
+                if (matchesFilter && matchesSearch) {
+                    card.classList.remove('d-none');
+                    visibleCount++;
+                } else {
+                    card.classList.add('d-none');
+                }
+            });
+
+            if (noResults) {
+                if (visibleCount === 0) {
+                    noResults.classList.remove('d-none');
+                } else {
+                    noResults.classList.add('d-none');
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

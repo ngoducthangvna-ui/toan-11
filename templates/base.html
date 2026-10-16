@@ -55,11 +55,17 @@
             </div>
 
             <div class="navbar-nav ms-auto flex-row align-items-center gap-2">
-                <a href="{{ url_for('formulas') }}" class="btn btn-sm btn-outline-primary d-none d-sm-inline-flex align-items-center gap-1">
+                <a href="{{ url_for('error_log') }}" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-shield-fill-exclamation"></i> Sổ tay lỗi sai
+                </a>
+                <a href="{{ url_for('exams') }}" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-clock-history"></i> Thi thử 90'
+                </a>
+                <a href="{{ url_for('formulas') }}" class="btn btn-sm btn-outline-secondary d-none d-md-inline-flex align-items-center gap-1">
                     <i class="bi bi-journal-bookmark-fill"></i> Sổ tay công thức
                 </a>
-                <a href="{{ url_for('calculator') }}" class="btn btn-sm btn-outline-success d-none d-sm-inline-flex align-items-center gap-1">
-                    <i class="bi bi-cpu-fill"></i> Máy tính SymPy
+                <a href="{{ url_for('calculator') }}" class="btn btn-sm btn-outline-success d-none d-lg-inline-flex align-items-center gap-1">
+                    <i class="bi bi-cpu-fill"></i> SymPy
                 </a>
                 <button id="themeToggleBtn" class="btn btn-sm btn-outline-secondary rounded-circle" title="Chuyển chế độ sáng/tối">
                     <i class="bi bi-moon-stars-fill" id="themeIcon"></i>

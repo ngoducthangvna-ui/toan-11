@@ -5,6 +5,11 @@ Tác giả: Antigravity AI
 Chạy trên nền tảng Python Flask
 """
 
+import os
+import sys
+# Đảm bảo Python luôn tìm thấy thư mục gốc của dự án trên Linux / Render
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 import sympy as sp
 from data.curriculum import (
@@ -17,6 +22,8 @@ from data.curriculum import (
     search_curriculum
 )
 from data.formulas import FORMULA_CATEGORIES
+from data.error_log import ERROR_LOG_DATA
+from data.exams import EXAM_LIST, get_exam
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'toan-11-antigravity-secret-key-2026'
@@ -29,7 +36,9 @@ def inject_global_data():
         'total_lessons': TOTAL_LESSONS,
         'total_questions': TOTAL_QUESTIONS,
         'vol1_chapters': [c for c in ALL_CHAPTERS if c['volume'] == 1],
-        'vol2_chapters': [c for c in ALL_CHAPTERS if c['volume'] == 2]
+        'vol2_chapters': [c for c in ALL_CHAPTERS if c['volume'] == 2],
+        'total_exams': len(EXAM_LIST),
+        'total_error_logs': len(ERROR_LOG_DATA)
     }
 
 @app.route('/')
@@ -84,6 +93,24 @@ def formulas():
 def calculator():
     """Trang máy tính toán học thông minh hỗ trợ giải bài tập Toán 11"""
     return render_template('calculator.html')
+
+@app.route('/error-log')
+def error_log():
+    """Trang Sổ tay lỗi sai - Error Log: Tổng hợp các bẫy đề thi và mẹo ghi nhớ"""
+    return render_template('error_log.html', error_logs=ERROR_LOG_DATA)
+
+@app.route('/exams')
+def exams():
+    """Phòng thi thử trực tuyến: Đề Giữa kì & Cuối kì chuẩn ma trận Hưng Yên 90 phút"""
+    return render_template('exams.html', exams=EXAM_LIST)
+
+@app.route('/exam/<exam_id>')
+def exam_view(exam_id):
+    """Trang làm bài thi thử trực tuyến kèm đồng hồ bấm giờ và chấm điểm tự động"""
+    exam = get_exam(exam_id)
+    if not exam:
+        return redirect(url_for('exams'))
+    return render_template('exam_view.html', exam=exam)
 
 @app.route('/api/search')
 def api_search():

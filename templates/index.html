@@ -17,11 +17,14 @@
                 <a href="{{ url_for('chapter_detail', chapter_id=1) }}" class="btn btn-light btn-lg px-4 fw-semibold text-primary d-inline-flex align-items-center gap-2">
                     <i class="bi bi-play-circle-fill"></i> Bắt đầu học từ Chương 1
                 </a>
+                <a href="{{ url_for('error_log') }}" class="btn btn-danger btn-lg px-4 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm">
+                    <i class="bi bi-shield-fill-exclamation"></i> Sổ tay lỗi sai
+                </a>
+                <a href="{{ url_for('exams') }}" class="btn btn-warning btn-lg px-4 fw-bold text-dark d-inline-flex align-items-center gap-2 shadow-sm">
+                    <i class="bi bi-clock-history"></i> Thi thử 90' Hưng Yên
+                </a>
                 <a href="{{ url_for('formulas') }}" class="btn btn-outline-light btn-lg px-4 fw-semibold d-inline-flex align-items-center gap-2">
                     <i class="bi bi-journal-check"></i> Tra cứu công thức
-                </a>
-                <a href="{{ url_for('calculator') }}" class="btn btn-outline-light btn-lg px-4 fw-semibold d-inline-flex align-items-center gap-2">
-                    <i class="bi bi-cpu"></i> Máy tính giải toán
                 </a>
             </div>
         </div>
@@ -63,6 +66,46 @@
                 </div>
                 <div class="fs-3 fw-bold text-warning">{{ total_questions }}+</div>
                 <div class="text-muted small">Câu trắc nghiệm có giải</div>
+            </div>
+        </div>
+    <!-- Featured Highlights: Error Log & Exam Center -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-white h-100 position-relative overflow-hidden" style="background: linear-gradient(135deg, #b02a37 0%, #dc3545 100%);">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge bg-white text-danger fw-bold text-uppercase px-3 py-1">
+                        <i class="bi bi-shield-fill-exclamation me-1"></i> BẢO HIỂM ĐIỂM SỐ
+                    </span>
+                    <span class="badge bg-danger-subtle text-white border border-white-50">10 BẪY KINH ĐIỂN</span>
+                </div>
+                <h4 class="fw-bold mb-2">Sổ Tay Lỗi Sai (Error Log)</h4>
+                <p class="text-white-50 small mb-4 flex-grow-1">
+                    Tổng hợp 10 bẫy điểm liệt phổ biến nhất ở Chương 1 (Lượng giác) và Chương 4 (Hình không gian). Đi kèm mô phỏng cảnh báo hệ thống và thần chú giúp học sinh không bao giờ lặp lại sai lầm!
+                </p>
+                <div>
+                    <a href="{{ url_for('error_log') }}" class="btn btn-light fw-bold text-danger px-4 rounded-3 d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-eye-fill"></i> Mở Sổ Tay Lỗi Sai <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-white h-100 position-relative overflow-hidden" style="background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge bg-white text-primary fw-bold text-uppercase px-3 py-1">
+                        <i class="bi bi-clock-history me-1"></i> PHÒNG THI THỬ 90 PHÚT
+                    </span>
+                    <span class="badge bg-warning text-dark fw-bold">CHUẨN FORMAT HƯNG YÊN</span>
+                </div>
+                <h4 class="fw-bold mb-2">Đề Thi Giữa Kì & Cuối Kì 1</h4>
+                <p class="text-white-50 small mb-4 flex-grow-1">
+                    Cấu trúc ma trận chuẩn Bộ GD&ĐT: Phần I (12 câu MCQ), Phần II (4 câu Đúng/Sai), Phần III (6 câu Trả lời ngắn). Có đồng hồ đếm ngược 90 phút, chấm điểm tự động và hướng dẫn bấm máy Casio fx-580/880.
+                </p>
+                <div>
+                    <a href="{{ url_for('exams') }}" class="btn btn-warning fw-bold text-dark px-4 rounded-3 d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-play-circle-fill"></i> Vào Phòng Thi Thử <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

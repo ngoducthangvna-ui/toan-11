@@ -148,22 +148,86 @@ VOLUME_1_CHAPTERS = [
                 "slug": "ham-so-luong-giac",
                 "title": "Bài 3: Hàm số lượng giác và đồ thị",
                 "objectives": [
-                    "Nắm vững tính chẵn lẻ, chu kì tuần hoàn của 4 hàm số lượng giác.",
-                    "Xác định tập xác định và tập giá trị.",
-                    "Nhận diện đồ thị hình sin và các phép tịnh tiến đồ thị."
+                    "Hiểu bản chất dao động tuần hoàn của sin, cos (chu kì lặp lại) và ý nghĩa giới hạn của tan, cot dưới góc nhìn kỹ thuật thực tế.",
+                    "Nắm vững Checklist 3 bước tìm Tập xác định và Checklist 4 bước xét Tính chẵn - lẻ mà không bao giờ bị sót điều kiện.",
+                    "Thành thạo kỹ thuật tìm Giá trị lớn nhất / nhỏ nhất bằng phương pháp kẹp biên độ dao động [-1; 1]."
                 ],
                 "content": r"""
 <div class="theory-section">
-    <h4>1. Bảng tổng hợp tính chất 4 hàm số lượng giác</h4>
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover bg-white text-center">
+    <!-- Lời tựa từ kỹ sư 30 năm kinh nghiệm -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-primary-subtle border-start border-4 border-primary p-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="fs-1 text-primary"><i class="bi bi-person-workspace"></i></div>
+            <div>
+                <h6 class="fw-bold text-primary mb-1">GÓC NHÌN TỪ KỸ SƯ 30 NĂM KINH NGHIỆM & GIA SƯ THỰC CHIẾN</h6>
+                <p class="small text-secondary mb-0">
+                    "Trong 30 năm làm kỹ sư thiết kế máy và dạy học, tôi thấy 90% học sinh sợ lượng giác vì bị bắt học vẹt công thức mà không hiểu nó mô tả cái gì trong thực tế. Đừng coi $\sin, \cos$ là những ký hiệu vô hồn! Chúng chính là toán học của <strong>mọi chuyển động lặp đi lặp lại trong vũ trụ</strong>: từ quả piston xe máy, dòng điện xoay chiều 220V trong nhà bạn, đến nhịp đập của quả tim. Hãy học lượng giác bằng tư duy quy trình của người làm kỹ thuật: có nguyên lý trực quan, có checklist từng bước, làm đâu chắc đó!"
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <h4>1. Mục tiêu cốt lõi (3 điều phải ghi nhớ sâu sắc)</h4>
+    <div class="row g-2 mb-3">
+        <div class="col-md-4">
+            <div class="card h-100 border p-3 rounded-3 bg-body">
+                <span class="badge bg-primary w-fit mb-2">Mục tiêu 1</span>
+                <h6 class="fw-bold mb-1">Bản chất dao động & Biên độ</h6>
+                <p class="small text-muted mb-0">Hàm $\sin$ và $\cos$ luôn bị 'giam' trong phạm vi $[-1; 1]$. Dù $x$ có lớn đến hàng triệu thì giá trị cũng không bao giờ vượt khỏi biên độ này.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border p-3 rounded-3 bg-body">
+                <span class="badge bg-success w-fit mb-2">Mục tiêu 2</span>
+                <h6 class="fw-bold mb-1">Chu kì tuần hoàn</h6>
+                <p class="small text-muted mb-0">$\sin, \cos$ quay đúng một vòng tròn $2\pi$ thì lặp lại y hệt trạng thái cũ. Còn $\tan, \cot$ chỉ cần đi nửa vòng $\pi$ là đã lặp lại chu kì.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border p-3 rounded-3 bg-body">
+                <span class="badge bg-danger w-fit mb-2">Mục tiêu 3</span>
+                <h6 class="fw-bold mb-1">Kỷ luật Checklist</h6>
+                <p class="small text-muted mb-0">Làm toán như kỹ sư kiểm tra máy móc trước khi bay: Tìm tập xác định, xét chẵn lẻ phải tuân thủ đúng quy trình từng bước, không nhảy cóc.</p>
+            </div>
+        </div>
+    </div>
+
+    <h4>2. Giải mã công thức: Lượng giác dưới góc nhìn kỹ thuật trực quan</h4>
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card border rounded-3 p-3 h-100 bg-body">
+                <h6 class="fw-bold text-primary"><i class="bi bi-gear-wide-connected me-1"></i> Trục Sin: Mô phỏng hành trình quả Piston</h6>
+                <p class="small text-muted mb-0">
+                    Hãy tưởng tượng trục khuỷu động cơ xe máy quay tròn đều góc $x$. Quả piston bên trong chỉ có thể chuyển động tịnh tiến lên xuống trên một đường thẳng đứng:
+                    <br>• Lên cao nhất tại đỉnh $+1$ (điểm chết trên).
+                    <br>• Xuống thấp nhất tại đáy $-1$ (điểm chết dưới).
+                    <br>$\implies$ Đó là lý do vì sao ta luôn có bất đẳng thức vàng: <strong>$-1 \le \sin x \le 1$</strong>.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border rounded-3 p-3 h-100 bg-body">
+                <h6 class="fw-bold text-success"><i class="bi bi-water me-1"></i> Hàm Tan: Mô phỏng chiếc vòi phun áp lực</h6>
+                <p class="small text-muted mb-0">
+                    Ta có $\tan x = \frac{\sin x}{\cos x}$. Hãy coi $\cos x$ như diện tích cửa van thoát nước.
+                    <br>• Khi góc quay tới $90^\circ = \frac{\pi}{2}$, cửa van đóng khít lại ($\cos x = 0$).
+                    <br>• Mẫu số tiệm cận về 0 khiến áp lực vọt lên vô cùng tận ($\pm\infty$).
+                    <br>$\implies$ Hệ thống bị quá tải! Do đó tại $x = \frac{\pi}{2} + k\pi$, hàm số $\tan$ bị <strong>đứt gãy (tiệm cận đứng)</strong>, không thể xác định.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng tổng hợp thuộc tính kỹ thuật -->
+    <div class="table-responsive mb-4">
+        <table class="table table-bordered table-hover bg-white text-center align-middle">
             <thead class="table-primary">
                 <tr>
                     <th>Hàm số</th>
                     <th>Tập xác định ($D$)</th>
                     <th>Tập giá trị ($T$)</th>
-                    <th>Tính chẵn / lẻ</th>
-                    <th>Chu kì tuần hoàn</th>
+                    <th>Chu kì ($T_0$)</th>
+                    <th>Đối xứng đồ thị</th>
                 </tr>
             </thead>
             <tbody>
@@ -171,40 +235,136 @@ VOLUME_1_CHAPTERS = [
                     <td><strong>$y = \sin x$</strong></td>
                     <td>$\mathbb{R}$</td>
                     <td>$[-1; 1]$</td>
-                    <td>Hàm số lẻ ($\sin(-x) = -\sin x$)</td>
-                    <td>$T = 2\pi$</td>
+                    <td>$2\pi$</td>
+                    <td>Hàm số lẻ $\implies$ Đối xứng qua gốc tọa độ $O(0;0)$</td>
                 </tr>
                 <tr>
                     <td><strong>$y = \cos x$</strong></td>
                     <td>$\mathbb{R}$</td>
                     <td>$[-1; 1]$</td>
-                    <td>Hàm số chẵn ($\cos(-x) = \cos x$)</td>
-                    <td>$T = 2\pi$</td>
+                    <td>$2\pi$</td>
+                    <td>Hàm số chẵn $\implies$ Đối xứng qua trục tung $Oy$</td>
                 </tr>
                 <tr>
                     <td><strong>$y = \tan x$</strong></td>
-                    <td>$D = \mathbb{R} \setminus \left\{\frac{\pi}{2} + k\pi, k \in \mathbb{Z}\right\}$</td>
+                    <td>$\mathbb{R} \setminus \{\frac{\pi}{2} + k\pi\}$</td>
                     <td>$\mathbb{R}$</td>
-                    <td>Hàm số lẻ</td>
-                    <td>$T = \pi$</td>
+                    <td>$\pi$</td>
+                    <td>Hàm số lẻ $\implies$ Đối xứng qua gốc tọa độ $O(0;0)$</td>
                 </tr>
                 <tr>
                     <td><strong>$y = \cot x$</strong></td>
-                    <td>$D = \mathbb{R} \setminus \left\{k\pi, k \in \mathbb{Z}\right\}$</td>
+                    <td>$\mathbb{R} \setminus \{k\pi\}$</td>
                     <td>$\mathbb{R}$</td>
-                    <td>Hàm số lẻ</td>
-                    <td>$T = \pi$</td>
+                    <td>$\pi$</td>
+                    <td>Hàm số lẻ $\implies$ Đối xứng qua gốc tọa độ $O(0;0)$</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <h4>2. Chu kì hàm hợp dạng $y = \sin(\omega x + \varphi)$ và $y = \tan(\omega x + \varphi)$</h4>
-    <div class="math-box alert alert-info">
-        <ul>
-            <li>Hàm $y = A\sin(\omega x + \varphi)$ và $y = A\cos(\omega x + \varphi)$ có chu kì: $$T = \frac{2\pi}{|\omega|}$$</li>
-            <li>Hàm $y = A\tan(\omega x + \varphi)$ và $y = A\cot(\omega x + \varphi)$ có chu kì: $$T = \frac{\pi}{|\omega|}$$</li>
-        </ul>
+    <h4>3. Checklist quy trình giải: Chuẩn hóa từng dạng toán</h4>
+
+    <!-- Checklist 1: TXĐ -->
+    <div class="card border-0 shadow-sm rounded-3 mb-3 p-3 bg-light-subtle">
+        <h6 class="fw-bold text-primary mb-2"><i class="bi bi-check2-square me-1"></i> CHECKLIST DẠNG 1: TÌM TẬP XÁC ĐỊNH (3 BƯỚC CỐ ĐỊNH)</h6>
+        <div class="small ps-2">
+            <div class="mb-1"><strong>Bước 1 (Quét toàn bộ bẫy điều kiện):</strong>
+                <br>• Có mẫu số $\frac{A}{B}$? $\implies$ Đặt $B \neq 0$.
+                <br>• Có căn thức $\sqrt{A}$? $\implies$ Đặt $A \ge 0$.
+                <br>• Có hàm $\tan u$? $\implies$ Đặt $u \neq \frac{\pi}{2} + k\pi$ (vì ẩn chứa mẫu $\cos u$).
+                <br>• Có hàm $\cot u$? $\implies$ Đặt $u \neq k\pi$ (vì ẩn chứa mẫu $\sin u$).
+            </div>
+            <div class="mb-1"><strong>Bước 2 (Giải phương trình/bất phương trình lượng giác con):</strong> Tìm ra điều kiện của $x$ kèm đuôi chu kỳ $k\pi$ hoặc $k2\pi$ ($k \in \mathbb{Z}$).</div>
+            <div><strong>Bước 3 (Kết luận tập D chuẩn hình thức):</strong> Viết $D = \mathbb{R} \setminus \{\dots\}$.</div>
+        </div>
+    </div>
+
+    <!-- Checklist 2: Chẵn lẻ -->
+    <div class="card border-0 shadow-sm rounded-3 mb-3 p-3 bg-light-subtle">
+        <h6 class="fw-bold text-success mb-2"><i class="bi bi-check2-square me-1"></i> CHECKLIST DẠNG 2: XÉT TÍNH CHẴN - LẺ (4 BƯỚC CỐ ĐỊNH)</h6>
+        <div class="small ps-2">
+            <div class="mb-1"><strong>Bước 1 (Kiểm tra đối xứng của miền D):</strong> Tìm $D$. Khẳng định: $\forall x \in D \implies -x \in D$. <em>(Nếu miền $D$ bị lệch, ví dụ $x \neq 1$ nhưng vẫn lấy $-1$, dừng lại kết luận ngay: Hàm số không chẵn không lẻ!).</em></div>
+            <div class="mb-1"><strong>Bước 2 (Tính giá trị đối $f(-x)$):</strong> Thay mọi vị trí có $x$ bằng $(-x)$.</div>
+            <div class="mb-1"><strong>Bước 3 (Áp dụng thần chú cung đối):</strong> $\cos(-x) = \cos x$; còn $\sin(-x) = -\sin x$; $\tan(-x) = -\tan x$. Rút gọn biểu thức.</div>
+            <div><strong>Bước 4 (Đối chiếu và kết luận):</strong>
+                <br>• Nếu $f(-x) = f(x) \implies$ Hàm số <strong>chẵn</strong>.
+                <br>• Nếu $f(-x) = -f(x) \implies$ Hàm số <strong>lẻ</strong>.
+                <br>• Nếu không rơi vào 2 trường hợp trên $\implies$ Hàm số <strong>không chẵn không lẻ</strong>.
+            </div>
+        </div>
+    </div>
+
+    <!-- Checklist 3: GTLN-GTNN -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4 p-3 bg-light-subtle">
+        <h6 class="fw-bold text-danger mb-2"><i class="bi bi-check2-square me-1"></i> CHECKLIST DẠNG 3: TÌM GIÁ TRỊ LỚN NHẤT / NHỎ NHẤT (3 BƯỚC)</h6>
+        <div class="small ps-2">
+            <div class="mb-1"><strong>Bước 1 (Kẹp biên độ gốc):</strong> Xuất phát từ bất đẳng thức nền: $-1 \le \sin u \le 1$ (hoặc $-1 \le \cos u \le 1$). <em>Lưu ý: Nếu có bình phương thì $0 \le \sin^2 u \le 1$.</em></div>
+            <div class="mb-1"><strong>Bước 2 (Xây dựng bậc thang theo đề bài):</strong> Nhân/chia hệ số rồi cộng/trừ hằng số vào cả 3 vế để tạo thành biểu thức $y$. Thu được $m \le y \le M$.</div>
+            <div><strong>Bước 3 (Chỉ ra điểm rơi đạt được):</strong> Tìm $x$ sao cho dấu bằng xảy ra để kết luận $\min y = m$ và $\max y = M$.</div>
+        </div>
+    </div>
+
+    <h4>4. Ví dụ thực chiến: Tư duy vì sao đi hướng này mà không đi hướng khác</h4>
+
+    <!-- Ví dụ 1 -->
+    <div class="example-box mb-4">
+        <h5 class="text-primary fw-bold"><i class="bi bi-pencil-fill"></i> Ví dụ thực chiến 1 (Tìm tập xác định)</h5>
+        <p><strong>Đề bài:</strong> Tìm tập xác định của hàm số $y = \frac{\tan 2x}{\cos x - 1}$.</p>
+        
+        <div class="p-3 bg-white rounded-3 border mb-3">
+            <h6 class="text-secondary fw-bold mb-2">💡 Phân tích chiến thuật (Tư duy của kỹ sư):</h6>
+            <p class="small text-muted mb-0">
+                Tại sao rất nhiều bạn chỉ đặt điều kiện mẫu số $\cos x - 1 \neq 0$ là ăn ngay điểm 0?<br>
+                Bởi vì các bạn nhìn bài toán bằng con mắt hời hợt! Hàm số này có <strong>2 tầng cạm bẫy</strong>:
+                <br>1. Mẫu số lộ thiên: $\cos x - 1 \neq 0$.
+                <br>2. Mẫu số ẩn nấp: hàm $\tan 2x = \frac{\sin 2x}{\cos 2x}$ bản thân nó đã chứa một mẫu số $\cos 2x$ bên trong!
+                <br>$\implies$ Bắt buộc phải kích hoạt Checklist Dạng 1 để quét sạch cả 2 điều kiện!
+            </p>
+        </div>
+
+        <p><strong>Lời giải chuẩn theo Checklist:</strong></p>
+        <p><strong>Bước 1 (Quét điều kiện):</strong> Hàm số xác định khi và chỉ khi đồng thời thỏa mãn:
+            $$\begin{cases} \cos 2x \neq 0 & (\text{điều kiện của } \tan 2x) \\ \cos x - 1 \neq 0 & (\text{điều kiện mẫu thức}) \end{cases}$$
+        </p>
+        <p><strong>Bước 2 (Giải chi tiết):</strong>
+            $$\begin{cases} 2x \neq \frac{\pi}{2} + k\pi \\ \cos x \neq 1 \end{cases} \iff \begin{cases} x \neq \frac{\pi}{4} + k\frac{\pi}{2} \\ x \neq k2\pi \end{cases} \quad (k \in \mathbb{Z})$$
+        </p>
+        <p><strong>Bước 3 (Kết luận):</strong>
+            Vậy tập xác định của hàm số là:
+            $$D = \mathbb{R} \setminus \left\{ \frac{\pi}{4} + k\frac{\pi}{2}, k2\pi \;\middle|\; k \in \mathbb{Z} \right\}$$
+        </p>
+    </div>
+
+    <!-- Ví dụ 2 -->
+    <div class="example-box">
+        <h5 class="text-success fw-bold"><i class="bi bi-pencil-fill"></i> Ví dụ thực chiến 2 (Xét tính chẵn - lẻ)</h5>
+        <p><strong>Đề bài:</strong> Xét tính chẵn, lẻ của hàm số $f(x) = \frac{\sin 2x}{|x| - 2}$.</p>
+
+        <div class="p-3 bg-white rounded-3 border mb-3">
+            <h6 class="text-secondary fw-bold mb-2">💡 Phân tích chiến thuật (Tư duy của kỹ sư):</h6>
+            <p class="small text-muted mb-0">
+                Tại sao không nhảy ngay vào tính $f(-x)$ mà phải xét tập xác định $D$ trước?<br>
+                Vì định nghĩa hàm số chẵn/lẻ đòi hỏi đồ thị phải có tâm hoặc trục đối xứng. Nếu tập xác định bị khuyết một bên (ví dụ có điểm $2$ mà không có $-2$) thì đồ thị không thể đối xứng được, việc tính $f(-x)$ trở nên vô nghĩa! Hãy luôn tuân thủ Bước 1 của Checklist!
+            </p>
+        </div>
+
+        <p><strong>Lời giải chuẩn theo Checklist:</strong></p>
+        <p><strong>Bước 1 (Kiểm tra miền đối xứng):</strong>
+            Điều kiện xác định: $|x| - 2 \neq 0 \iff |x| \neq 2 \iff x \neq \pm 2$.<br>
+            Tập xác định: $D = \mathbb{R} \setminus \{-2; 2\}$.<br>
+            Rõ ràng với mọi $x \in D \implies -x \in D$ (miền đối xứng hoàn hảo).
+        </p>
+        <p><strong>Bước 2 & 3 (Tính và rút gọn $f(-x)$):</strong>
+            Ta có:
+            $$f(-x) = \frac{\sin(2(-x))}{|-x| - 2} = \frac{\sin(-2x)}{|x| - 2}$$
+            Áp dụng thần chú cung đối: $\sin(-2x) = -\sin 2x$, còn $|-x| = |x|$.<br>
+            Do đó:
+            $$f(-x) = \frac{-\sin 2x}{|x| - 2} = - \left( \frac{\sin 2x}{|x| - 2} \right) = -f(x)$$
+        </p>
+        <p><strong>Bước 4 (Kết luận):</strong>
+            Vì $f(-x) = -f(x)$ với mọi $x \in D$, nên $f(x)$ là <strong>hàm số lẻ</strong> (đồ thị nhận gốc tọa độ $O$ làm tâm đối xứng).
+        </p>
     </div>
 </div>
 """
@@ -251,15 +411,190 @@ VOLUME_1_CHAPTERS = [
             }
         ],
         "quiz": {
-            "title": "Bài kiểm tra trắc nghiệm cuối Chương 1: Lượng giác",
-            "time_minutes": 15,
+            "title": "Đề kiểm tra cuối Chương 1: Lượng giác (Chuẩn format Bộ GD&ĐT 45 phút)",
+            "time_minutes": 45,
+            "format": "standard_2025",
+            "score_scale": 10.0,
+            "part1": [
+                {
+                    "id": 1,
+                    "question": r"Góc lượng giác có số đo $\frac{5\pi}{6}\text{ rad}$ khi đổi sang đơn vị độ bằng:",
+                    "options": [r"A. $120^\circ$", r"B. $150^\circ$", r"C. $135^\circ$", r"D. $210^\circ$"],
+                    "correct": 1,
+                    "explanation": r"Công thức: $\alpha^\circ = \frac{5\pi}{6} \cdot \frac{180^\circ}{\pi} = 150^\circ$."
+                },
+                {
+                    "id": 2,
+                    "question": r"Cho góc $\alpha$ thỏa mãn $\frac{\pi}{2} < \alpha < \pi$. Khẳng định nào sau đây là ĐÚNG?",
+                    "options": [
+                        r"A. $\sin \alpha < 0, \cos \alpha < 0$",
+                        r"B. $\sin \alpha > 0, \cos \alpha > 0$",
+                        r"C. $\sin \alpha > 0, \cos \alpha < 0$",
+                        r"D. $\sin \alpha < 0, \cos \alpha > 0$"
+                    ],
+                    "correct": 2,
+                    "explanation": r"Góc $\alpha$ thuộc góc phần tư thứ II nên $\sin \alpha > 0$ và $\cos \alpha < 0$."
+                },
+                {
+                    "id": 3,
+                    "question": r"Khẳng định nào sau đây là ĐÚNG với mọi $a, b$?",
+                    "options": [
+                        r"A. $\cos(a+b) = \cos a \cos b + \sin a \sin b$",
+                        r"B. $\cos(a+b) = \cos a \cos b - \sin a \sin b$",
+                        r"C. $\sin(a+b) = \sin a \cos b - \cos a \sin b$",
+                        r"D. $\cos 2a = 1 - \sin^2 a$"
+                    ],
+                    "correct": 1,
+                    "explanation": r"Công thức cộng chuẩn: $\cos(a+b) = \cos a \cos b - \sin a \sin b$."
+                },
+                {
+                    "id": 4,
+                    "question": r"Tập xác định của hàm số $y = \tan x$ là:",
+                    "options": [
+                        r"A. $D = \mathbb{R} \setminus \{k\pi, k \in \mathbb{Z}\}$",
+                        r"B. $D = \mathbb{R} \setminus \left\{\frac{\pi}{2} + k\pi, k \in \mathbb{Z}\right\}$",
+                        r"C. $D = \mathbb{R}$",
+                        "D. $D = [-1; 1]$"
+                    ],
+                    "correct": 1,
+                    "explanation": r"Hàm $y = \tan x = \frac{\sin x}{\cos x}$ xác định khi $\cos x \neq 0 \iff x \neq \frac{\pi}{2} + k\pi$."
+                },
+                {
+                    "id": 5,
+                    "question": r"Tập giá trị của hàm số $y = 3\sin x - 2$ là:",
+                    "options": ["A. $[-1; 1]$", "B. $[-5; 1]$", "C. $[1; 5]$", "D. $[-2; 3]$"],
+                    "correct": 1,
+                    "explanation": r"Vì $-1 \le \sin x \le 1 \implies 3(-1) - 2 \le y \le 3(1) - 2 \iff -5 \le y \le 1$."
+                },
+                {
+                    "id": 6,
+                    "question": r"Chu kì tuần hoàn của hàm số $y = \cos 4x$ là:",
+                    "options": [r"A. $2\pi$", r"B. $\frac{\pi}{2}$", r"C. $\pi$", r"D. $4\pi$"],
+                    "correct": 1,
+                    "explanation": r"Chu kì $T = \frac{2\pi}{|\omega|} = \frac{2\pi}{4} = \frac{\pi}{2}$."
+                },
+                {
+                    "id": 7,
+                    "question": r"Nghiệm của phương trình $\sin x = \frac{1}{2}$ là:",
+                    "options": [
+                        r"A. $x = \pm \frac{\pi}{6} + k2\pi$",
+                        r"B. $x = \frac{\pi}{6} + k2\pi$ hoặc $x = \frac{5\pi}{6} + k2\pi$",
+                        r"C. $x = \frac{\pi}{3} + k2\pi$ hoặc $x = \frac{2\pi}{3} + k2\pi$",
+                        r"D. $x = \frac{\pi}{6} + k\pi$"
+                    ],
+                    "correct": 1,
+                    "explanation": r"$\sin x = \sin\frac{\pi}{6} \iff x = \frac{\pi}{6} + k2\pi$ hoặc $x = \pi - \frac{\pi}{6} + k2\pi = \frac{5\pi}{6} + k2\pi$."
+                },
+                {
+                    "id": 8,
+                    "question": r"Số nghiệm của phương trình $\cos x = 0$ thuộc đoạn $[0; 2\pi]$ là:",
+                    "options": ["A. 1", "B. 2", "C. 3", "D. 4"],
+                    "correct": 1,
+                    "explanation": r"$\cos x = 0 \iff x = \frac{\pi}{2} + k\pi$. Trên $[0; 2\pi]$ có 2 nghiệm $x = \frac{\pi}{2}$ ($k=0$) và $x = \frac{3\pi}{2}$ ($k=1$)."
+                },
+                {
+                    "id": 9,
+                    "question": r"Công thức nhân đôi nào sau đây là ĐÚNG?",
+                    "options": [
+                        r"A. $\sin 2a = 2\sin a \cos a$",
+                        r"B. $\sin 2a = \sin a \cos a$",
+                        r"C. $\cos 2a = \cos^2 a + \sin^2 a$",
+                        r"D. $\cos 2a = 2\sin^2 a - 1$"
+                    ],
+                    "correct": 0,
+                    "explanation": r"Công thức đúng: $\sin 2a = 2\sin a \cos a$."
+                },
+                {
+                    "id": 10,
+                    "question": r"Nghiệm của phương trình $\tan x = 1$ là:",
+                    "options": [
+                        r"A. $x = \frac{\pi}{4} + k2\pi$",
+                        r"B. $x = \frac{\pi}{4} + k\pi$",
+                        r"C. $x = -\frac{\pi}{4} + k\pi$",
+                        r"D. $x = \pm \frac{\pi}{4} + k\pi$"
+                    ],
+                    "correct": 1,
+                    "explanation": r"$\tan x = 1 = \tan\frac{\pi}{4} \iff x = \frac{\pi}{4} + k\pi$ ($k \in \mathbb{Z}$)."
+                },
+                {
+                    "id": 11,
+                    "question": r"Giá trị của biểu thức $M = \sin^2 15^\circ + \sin^2 75^\circ$ bằng:",
+                    "options": ["A. 0", "B. 1", r"C. $\frac{1}{2}$", "D. 2"],
+                    "correct": 1,
+                    "explanation": r"Vì $15^\circ + 75^\circ = 90^\circ \implies \sin 75^\circ = \cos 15^\circ \implies M = \sin^2 15^\circ + \cos^2 15^\circ = 1$."
+                },
+                {
+                    "id": 12,
+                    "question": r"Trong các hàm số sau, hàm số nào là hàm số lẻ?",
+                    "options": [r"A. $y = \cos x$", r"B. $y = \sin x$", r"C. $y = x^2 + 1$", r"D. $y = \cos 2x$"],
+                    "correct": 1,
+                    "explanation": r"Hàm số $y = \sin x$ là hàm số lẻ vì $\sin(-x) = -\sin x$."
+                }
+            ],
+            "part2": [
+                {
+                    "id": 1,
+                    "context": r"Một con lắc lò xo dao động điều hòa theo phương ngang. Li độ $x$ (cm) của vật tại thời điểm $t$ giây được cho bởi phương trình: $x(t) = 4\cos\left(2\pi t - \frac{\pi}{3}\right)$.",
+                    "sub_questions": [
+                        {"label": "a", "text": "Biên độ dao động của vật là $A = 4\text{ cm}$.", "correct": True, "explanation": r"Đúng. Biên độ $A = 4\text{ cm}$ là hệ số trước hàm cos."},
+                        {"label": "b", "text": "Chu kì dao động của con lắc là $T = 2\text{ giây}$.", "correct": False, "explanation": r"Sai. Chu kì $T = \frac{2\pi}{\omega} = \frac{2\pi}{2\pi} = 1\text{ giây}$."},
+                        {"label": "c", "text": "Tại thời điểm ban đầu ($t = 0$), li độ của vật là $x = 2\text{ cm}$.", "correct": True, "explanation": r"Đúng. $x(0) = 4\cos(-\frac{\pi}{3}) = 4 \cdot \frac{1}{2} = 2\text{ cm}$."},
+                        {"label": "d", "text": "Trong 2 giây đầu tiên, vật đi qua vị trí cân bằng ($x = 0$) đúng 4 lần.", "correct": True, "explanation": r"Đúng. Trong 1 chu kì (1 giây) vật qua VTCB 2 lần. Do đó trong 2 giây (2 chu kì) vật qua VTCB đúng $2 \times 2 = 4$ lần."}
+                    ]
+                },
+                {
+                    "id": 2,
+                    "context": r"Cho hàm số $f(x) = 2\sin^2 x - 4\cos x + 1$. Xét tính đúng/sai của các khẳng định sau:",
+                    "sub_questions": [
+                        {"label": "a", "text": r"Biểu thức $f(x)$ có thể đưa về dạng hàm bậc 2 theo biến $t = \cos x$ là: $g(t) = -2t^2 - 4t + 3$.", "correct": True, "explanation": r"Đúng. Do $\sin^2 x = 1 - \cos^2 x$, ta có: $f(x) = 2(1 - \cos^2 x) - 4\cos x + 1 = -2\cos^2 x - 4\cos x + 3$."},
+                        {"label": "b", "text": r"Tập giá trị của biến số $t = \cos x$ là $[-1; 1]$.", "correct": True, "explanation": r"Đúng. Hàm số $\cos$ luôn có tập giá trị $[-1; 1]$."},
+                        {"label": "c", "text": r"Giá trị nhỏ nhất của hàm số $f(x)$ bằng $-3$.", "correct": True, "explanation": r"Đúng. Khảo sát $g(t) = -2t^2 - 4t + 3$ trên $[-1; 1]$: Đỉnh parabol tại $t = -1 \implies g(-1) = 5$. Tại biên $t = 1 \implies g(1) = -2(1) - 4(1) + 3 = -3$. Vậy $\min = -3$."},
+                        {"label": "d", "text": r"Giá trị lớn nhất của hàm số $f(x)$ đạt được khi $x = k2\pi \ (k \in \mathbb{Z})$.", "correct": False, "explanation": r"Sai. Giá trị lớn nhất bằng 5 đạt được khi $t = \cos x = -1 \iff x = \pi + k2\pi$, không phải $k2\pi$."}
+                    ]
+                }
+            ],
+            "part3": [
+                {
+                    "id": 1,
+                    "question": r"Số nghiệm của phương trình $\sin 2x = -\frac{1}{2}$ trên đoạn $[0; \pi]$ là:",
+                    "answer": "2",
+                    "explanation_steps": [
+                        r"<strong>Trạm 1 (Đưa về dạng chuẩn):</strong> $\sin 2x = \sin(-\frac{\pi}{6})$.",
+                        r"<strong>Trạm 2 (Tìm họ nghiệm):</strong><br>- Nhánh 1: $2x = -\frac{\pi}{6} + k2\pi \iff x = -\frac{\pi}{12} + k\pi$<br>- Nhánh 2: $2x = \pi - (-\frac{\pi}{6}) + k2\pi = \frac{7\pi}{6} + k2\pi \iff x = \frac{7\pi}{12} + k\pi$",
+                        r"<strong>Trạm 3 (Chặn nghiệm trên $[0; \pi]$):</strong><br>- Nhánh 1: Với $k = 1 \implies x = \frac{11\pi}{12} \in [0; \pi]$ (1 nghiệm)<br>- Nhánh 2: Với $k = 0 \implies x = \frac{7\pi}{12} \in [0; \pi]$ (1 nghiệm)",
+                        r"<strong>Trạm 4 (Kết luận):</strong> Có đúng $1 + 1 = 2$ nghiệm."
+                    ]
+                },
+                {
+                    "id": 2,
+                    "question": r"Giá trị lớn nhất của hàm số $y = 4\cos\left(x - \frac{\pi}{6}\right) - 3$ bằng:",
+                    "answer": "1",
+                    "explanation_steps": [
+                        r"<strong>Trạm 1 (Biên độ gốc):</strong> Ta luôn có $-1 \le \cos(x - \frac{\pi}{6}) \le 1$.",
+                        r"<strong>Trạm 2 (Xây dựng bất đẳng thức):</strong><br>$\implies 4(-1) - 3 \le y \le 4(1) - 3 \iff -7 \le y \le 1$.",
+                        r"<strong>Trạm 3 (Điểm rơi):</strong> Dấu bằng xảy ra khi $\cos(x - \frac{\pi}{6}) = 1 \iff x = \frac{\pi}{6} + k2\pi$.",
+                        r"<strong>Trạm 4 (Kết luận):</strong> Giá trị lớn nhất bằng 1."
+                    ]
+                },
+                {
+                    "id": 3,
+                    "question": r"Nghiệm dương nhỏ nhất (tính theo radian, làm tròn 2 chữ số thập phân) của phương trình $\tan\left(x + \frac{\pi}{4}\right) = 1$ là:",
+                    "answer": "0",
+                    "explanation_steps": [
+                        r"<strong>Trạm 1 (Chuẩn hóa):</strong> $\tan(x + \frac{\pi}{4}) = \tan\frac{\pi}{4} \iff x + \frac{\pi}{4} = \frac{\pi}{4} + k\pi \iff x = k\pi \ (k \in \mathbb{Z})$.",
+                        r"<strong>Trạm 2 (Nghiệm dương):</strong> Để $x > 0 \implies k \ge 1$. Nghiệm dương nhỏ nhất là khi $k = 1 \implies x = \pi \approx 3.14$.",
+                        r"<strong>Trạm 3 (Kết luận):</strong> Nghiệm dương nhỏ nhất là $\pi \approx 3.14$ (hoặc 3.14)."
+                    ]
+                }
+            ],
+            # Giữ trường questions để tương thích bài quiz cũ nếu cần
             "questions": [
                 {
                     "id": 1,
                     "question": r"Góc lượng giác có số đo $\frac{5\pi}{6}\text{ rad}$ khi đổi sang đơn vị độ bằng:",
                     "options": [r"A. $120^\circ$", r"B. $150^\circ$", r"C. $135^\circ$", r"D. $210^\circ$"],
                     "correct": 1,
-                    "explanation": r"Ta có công thức: $\alpha^\circ = \alpha\text{ rad} \cdot \frac{180^\circ}{\pi} = \frac{5\pi}{6} \cdot \frac{180}{\pi} = 150^\circ$."
+                    "explanation": r"Công thức: $\alpha^\circ = \frac{5\pi}{6} \cdot \frac{180^\circ}{\pi} = 150^\circ$."
                 },
                 {
                     "id": 2,
