@@ -1,0 +1,15 @@
+================================================================================
+🎓 WEBSITE TOÁN 11 MASTER - ĐỊA CHỈ CỐ ĐỊNH DUY NHẤT VĨNH VIỄN
+================================================================================
+
+🌍 ĐƯỜNG LINK CỐ ĐỊNH CỦA BẠN (KHÔNG BAO GIỜ THAY ĐỔI):
+👉 https://toan11-thang.loca.lt
+
+🔑 MẬT KHẨU XÁC NHẬN (chỉ cần nhập 1 lần duy nhất trên mỗi điện thoại):
+   118.69.93.81
+   (Khi điện thoại mở link lần đầu, trang web sẽ hỏi "Tunnel Password",
+    bạn chỉ cần dán dãy số 118.69.93.81 này vào ô rồi bấm "Click to Submit" là xong!)
+
+📱 MÃ QR: Xem file "qrcode_co_dinh.png"
+💻 Mở trên máy tính này: http://localhost:5000
+================================================================================

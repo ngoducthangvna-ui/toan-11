@@ -64,19 +64,21 @@
                 </button>
             </h2>
             <div id="collapse-ch-{{ ch.id }}" class="accordion-collapse collapse {% if chapter and chapter.id == ch.id %}show{% endif %}" data-bs-parent="#curriculumAccordion">
-                <div class="accordion-body p-2 bg-body-tertiary">
-                    <ul class="nav nav-pills flex-column gap-1">
-                        {% for les in ch.lessons %}
-                        <li class="nav-item">
-                            <a href="{{ url_for('lesson_detail', chapter_id=ch.id, lesson_id=les.id) }}" 
-                               class="nav-link py-1 px-2 small d-flex align-items-center justify-content-between rounded-2 {% if chapter and lesson and chapter.id == ch.id and lesson.id == les.id %}active{% endif %}"
-                               data-lesson-id="ch{{ ch.id }}_les{{ les.id }}">
-                                <span class="lesson-link-text flex-grow-1">{{ les.title }}</span>
-                                <i class="bi bi-check-circle-fill lesson-check-icon text-success d-none ms-1"></i>
-                            </a>
-                        </li>
-                        {% endfor %}
-                    </ul>
+                <div class="accordion-collapse-inner">
+                    <div class="accordion-body p-2 bg-body-tertiary">
+                        <ul class="nav nav-pills flex-column gap-1">
+                            {% for les in ch.lessons %}
+                            <li class="nav-item">
+                                <a href="{{ url_for('lesson_detail', chapter_id=ch.id, lesson_id=les.id) }}" 
+                                   class="nav-link py-1 px-2 small d-flex align-items-center justify-content-between rounded-2 {% if chapter and lesson and chapter.id == ch.id and lesson.id == les.id %}active{% endif %}"
+                                   data-lesson-id="ch{{ ch.id }}_les{{ les.id }}">
+                                    <span class="lesson-link-text flex-grow-1">{{ les.title }}</span>
+                                    <i class="bi bi-check-circle-fill lesson-check-icon text-success d-none ms-1"></i>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -98,19 +100,21 @@
                 </button>
             </h2>
             <div id="collapse-ch-{{ ch.id }}" class="accordion-collapse collapse {% if chapter and chapter.id == ch.id %}show{% endif %}" data-bs-parent="#curriculumAccordion">
-                <div class="accordion-body p-2 bg-body-tertiary">
-                    <ul class="nav nav-pills flex-column gap-1">
-                        {% for les in ch.lessons %}
-                        <li class="nav-item">
-                            <a href="{{ url_for('lesson_detail', chapter_id=ch.id, lesson_id=les.id) }}" 
-                               class="nav-link py-1 px-2 small d-flex align-items-center justify-content-between rounded-2 {% if chapter and lesson and chapter.id == ch.id and lesson.id == les.id %}active{% endif %}"
-                               data-lesson-id="ch{{ ch.id }}_les{{ les.id }}">
-                                <span class="lesson-link-text flex-grow-1">{{ les.title }}</span>
-                                <i class="bi bi-check-circle-fill lesson-check-icon text-success d-none ms-1"></i>
-                            </a>
-                        </li>
-                        {% endfor %}
-                    </ul>
+                <div class="accordion-collapse-inner">
+                    <div class="accordion-body p-2 bg-body-tertiary">
+                        <ul class="nav nav-pills flex-column gap-1">
+                            {% for les in ch.lessons %}
+                            <li class="nav-item">
+                                <a href="{{ url_for('lesson_detail', chapter_id=ch.id, lesson_id=les.id) }}" 
+                                   class="nav-link py-1 px-2 small d-flex align-items-center justify-content-between rounded-2 {% if chapter and lesson and chapter.id == ch.id and lesson.id == les.id %}active{% endif %}"
+                                   data-lesson-id="ch{{ ch.id }}_les{{ les.id }}">
+                                    <span class="lesson-link-text flex-grow-1">{{ les.title }}</span>
+                                    <i class="bi bi-check-circle-fill lesson-check-icon text-success d-none ms-1"></i>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

@@ -18,8 +18,15 @@ document.addEventListener("DOMContentLoaded", function() {
     initProgress();
     initContinueLearning();
     initSearch();
+    initSidebarAccordion();
+    initSoftStart();
     initSpaRouter();
 });
+
+// Early trigger for Soft Start if DOM is already parsed
+if (document.readyState !== 'loading') {
+    initSoftStart();
+}
 
 /* ==========================================================================
    1. Theme Management (Dark / Light Mode)
@@ -566,7 +573,70 @@ function initQuiz() {
 }
 
 /* ==========================================================================
-   6. SPA Smooth Navigation Engine (Fetch API + History API + View Transitions)
+   6. Sidebar Grid Accordion Controller
+   Loại bỏ hoàn toàn display: none sang block.
+   Điều khiển class 'show' để CSS Grid kích hoạt transition grid-template-rows 0fr -> 1fr mượt mà.
+   ========================================================================== */
+function initSidebarAccordion() {
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.sidebar-accordion .accordion-button');
+        if (!btn) return;
+
+        // Chặn hoàn toàn Bootstrap collapse plugin can thiệp inline style height và display:none
+        e.preventDefault();
+        e.stopPropagation();
+
+        const item = btn.closest('.accordion-item');
+        const targetCollapse = item ? item.querySelector('.accordion-collapse') : null;
+        if (!targetCollapse) return;
+
+        const isCurrentlyOpen = targetCollapse.classList.contains('show');
+        const accordionContainer = btn.closest('.sidebar-accordion');
+
+        // Accordion behavior: Đóng các mục khác trong cùng container menu khi mở mục mới
+        if (accordionContainer && !isCurrentlyOpen) {
+            accordionContainer.querySelectorAll('.accordion-collapse.show').forEach(openCol => {
+                if (openCol !== targetCollapse) {
+                    openCol.classList.remove('show');
+                    const otherBtn = openCol.closest('.accordion-item')?.querySelector('.accordion-button');
+                    if (otherBtn) {
+                        otherBtn.classList.add('collapsed');
+                        otherBtn.setAttribute('aria-expanded', 'false');
+                    }
+                }
+            });
+        }
+
+        if (isCurrentlyOpen) {
+            targetCollapse.classList.remove('show');
+            btn.classList.add('collapsed');
+            btn.setAttribute('aria-expanded', 'false');
+        } else {
+            targetCollapse.classList.add('show');
+            btn.classList.remove('collapsed');
+            btn.setAttribute('aria-expanded', 'true');
+        }
+    }, true); // Bắt sự kiện ở Capture phase để ngăn chặn hoàn toàn Bootstrap Collapse JS
+}
+
+/* ==========================================================================
+   7. Soft Start Entrance Animation Controller
+   Kích hoạt chuyển tiếp về opacity: 1 và transform: translateY(0) trong 0.4s
+   ngay khi DOM được tải xong.
+   ========================================================================== */
+function initSoftStart() {
+    const mainEl = document.getElementById('spaMainContent') || document.querySelector('.main-column');
+    if (!mainEl) return;
+
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            mainEl.classList.add('soft-start-ready');
+        });
+    });
+}
+
+/* ==========================================================================
+   8. SPA Smooth Navigation Engine (Fetch API + History API + View Transitions)
    ========================================================================== */
 function initSpaRouter() {
     // 1. In-memory Cache: url -> { title, viewHtml, scriptsHtml, timestamp }
@@ -633,12 +703,12 @@ function initSpaRouter() {
                 // Auto-expand parent chapter accordion if collapsed
                 const collapseEl = link.closest('.accordion-collapse');
                 if (collapseEl && !collapseEl.classList.contains('show')) {
-                    try {
-                        const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
-                        bsCollapse.show();
-                        const headerBtn = collapseEl.closest('.accordion-item')?.querySelector('.accordion-button');
-                        if (headerBtn) headerBtn.classList.remove('collapsed');
-                    } catch (_) {}
+                    collapseEl.classList.add('show');
+                    const headerBtn = collapseEl.closest('.accordion-item')?.querySelector('.accordion-button');
+                    if (headerBtn) {
+                        headerBtn.classList.remove('collapsed');
+                        headerBtn.setAttribute('aria-expanded', 'true');
+                    }
                 }
             } else {
                 link.classList.remove('active');
@@ -813,9 +883,10 @@ function initSpaRouter() {
                 history.pushState({ url: targetUrl.href }, '', targetUrl.href);
             }
 
-            // 5. DOM Swap with View Transitions API or Fallback
+            // 5. DOM Swap with View Transitions API (ATS seamless cross-fade handover)
             const viewContainer = document.getElementById('spaViewContainer');
             const scriptsContainer = document.getElementById('spaScriptsContainer');
+            const mainContent = document.getElementById('spaMainContent');
 
             const performDomSwap = () => {
                 document.title = pageData.title;
@@ -825,20 +896,27 @@ function initSpaRouter() {
                 if (scriptsContainer) {
                     scriptsContainer.innerHTML = pageData.scriptsHtml;
                 }
+                if (mainContent) {
+                    mainContent.classList.add('soft-start-ready');
+                }
                 window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
             };
 
             if (document.startViewTransition) {
-                const transition = document.startViewTransition(performDomSwap);
-                await transition.finished;
-            } else {
-                if (viewContainer) {
-                    viewContainer.classList.add('spa-fade-out');
-                    await new Promise(r => setTimeout(r, 90));
+                // View Transitions API: Cơ chế chuyển đổi nguồn ATS mượt mà
+                const transition = document.startViewTransition(() => {
                     performDomSwap();
-                    viewContainer.classList.remove('spa-fade-out');
-                    viewContainer.classList.add('spa-fade-in');
-                    setTimeout(() => viewContainer.classList.remove('spa-fade-in'), 180);
+                });
+                await transition.finished.catch(() => {});
+            } else {
+                // ATS Cross-Fade Fallback (loại bỏ hoàn toàn chớp trắng)
+                if (viewContainer) {
+                    viewContainer.classList.add('ats-crossfade-out');
+                    await new Promise(r => setTimeout(r, 150));
+                    performDomSwap();
+                    viewContainer.classList.remove('ats-crossfade-out');
+                    viewContainer.classList.add('ats-crossfade-in');
+                    setTimeout(() => viewContainer.classList.remove('ats-crossfade-in'), 250);
                 } else {
                     performDomSwap();
                 }

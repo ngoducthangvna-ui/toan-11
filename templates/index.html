@@ -46,42 +46,46 @@
         </div>
     </div>
 
-    <!-- Featured Highlights: 3D Geometry & Exam Center -->
+    <!-- Featured Highlights: 3D Geometry & Exam Center (Synchronized with Hero Banner) -->
     <div class="row g-3 g-md-4 mb-5">
         <div class="col-lg-6">
-            <div class="card border-0 shadow-sm rounded-4 p-4 text-white h-100 position-relative overflow-hidden card-feature-3d">
-                <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap mb-2">
-                    <span class="badge bg-white fw-bold text-uppercase px-3 py-1 text-feature-teal">
+            <div class="hero-card card border-0 shadow-sm rounded-4 p-4 text-white h-100 position-relative overflow-hidden card-feature-3d" style="background: linear-gradient(135deg, #1b263b 0%, #1e3352 50%, #1d3d63 100%) !important;">
+                <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap mb-3">
+                    <span class="badge bg-white text-primary fw-bold text-uppercase px-3 py-1 shadow-sm">
                         <i class="bi bi-box me-1"></i> TRỰC QUAN HÓA 3D
                     </span>
-                    <span class="badge bg-light text-dark border border-white-50 px-2 py-1">XOAY 360° THIẾT DIỆN</span>
+                    <span class="stat-glass-badge badge rounded-pill px-2 py-1">
+                        <i class="bi bi-arrow-repeat me-1 text-info"></i>XOAY 360° THIẾT DIỆN
+                    </span>
                 </div>
-                <h4 class="fw-bold mb-2">Mô Hình Không Gian 3D Tương Tác</h4>
-                <p class="text-white-50 small mb-4 flex-grow-1">
+                <h4 class="fw-bold mb-2 text-white">Mô Hình Không Gian 3D Tương Tác</h4>
+                <p class="text-light text-opacity-75 small mb-4 flex-grow-1" style="line-height: 1.6;">
                     Công cụ mô phỏng 3D tương tác đa chiều cho Chương 4 & 8: Chóp tam giác S.ABC, chóp đều S.ABCD, chóp có SA vuông góc đáy và lăng trụ. Cho phép bật/tắt đường cao, mặt phẳng thiết diện, góc phẳng và phân biệt rõ nét liền/nét đứt!
                 </p>
                 <div>
-                    <a href="{{ url_for('hinh_hoc_3d') }}" class="btn btn-light fw-bold px-4 rounded-3 d-inline-flex align-items-center gap-2 shadow-sm text-feature-teal">
-                        <i class="bi bi-bounding-box"></i> Mở Phòng Thí Nghiệm 3D <i class="bi bi-arrow-right"></i>
+                    <a href="{{ url_for('hinh_hoc_3d') }}" class="hero-btn-primary btn fw-bold px-4 rounded-3 d-inline-flex align-items-center gap-2 shadow-sm">
+                        <i class="bi bi-bounding-box text-primary"></i> Mở Phòng Thí Nghiệm 3D <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>
         </div>
         <div class="col-lg-6">
-            <div class="card border-0 shadow-sm rounded-4 p-4 text-white h-100 position-relative overflow-hidden card-feature-exam">
-                <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap mb-2">
-                    <span class="badge bg-white text-primary fw-bold text-uppercase px-3 py-1">
+            <div class="hero-card card border-0 shadow-sm rounded-4 p-4 text-white h-100 position-relative overflow-hidden card-feature-exam" style="background: linear-gradient(135deg, #1b263b 0%, #1e3352 50%, #1d3d63 100%) !important;">
+                <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap mb-3">
+                    <span class="badge bg-white text-primary fw-bold text-uppercase px-3 py-1 shadow-sm">
                         <i class="bi bi-clock-history me-1"></i> PHÒNG THI THỬ 90 PHÚT
                     </span>
-                    <span class="badge bg-warning-subtle text-warning-emphasis fw-bold px-2 py-1 feature-format-badge">6 ĐỀ GIỮA KÌ + 5 ĐỀ CUỐI KÌ HƯNG YÊN</span>
+                    <span class="stat-glass-badge badge rounded-pill px-2 py-1 feature-format-badge">
+                        <i class="bi bi-award-fill me-1 text-warning"></i>11 ĐỀ CHUẨN HY
+                    </span>
                 </div>
-                <h4 class="fw-bold mb-2">Đề Thi Giữa Kì & Cuối Kì (11 Đề)</h4>
-                <p class="text-white-50 small mb-4 flex-grow-1">
+                <h4 class="fw-bold mb-2 text-white">Đề Thi Giữa Kì & Cuối Kì (11 Đề)</h4>
+                <p class="text-light text-opacity-75 small mb-4 flex-grow-1" style="line-height: 1.6;">
                     Trọn bộ 11 đề thi Giữa kì & Cuối kì chuẩn format Sở GD&ĐT Hưng Yên: Phần I (12 câu MCQ), Phần II (4 câu Đúng/Sai lũy tiến), Phần III (6 câu Trả lời ngắn). Có đồng hồ bấm giờ 90 phút, tự chấm điểm và hướng dẫn bấm máy Casio fx-580/880!
                 </p>
                 <div>
-                    <a href="{{ url_for('exams') }}" class="btn btn-warning-soft fw-bold px-4 rounded-3 d-inline-flex align-items-center gap-2 shadow-sm">
-                        <i class="bi bi-play-circle-fill"></i> Vào Phòng Thi Thử (11 Đề) <i class="bi bi-arrow-right"></i>
+                    <a href="{{ url_for('exams') }}" class="hero-btn-primary btn fw-bold px-4 rounded-3 d-inline-flex align-items-center gap-2 shadow-sm">
+                        <i class="bi bi-play-circle-fill text-primary"></i> Vào Phòng Thi Thử (11 Đề) <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>

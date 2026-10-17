@@ -1,0 +1,196 @@
+/* ==========================================================================
+   HỆ THỐNG HIỆU ỨNG CHUYỂN TRANG & HOẠT HỌA (TOÁN 11 MASTER)
+   Bao gồm:
+   1. View Transitions API (Cross-fade ATS không chớp trắng)
+   2. Menu Sidebar Grid Accordion (grid-template-rows 0fr -> 1fr)
+   3. Tăng tốc phần cứng GPU cho Cards & Buttons (translateY(-4px) + box-shadow)
+   4. Khởi động mềm Soft Start cho khung nội dung chính (0.4s)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Chuyển trang toàn cục (View Transitions API - ATS Seamless Handover)
+   -------------------------------------------------------------------------- */
+@view-transition {
+    navigation: auto;
+}
+
+/* Khóa vững chắc màu nền html & body triệt tiêu 100% chớp trắng */
+html,
+body {
+    background-color: var(--bs-body-bg);
+}
+
+#spaViewContainer {
+    view-transition-name: spa-view;
+}
+
+::view-transition-group(root),
+::view-transition-group(spa-view) {
+    animation-duration: 250ms;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Trang cũ mờ dần (Fade-out) */
+::view-transition-old(root),
+::view-transition-old(spa-view) {
+    animation: 250ms cubic-bezier(0.4, 0, 0.2, 1) both atsFadeOut;
+    mix-blend-mode: normal;
+}
+
+/* Trang mới từ từ hiện lên (Fade-in) */
+::view-transition-new(root),
+::view-transition-new(spa-view) {
+    animation: 250ms cubic-bezier(0.4, 0, 0.2, 1) both atsFadeIn;
+    mix-blend-mode: normal;
+}
+
+@keyframes atsFadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes atsFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Fallback Cross-Fade cho trình duyệt cũ */
+.ats-crossfade-out {
+    opacity: 0 !important;
+    transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.ats-crossfade-in {
+    animation: atsFadeIn 250ms cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+}
+
+/* --------------------------------------------------------------------------
+   2. Mở rộng Menu Sidebar (Grid Accordion)
+   Loại bỏ hoàn toàn display: none sang block, sử dụng grid-template-rows
+   -------------------------------------------------------------------------- */
+.sidebar-accordion .accordion-collapse,
+.sidebar-accordion .accordion-collapse.collapse,
+.sidebar-accordion .accordion-collapse.collapse:not(.show),
+.sidebar-accordion .accordion-collapse.collapsing {
+    display: grid !important;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 300ms ease-in-out !important;
+    height: auto !important;
+    overflow: hidden !important;
+    visibility: visible !important;
+}
+
+.sidebar-accordion .accordion-collapse.show {
+    grid-template-rows: 1fr !important;
+}
+
+.sidebar-accordion .accordion-collapse-inner,
+.sidebar-accordion .accordion-collapse > .accordion-body {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.sidebar-accordion .accordion-button::after {
+    transition: transform 300ms ease-in-out !important;
+}
+
+/* --------------------------------------------------------------------------
+   3. Hiệu ứng Thẻ và Nút bấm (Hardware Acceleration)
+   Chỉ được phép thiết lập transform: translateY(-4px) và box-shadow với 0.2s ease.
+   Tuyệt đối không can thiệp layout (width, height, margin).
+   -------------------------------------------------------------------------- */
+
+/* Nút bấm (Buttons) */
+.btn {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
+    will-change: transform, box-shadow;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.btn:hover:not(:disabled):not(.disabled) {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15) !important;
+}
+
+.btn:active:not(:disabled):not(.disabled) {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Thẻ (Cards) */
+.chapter-card,
+.lesson-item-card,
+.card-hover,
+.card.transition-hover,
+.interactive-card,
+.exam-card,
+.card-feature-3d,
+.card-feature-exam {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+    will-change: transform, box-shadow;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.chapter-card:hover,
+.lesson-item-card:hover,
+.card-hover:hover,
+.card.transition-hover:hover,
+.interactive-card:hover,
+.exam-card:hover,
+.card-feature-3d:hover,
+.card-feature-exam:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Dark theme shadow tuning */
+[data-bs-theme="dark"] .btn:hover:not(:disabled):not(.disabled) {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45) !important;
+}
+
+[data-bs-theme="dark"] .chapter-card:hover,
+[data-bs-theme="dark"] .lesson-item-card:hover,
+[data-bs-theme="dark"] .card-hover:hover,
+[data-bs-theme="dark"] .card.transition-hover:hover,
+[data-bs-theme="dark"] .interactive-card:hover,
+[data-bs-theme="dark"] .exam-card:hover,
+[data-bs-theme="dark"] .card-feature-3d:hover,
+[data-bs-theme="dark"] .card-feature-exam:hover {
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* --------------------------------------------------------------------------
+   4. Tải nội dung bài học (Soft Start Entrance Animation)
+   Gốc: opacity: 0 & translateY(15px). Kích hoạt: opacity: 1 & translateY(0) trong 0.4s.
+   -------------------------------------------------------------------------- */
+#spaMainContent {
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+#spaMainContent.soft-start-ready {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #spaMainContent {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+}

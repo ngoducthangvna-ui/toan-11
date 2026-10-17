@@ -189,8 +189,8 @@ body {
 .hero-stats-strip .badge:hover {
     background: rgba(30, 41, 59, 0.95) !important;
     border-color: rgba(147, 197, 253, 0.45) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px) !important;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15) !important;
 }
 
 /* Hero Buttons Layout */
@@ -204,12 +204,12 @@ body {
     color: #1e3a6f !important;
     border: 2px solid #f8fafc !important;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2) !important;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease !important;
 }
 
 .hero-btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28) !important;
+    transform: translateY(-4px) !important;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28) !important;
     color: #2b5cb8 !important;
 }
 
@@ -221,36 +221,36 @@ body {
     text-align: right;
 }
 
-/* Feature Highlight Cards (Eye-friendly palette) */
-.card-feature-3d {
-    background: linear-gradient(135deg, #155e75 0%, #0e7490 100%) !important;
-}
-
-.text-feature-teal {
-    color: #0e7490 !important;
-}
-
+/* Feature Highlight Cards: Synchronized with Hero Banner Gradient */
+.card-feature-3d,
 .card-feature-exam {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+    background: linear-gradient(135deg, #1b263b 0%, #1e3352 50%, #1d3d63 100%) !important;
+    border: 1px solid rgba(148, 163, 184, 0.15) !important;
+}
+
+[data-bs-theme="dark"] .card-feature-3d,
+[data-bs-theme="dark"] .card-feature-exam {
+    background: linear-gradient(135deg, #141c2b 0%, #1a273b 50%, #1e2f47 100%) !important;
+    border: 1px solid rgba(148, 163, 184, 0.2) !important;
 }
 
 .btn-warning-soft {
     background-color: #fef3c7 !important;
     color: #78350f !important;
     border: 1px solid #fde68a !important;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease !important;
 }
 
 .btn-warning-soft:hover {
     background-color: #fde68a !important;
     color: #451a03 !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    transform: translateY(-4px) !important;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15) !important;
 }
 
 /* Chapter Card & Animations */
 .chapter-card {
-    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
     display: flex;
     flex-direction: column;
 }
@@ -262,8 +262,8 @@ body {
 }
 
 .chapter-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
+    transform: translateY(-4px) !important;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12) !important;
 }
 
 .chapter-title-link:hover {
@@ -682,8 +682,72 @@ body {
 }
 
 /* ==========================================================================
-   SPA Navigation: Progress Bar & Smooth Transitions
+   1. Chuyển trang toàn cục (View Transitions API - ATS Seamless Transfer)
+   Triệt tiêu hoàn toàn hiện tượng chớp trắng, chuyển giao liền mạch như cơ chế tủ ATS.
    ========================================================================== */
+@view-transition {
+    navigation: auto;
+}
+
+/* Khóa nền màu vững chắc trên html & body để loại bỏ hoàn toàn hiện tượng chớp trắng */
+html,
+body {
+    background-color: var(--bs-body-bg);
+}
+
+#spaViewContainer {
+    view-transition-name: spa-view;
+}
+
+::view-transition-group(root),
+::view-transition-group(spa-view) {
+    animation-duration: 250ms;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Cơ chế cross-fade đối xứng: Trang cũ mờ dần (Fade-out) */
+::view-transition-old(root),
+::view-transition-old(spa-view) {
+    animation: 250ms cubic-bezier(0.4, 0, 0.2, 1) both atsFadeOut;
+    mix-blend-mode: normal;
+}
+
+/* Trang mới từ từ hiện lên (Fade-in) */
+::view-transition-new(root),
+::view-transition-new(spa-view) {
+    animation: 250ms cubic-bezier(0.4, 0, 0.2, 1) both atsFadeIn;
+    mix-blend-mode: normal;
+}
+
+@keyframes atsFadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes atsFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Fallback Cross-Fade cho các trình duyệt chưa hỗ trợ View Transitions API */
+.ats-crossfade-out {
+    opacity: 0 !important;
+    transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.ats-crossfade-in {
+    animation: atsFadeIn 250ms cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+}
+
+/* Top Progress Bar (chỉ kích hoạt khi mạng chậm > 120ms) */
 .spa-progress-bar {
     position: fixed;
     top: 0;
@@ -708,52 +772,128 @@ body {
     transition: width 100ms ease, opacity 250ms ease 100ms;
 }
 
-/* Native CSS View Transitions */
-::view-transition-old(root),
-::view-transition-new(root) {
-    animation-duration: 180ms;
-    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+/* ==========================================================================
+   2. Mở rộng Menu Sidebar (Grid Accordion)
+   Loại bỏ hoàn toàn thao tác bật/tắt display: none sang block.
+   Áp dụng kỹ thuật grid-template-rows chuyển từ 0fr sang 1fr kết hợp transition: 300ms ease-in-out.
+   ========================================================================== */
+.sidebar-accordion .accordion-collapse,
+.sidebar-accordion .accordion-collapse.collapse,
+.sidebar-accordion .accordion-collapse.collapse:not(.show),
+.sidebar-accordion .accordion-collapse.collapsing {
+    display: grid !important;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 300ms ease-in-out !important;
+    height: auto !important;
+    overflow: hidden !important;
+    visibility: visible !important;
 }
 
-#spaViewContainer {
-    view-transition-name: spa-view;
+.sidebar-accordion .accordion-collapse.show {
+    grid-template-rows: 1fr !important;
 }
 
-::view-transition-old(spa-view) {
-    animation: 90ms cubic-bezier(0.22, 1, 0.36, 1) both spaFadeOut;
+.sidebar-accordion .accordion-collapse-inner,
+.sidebar-accordion .accordion-collapse > .accordion-body {
+    min-height: 0;
+    overflow: hidden;
 }
 
-::view-transition-new(spa-view) {
-    animation: 180ms cubic-bezier(0.22, 1, 0.36, 1) both spaFadeIn;
+.sidebar-accordion .accordion-button::after {
+    transition: transform 300ms ease-in-out !important;
 }
 
-/* Fallback CSS Keyframes */
-@keyframes spaFadeOut {
-    from {
-        opacity: 1;
-        transform: translateY(0);
+/* ==========================================================================
+   3. Hiệu ứng Thẻ và Nút bấm (Hardware Acceleration)
+   Chỉ được phép thiết lập transform: translateY(-4px) và thay đổi box-shadow với transition: 0.2s ease.
+   Tuyệt đối không can thiệp vào các thuộc tính định dạng layout (width, height, margin)
+   để trình duyệt giao toàn quyền render cho GPU, giữ ổn định 60fps.
+   ========================================================================== */
+
+/* Universal Buttons Hardware Acceleration */
+.btn {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
+    will-change: transform, box-shadow;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.btn:hover:not(:disabled):not(.disabled) {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15) !important;
+}
+
+.btn:active:not(:disabled):not(.disabled) {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Universal Cards Hardware Acceleration */
+.chapter-card,
+.lesson-item-card,
+.card-hover,
+.card.transition-hover,
+.interactive-card,
+.exam-card,
+.card-feature-3d,
+.card-feature-exam {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+    will-change: transform, box-shadow;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.chapter-card:hover,
+.lesson-item-card:hover,
+.card-hover:hover,
+.card.transition-hover:hover,
+.interactive-card:hover,
+.exam-card:hover,
+.card-feature-3d:hover,
+.card-feature-exam:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Dark theme shadow tuning for hardware-accelerated cards & buttons */
+[data-bs-theme="dark"] .btn:hover:not(:disabled):not(.disabled) {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45) !important;
+}
+
+[data-bs-theme="dark"] .chapter-card:hover,
+[data-bs-theme="dark"] .lesson-item-card:hover,
+[data-bs-theme="dark"] .card-hover:hover,
+[data-bs-theme="dark"] .card.transition-hover:hover,
+[data-bs-theme="dark"] .interactive-card:hover,
+[data-bs-theme="dark"] .exam-card:hover,
+[data-bs-theme="dark"] .card-feature-3d:hover,
+[data-bs-theme="dark"] .card-feature-exam:hover {
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ==========================================================================
+   4. Tải nội dung bài học (Soft Start Entrance Animation)
+   Trạng thái gốc: opacity: 0 và transform: translateY(15px).
+   Kích hoạt: opacity: 1 và transform: translateY(0) trong thời gian 0.4s ngay khi DOM tải xong.
+   ========================================================================== */
+#spaMainContent {
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+#spaMainContent.soft-start-ready {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #spaMainContent {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
     }
-    to {
-        opacity: 0;
-        transform: translateY(-4px);
-    }
-}
-
-@keyframes spaFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.spa-fade-out {
-    animation: spaFadeOut 90ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
-}
-
-.spa-fade-in {
-    animation: spaFadeIn 180ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
 }

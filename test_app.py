@@ -142,7 +142,68 @@ class Math11AppTests(unittest.TestCase):
             self.assertIn('id="spaProgressBar"', html_text, f"{path} missing spaProgressBar")
             self.assertIn('id="spaViewContainer"', html_text, f"{path} missing spaViewContainer")
             self.assertIn('id="spaScriptsContainer"', html_text, f"{path} missing spaScriptsContainer")
+            self.assertIn('id="spaMainContent"', html_text, f"{path} missing spaMainContent")
             res.close()
+
+    def test_view_transitions_and_ats_crossfade(self):
+        """Kiểm tra View Transitions API và hiệu ứng chuyển trang cross-fade chuẩn ATS"""
+        with open('static/css/custom.css', 'r', encoding='utf-8') as f:
+            css = f.read()
+        self.assertIn('@view-transition', css)
+        self.assertIn('::view-transition-old(spa-view)', css)
+        self.assertIn('::view-transition-new(spa-view)', css)
+        self.assertIn('atsFadeOut', css)
+        self.assertIn('atsFadeIn', css)
+
+        with open('static/js/main.js', 'r', encoding='utf-8') as f:
+            js = f.read()
+        self.assertIn('document.startViewTransition', js)
+
+    def test_sidebar_grid_accordion(self):
+        """Kiểm tra cấu trúc Menu Sidebar mở rộng bằng Grid-template-rows (loại bỏ display:none)"""
+        with open('static/css/custom.css', 'r', encoding='utf-8') as f:
+            css = f.read()
+        self.assertIn('grid-template-rows: 0fr', css)
+        self.assertIn('grid-template-rows: 1fr', css)
+        self.assertIn('transition: grid-template-rows 300ms ease-in-out', css)
+        self.assertIn('.sidebar-accordion .accordion-collapse-inner', css)
+
+        with open('templates/includes/sidebar.html', 'r', encoding='utf-8') as f:
+            html = f.read()
+        self.assertIn('accordion-collapse-inner', html)
+
+        with open('static/js/main.js', 'r', encoding='utf-8') as f:
+            js = f.read()
+        self.assertIn('initSidebarAccordion', js)
+
+    def test_hardware_accelerated_hover(self):
+        """Kiểm tra hiệu ứng hover translateY(-4px) + box-shadow 0.2s ease trên thẻ và nút bấm"""
+        with open('static/css/custom.css', 'r', encoding='utf-8') as f:
+            css = f.read()
+        self.assertIn('transform: translateY(-4px)', css)
+        self.assertIn('0.2s ease', css)
+        self.assertIn('will-change: transform, box-shadow', css)
+        self.assertIn('transform: translateZ(0)', css)
+
+    def test_soft_start_entrance(self):
+        """Kiểm tra hiệu ứng khởi động mềm Soft Start cho khung nội dung chính (opacity 0->1, translateY 15px->0, 0.4s)"""
+        with open('static/css/custom.css', 'r', encoding='utf-8') as f:
+            css = f.read()
+        self.assertIn('opacity: 0', css)
+        self.assertIn('transform: translateY(15px)', css)
+        self.assertIn('opacity: 1', css)
+        self.assertIn('transform: translateY(0)', css)
+        self.assertIn('0.4s', css)
+        self.assertIn('#spaMainContent.soft-start-ready', css)
+
+        with open('static/js/main.js', 'r', encoding='utf-8') as f:
+            js = f.read()
+        self.assertIn('initSoftStart', js)
+        self.assertIn('soft-start-ready', js)
+
+        with open('templates/base.html', 'r', encoding='utf-8') as f:
+            base_html = f.read()
+        self.assertIn('#spaMainContent { opacity: 1 !important; transform: none !important; }', base_html)
 
 if __name__ == '__main__':
     unittest.main()
