@@ -20,8 +20,6 @@ document.addEventListener("DOMContentLoaded", function() {
     initSearch();
     initQuiz();
     initWorkout();
-    initSidebarAccordion();
-    initSidebarScrollTracking();
     initSpaRouter();
 });
 
@@ -735,85 +733,7 @@ function initWorkout() {
 }
 
 /* ==========================================================================
-   7. Sidebar 60fps CSS Grid Accordion & Zero-Flicker State Lock
-   ========================================================================== */
-function saveSidebarState() {
-    try {
-        const openIds = [];
-        const desktop = document.getElementById('desktopSidebar');
-        const scope = desktop || document;
-        scope.querySelectorAll('.sidebar-accordion-collapse.show').forEach(el => {
-            const id = el.getAttribute('data-chapter-id');
-            if (id && !openIds.includes(String(id))) {
-                openIds.push(String(id));
-            }
-        });
-        sessionStorage.setItem('toan11_open_chapters', JSON.stringify(openIds));
-    } catch (_) {}
-}
-
-function initSidebarAccordion() {
-    // 1. If sessionStorage doesn't have open chapters yet, save whatever initial chapters are open
-    if (!sessionStorage.getItem('toan11_open_chapters')) {
-        saveSidebarState();
-    }
-
-    // 2. Delegate click handler for accordion toggle buttons (Pure CSS Grid, no layout reflow)
-    document.addEventListener('click', function(e) {
-        const btn = e.target.closest('.sidebar-ch-btn');
-        if (!btn) return;
-        e.preventDefault();
-
-        const targetId = btn.getAttribute('data-chapter-target');
-        if (!targetId) return;
-
-        // Find the matching collapse container
-        const accordionItem = btn.closest('.accordion-item');
-        const targetCollapse = accordionItem ? accordionItem.querySelector('.sidebar-accordion-collapse') : document.getElementById(targetId);
-        if (!targetCollapse) return;
-
-        const isCurrentlyOpen = targetCollapse.classList.contains('show');
-        const chapterId = targetCollapse.getAttribute('data-chapter-id');
-
-        // Toggle state smoothly across both desktop and mobile sidebars
-        const selectorColl = chapterId ? `.sidebar-accordion-collapse[data-chapter-id="${chapterId}"]` : `#${targetId}`;
-        const selectorBtn = chapterId ? `.sidebar-ch-btn[data-chapter-target="collapse-ch-${chapterId}"]` : `[data-chapter-target="${targetId}"]`;
-
-        if (isCurrentlyOpen) {
-            document.querySelectorAll(selectorColl).forEach(c => c.classList.remove('show'));
-            document.querySelectorAll(selectorBtn).forEach(b => {
-                b.classList.add('collapsed');
-                b.setAttribute('aria-expanded', 'false');
-            });
-        } else {
-            document.querySelectorAll(selectorColl).forEach(c => c.classList.add('show'));
-            document.querySelectorAll(selectorBtn).forEach(b => {
-                b.classList.remove('collapsed');
-                b.setAttribute('aria-expanded', 'true');
-            });
-        }
-
-        saveSidebarState();
-    });
-}
-
-function initSidebarScrollTracking() {
-    const desktop = document.getElementById('desktopSidebar');
-    if (!desktop) return;
-
-    let scrollTimeout = null;
-    desktop.addEventListener('scroll', function() {
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(() => {
-            try {
-                sessionStorage.setItem('toan11_sidebar_scroll', desktop.scrollTop);
-            } catch (_) {}
-        }, 60);
-    }, { passive: true });
-}
-
-/* ==========================================================================
-   8. SPA Smooth Navigation Engine (Fetch API + History API + View Transitions)
+   7. SPA Smooth Navigation Engine (Fetch API + History API + View Transitions)
    ========================================================================== */
 function initSpaRouter() {
     // 1. In-memory Cache: url -> { title, viewHtml, scriptsHtml, timestamp }
@@ -881,18 +801,15 @@ function initSpaRouter() {
                     link.classList.add('text-white', 'bg-danger');
                     link.classList.remove('bg-danger-subtle');
                 }
-                // Auto-expand parent chapter accordion smoothly without resetting other chapters
-                const collapseEl = link.closest('.sidebar-accordion-collapse');
+                // Auto-expand parent chapter accordion if collapsed
+                const collapseEl = link.closest('.accordion-collapse');
                 if (collapseEl && !collapseEl.classList.contains('show')) {
-                    const chId = collapseEl.getAttribute('data-chapter-id');
-                    if (chId) {
-                        document.querySelectorAll(`.sidebar-accordion-collapse[data-chapter-id="${chId}"]`).forEach(c => c.classList.add('show'));
-                        document.querySelectorAll(`.sidebar-ch-btn[data-chapter-target="collapse-ch-${chId}"]`).forEach(btn => {
-                            btn.classList.remove('collapsed');
-                            btn.setAttribute('aria-expanded', 'true');
-                        });
-                        saveSidebarState();
-                    }
+                    try {
+                        const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
+                        bsCollapse.show();
+                        const headerBtn = collapseEl.closest('.accordion-item')?.querySelector('.accordion-button');
+                        if (headerBtn) headerBtn.classList.remove('collapsed');
+                    } catch (_) {}
                 }
             } else {
                 link.classList.remove('active');
@@ -999,15 +916,11 @@ function initSpaRouter() {
                 });
             } else {
                 // Inline script execution
-                try {
-                    const newScript = document.createElement('script');
-                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                    newScript.textContent = oldScript.textContent;
-                    document.body.appendChild(newScript);
-                    newScript.remove();
-                } catch (scriptErr) {
-                    console.warn('Inline script execution warning:', scriptErr);
-                }
+                const newScript = document.createElement('script');
+                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                newScript.textContent = oldScript.textContent;
+                document.body.appendChild(newScript);
+                newScript.remove();
             }
         }
     }
@@ -1033,7 +946,7 @@ function initSpaRouter() {
         // 2. Cleanup 3D scene if leaving 3D page
         if (window.location.pathname === '/hinh-hoc-3d' && targetUrl.pathname !== '/hinh-hoc-3d') {
             if (window.cleanupGeometry3D) {
-                try { window.cleanupGeometry3D(); } catch (_) {}
+                window.cleanupGeometry3D();
             }
         }
 
@@ -1107,11 +1020,7 @@ function initSpaRouter() {
             }
 
             // 6. Execute scripts from the new page
-            try {
-                await executeScriptsFromContainer(scriptsContainer);
-            } catch (scriptErr) {
-                console.warn('SPA Script Execution Warning:', scriptErr);
-            }
+            await executeScriptsFromContainer(scriptsContainer);
 
             // 7. MathJax typeset for newly loaded content
             if (window.MathJax && window.MathJax.typesetPromise && viewContainer) {
@@ -1122,23 +1031,21 @@ function initSpaRouter() {
             }
 
             // 8. Re-initialize global components on new DOM
-            try { initProgress(); } catch (_) {}
-            try { initContinueLearning(); } catch (_) {}
-            try { initQuiz(); } catch (_) {}
-            try { initWorkout(); } catch (_) {}
+            initProgress();
+            initContinueLearning();
+            initQuiz();
+            initWorkout();
 
             // 9. If navigated to 3D page, ensure 3D scene starts
             if (targetUrl.pathname === '/hinh-hoc-3d') {
                 if (window.initGeometry3D) {
-                    try { window.initGeometry3D(); } catch (_) {}
+                    window.initGeometry3D();
                 }
             }
 
         } catch (err) {
             console.error('SPA Navigation Error:', err);
-            if (!isPopState) {
-                window.location.href = targetUrl.href;
-            }
+            window.location.href = targetUrl.href;
         } finally {
             isNavigating = false;
             ProgressBar.finish();
