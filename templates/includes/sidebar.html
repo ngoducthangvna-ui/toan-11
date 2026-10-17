@@ -77,13 +77,6 @@
                                 </a>
                             </li>
                             {% endfor %}
-                            <li class="nav-item mt-1 pt-1 border-top border-light-subtle">
-                                <a href="{{ url_for('chapter_quiz', chapter_id=ch.id) }}" 
-                                   class="nav-link py-1 px-2 small d-flex align-items-center justify-content-between rounded-2 text-danger fw-semibold bg-danger-subtle {% if request.path == url_for('chapter_quiz', chapter_id=ch.id) %}active text-white bg-danger{% endif %}">
-                                    <span><i class="bi bi-pencil-square me-1"></i>Kiểm tra Chương {{ ch.id }}</span>
-                                    <span class="badge bg-danger text-white rounded-pill">{{ ch.quiz.questions|length }} câu</span>
-                                </a>
-                            </li>
                         </ul>
                     </div>
                 </div>
@@ -120,13 +113,6 @@
                                 </a>
                             </li>
                             {% endfor %}
-                            <li class="nav-item mt-1 pt-1 border-top border-light-subtle">
-                                <a href="{{ url_for('chapter_quiz', chapter_id=ch.id) }}" 
-                                   class="nav-link py-1 px-2 small d-flex align-items-center justify-content-between rounded-2 text-danger fw-semibold bg-danger-subtle {% if request.path == url_for('chapter_quiz', chapter_id=ch.id) %}active text-white bg-danger{% endif %}">
-                                    <span><i class="bi bi-pencil-square me-1"></i>Kiểm tra Chương {{ ch.id }}</span>
-                                    <span class="badge bg-danger text-white rounded-pill">{{ ch.quiz.questions|length }} câu</span>
-                                </a>
-                            </li>
                         </ul>
                     </div>
                 </div>

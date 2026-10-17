@@ -503,7 +503,8 @@ function initQuiz() {
     });
 
     // Submit and Grade
-    submitBtn.addEventListener('click', function() {
+    if (submitBtn) {
+        submitBtn.addEventListener('click', function() {
         let correctCount = 0;
         const total = questionCards.length;
         let unanswered = 0;
@@ -619,7 +620,8 @@ function initQuiz() {
             const quizContainer = document.getElementById('quizForm') || document.querySelector('.quiz-page');
             MathJax.typesetPromise(quizContainer ? [quizContainer] : []).catch(() => {});
         }
-    });
+        });
+    }
 
     // Retry Quiz
     if (retryBtn) {
@@ -804,7 +806,7 @@ function initSidebarAccordion() {
 function initSidebarScrollTracking() {
     const desktop = document.getElementById('desktopSidebar');
     if (!desktop) return;
-    const scroller = desktop.querySelector('#curriculumAccordion') || desktop;
+    const scroller = desktop;
 
     let scrollTimeout = null;
     scroller.addEventListener('scroll', function() {

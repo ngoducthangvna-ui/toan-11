@@ -92,7 +92,7 @@ body {
 
 /* Original Native Chevron Arrow Rotation */
 .sidebar-wrapper .accordion-button::after {
-    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+    transition: transform 0.2s ease-in-out !important;
     will-change: transform;
 }
 
@@ -105,7 +105,7 @@ body {
 }
 
 /* ==========================================================================
-   Sidebar 60fps CSS Grid Accordion & Zero-Flicker State Lock
+   Sidebar Accordion Collapse & Zero-Flicker State Lock
    ========================================================================== */
 .no-transition,
 .no-transition * {
@@ -113,32 +113,29 @@ body {
     animation: none !important;
 }
 
-/* 60fps CSS Grid Accordion with overflow: hidden */
+/* Bulletproof Expand / Collapse */
 .sidebar-accordion-collapse {
-    display: grid !important;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 250ms cubic-bezier(0.22, 1, 0.36, 1) !important;
-    overflow: hidden !important;
-    will-change: grid-template-rows;
-    visibility: visible !important;
+    display: none;
 }
 
 .sidebar-accordion-collapse.show {
-    grid-template-rows: 1fr !important;
+    display: block !important;
+    animation: fadeInAccordion 0.18s ease-in-out;
+}
+
+@keyframes fadeInAccordion {
+    from {
+        opacity: 0;
+        transform: translateY(-3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .sidebar-accordion-inner {
-    overflow: hidden !important;
-    min-height: 0 !important;
-    opacity: 0;
-    transform: translateY(-4px);
-    transition: opacity 180ms ease, transform 200ms cubic-bezier(0.22, 1, 0.36, 1) !important;
-    will-change: opacity, transform;
-}
-
-.sidebar-accordion-collapse.show > .sidebar-accordion-inner {
-    opacity: 1;
-    transform: translateY(0);
+    min-height: 0;
 }
 
 /* Clean Nav links: eliminate transition: all, only color & background */
@@ -161,34 +158,22 @@ body {
     top: 56px;
     height: calc(100vh - 56px);
     max-height: calc(100vh - 56px);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
     padding-top: 1rem !important;
-    padding-bottom: 0.5rem !important;
+    padding-bottom: 3.5rem !important;
 }
 
 .sidebar-wrapper {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 0;
-    overflow: hidden;
-}
-
-.sidebar-wrapper > .card,
-.sidebar-wrapper > .list-group {
-    flex-shrink: 0;
+    display: block;
+    width: 100%;
 }
 
 #curriculumAccordion {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-bottom: 2.5rem;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
+    display: block;
+    width: 100%;
 }
 
 /* Scrollbar Sidebar mỏng 5px, thích ứng hoàn hảo Dark / Light Mode */

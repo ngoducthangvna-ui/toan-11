@@ -71,9 +71,8 @@
                     <i class="bi bi-arrow-right"></i>
                 </a>
                 {% else %}
-                <!-- Bài học cuối cùng của chương -> Mời làm bài kiểm tra -->
-                <a href="{{ url_for('chapter_quiz', chapter_id=chapter.id) }}" class="btn btn-danger btn-lg d-inline-flex align-items-center gap-2 shadow-sm animate-pulse">
-                    <i class="bi bi-award-fill"></i> Hoàn thành chương - Làm bài kiểm tra ngay!
+                <a href="{{ url_for('chapter_detail', chapter_id=chapter.id) }}" class="btn btn-outline-success d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-check-circle-fill"></i> Đã hoàn thành chương {{ chapter.id }}
                 </a>
                 {% endif %}
             </div>

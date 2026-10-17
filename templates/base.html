@@ -130,8 +130,7 @@
                     // 2. Restore scroll position
                     var scroll = localStorage.getItem('toan11_sidebar_scroll') || sessionStorage.getItem('toan11_sidebar_scroll');
                     if (scroll !== null) {
-                        var scroller = s.querySelector('#curriculumAccordion') || s;
-                        scroller.scrollTop = parseInt(scroll, 10) || 0;
+                        s.scrollTop = parseInt(scroll, 10) || 0;
                     }
 
                     // 3. Remove .no-transition after layout paint
