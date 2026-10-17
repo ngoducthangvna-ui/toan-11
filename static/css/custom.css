@@ -50,19 +50,81 @@ body {
     background-color: transparent;
 }
 
-/* Desktop Sidebar 280px width & Layout */
+/* Desktop Sidebar 300px width & Layout */
 @media (min-width: 992px) {
     .sidebar-column {
-        width: 280px !important;
-        flex: 0 0 280px !important;
-        max-width: 280px !important;
+        width: 300px !important;
+        flex: 0 0 300px !important;
+        max-width: 300px !important;
     }
     .main-column {
-        width: calc(100% - 280px) !important;
-        flex: 0 0 calc(100% - 280px) !important;
-        max-width: calc(100% - 280px) !important;
+        width: calc(100% - 300px) !important;
+        flex: 0 0 calc(100% - 300px) !important;
+        max-width: calc(100% - 300px) !important;
         min-width: 0 !important;
     }
+}
+
+/* Quick Navigation Menu (Modern Detached Cards) */
+.sidebar-quick-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sidebar-quick-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #475569;
+    background: transparent;
+    transition: background-color 0.16s ease, color 0.16s ease;
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.35;
+    border: none !important;
+}
+
+[data-bs-theme="dark"] .sidebar-quick-link {
+    color: #cbd5e1;
+}
+
+.sidebar-quick-link:hover {
+    background: rgba(148, 163, 184, 0.12);
+    color: #0f172a;
+}
+
+[data-bs-theme="dark"] .sidebar-quick-link:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+}
+
+.sidebar-quick-link.active {
+    background: rgba(37, 99, 235, 0.08);
+    color: #2563eb !important;
+    font-weight: 600;
+}
+
+[data-bs-theme="dark"] .sidebar-quick-link.active {
+    background: rgba(56, 189, 248, 0.1);
+    color: #38bdf8 !important;
+}
+
+.quick-link-title {
+    font-size: 13.5px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.quick-link-badge {
+    font-size: 0.68rem;
+    padding: 0.22rem 0.5rem;
+    white-space: nowrap !important;
+    flex-shrink: 0;
 }
 
 /* Sidebar Wrapping - Never cut text with ... */
@@ -75,9 +137,32 @@ body {
     line-height: 1.4 !important;
 }
 
+/* Volume Headers (Tập 1 & Tập 2) */
+.volume-header {
+    margin-top: 20px !important;
+    margin-bottom: 8px !important;
+    font-size: 11px !important;
+    letter-spacing: 0.05em !important;
+    color: #64748b !important;
+    font-weight: 700 !important;
+}
+
+.volume-header.volume-header-first {
+    margin-top: 14px !important;
+}
+
 /* Sidebar Header & Button Styling */
 .sidebar-wrapper .accordion-header {
     pointer-events: auto !important;
+}
+
+.sidebar-wrapper .accordion-item {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin-bottom: 3px !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 .sidebar-wrapper .accordion-button {
@@ -86,8 +171,46 @@ body {
     pointer-events: auto !important;
     position: relative !important;
     box-shadow: none !important;
-    border-radius: 0.5rem !important;
-    transition: background-color 0.18s ease, color 0.18s ease !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    background: transparent !important;
+    color: #475569 !important;
+    transition: background-color 0.16s ease, color 0.16s ease !important;
+}
+
+[data-bs-theme="dark"] .sidebar-wrapper .accordion-button {
+    color: #cbd5e1 !important;
+}
+
+.sidebar-wrapper .accordion-button:hover {
+    background: rgba(148, 163, 184, 0.12) !important;
+    color: #0f172a !important;
+}
+
+[data-bs-theme="dark"] .sidebar-wrapper .accordion-button:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: #ffffff !important;
+}
+
+/* Khi Chương đang mở (not collapsed) */
+.sidebar-wrapper .accordion-button:not(.collapsed) {
+    background: rgba(37, 99, 235, 0.08) !important;
+    color: #1d4ed8 !important;
+}
+
+[data-bs-theme="dark"] .sidebar-wrapper .accordion-button:not(.collapsed) {
+    background: rgba(56, 189, 248, 0.08) !important;
+    color: #38bdf8 !important;
+}
+
+.sidebar-chapter-label {
+    font-size: 13.5px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Original Native Chevron Arrow Rotation */
@@ -138,18 +261,80 @@ body {
     min-height: 0;
 }
 
+/* Tree-view Container for Lessons */
+.sidebar-lessons-tree {
+    margin-left: 16px;
+    padding-left: 12px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-left: 1.5px solid rgba(148, 163, 184, 0.35);
+    position: relative;
+}
+
+[data-bs-theme="dark"] .sidebar-lessons-tree {
+    border-left: 1.5px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Individual Lesson Link */
+.sidebar-lesson-link {
+    font-size: 13px !important;
+    line-height: 1.35 !important;
+    color: #64748b !important;
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+    position: relative;
+    transition: color 0.15s ease, background-color 0.15s ease !important;
+}
+
+[data-bs-theme="dark"] .sidebar-lesson-link {
+    color: #94a3b8 !important;
+}
+
+.sidebar-lesson-link:hover {
+    color: #0284c7 !important;
+    background: rgba(14, 165, 233, 0.08) !important;
+}
+
+[data-bs-theme="dark"] .sidebar-lesson-link:hover {
+    color: #38bdf8 !important;
+    background: rgba(56, 189, 248, 0.08) !important;
+}
+
+.sidebar-lesson-link.active {
+    color: #0369a1 !important;
+    font-weight: 600 !important;
+    background: rgba(14, 165, 233, 0.12) !important;
+}
+
+[data-bs-theme="dark"] .sidebar-lesson-link.active {
+    color: #38bdf8 !important;
+    font-weight: 600 !important;
+    background: rgba(56, 189, 248, 0.14) !important;
+}
+
+/* Active indicator notch connecting to tree guide line */
+.sidebar-lesson-link.active::before {
+    content: '';
+    position: absolute;
+    left: -13.5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 16px;
+    border-radius: 2px;
+    background-color: #0284c7;
+}
+
+[data-bs-theme="dark"] .sidebar-lesson-link.active::before {
+    background-color: #38bdf8;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+}
+
 /* Clean Nav links: eliminate transition: all, only color & background */
 .sidebar-wrapper .nav-link,
 .sidebar-wrapper .list-group-item {
     transition: background-color 0.15s ease, color 0.15s ease !important;
-}
-
-/* Eliminate heavy box-shadow or backdrop-filter during transitions */
-.sidebar-wrapper .accordion-item {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
-    border: 1px solid rgba(148, 163, 184, 0.15) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
 }
 
 /* Sidebar Sticky Container & Smooth Vertical Scroll */
@@ -261,6 +446,25 @@ body {
     max-width: 100%;
     line-height: 1.25;
     text-align: right;
+}
+
+/* Hero CTA Group on Single Horizontal Row */
+.hero-cta-group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+.hero-cta-group .btn {
+    white-space: nowrap;
+}
+
+/* Performance: content-visibility for offscreen homepage cards */
+.chapter-card-col {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 280px;
 }
 
 /* Chapter Card & Animations */

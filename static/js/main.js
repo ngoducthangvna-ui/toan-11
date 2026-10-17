@@ -997,6 +997,19 @@ function initSpaRouter() {
         }
     });
 
+    document.addEventListener('pointerdown', function(e) {
+        const link = e.target.closest('a[href]');
+        if (!link) return;
+        const href = link.getAttribute('href');
+        if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:')) return;
+        try {
+            const targetUrl = new URL(href, window.location.origin);
+            if (targetUrl.origin === window.location.origin && !targetUrl.pathname.startsWith('/api/')) {
+                prefetchPage(targetUrl.href);
+            }
+        } catch (_) {}
+    }, { passive: true });
+
     // 5. Script Re-Execution Helper
     async function executeScriptsFromContainer(scriptsContainer) {
         if (!scriptsContainer) return;

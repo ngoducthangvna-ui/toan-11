@@ -25,8 +25,8 @@
                     <span><strong>{{ total_lessons }}</strong> Bài học lý thuyết</span>
                 </span>
                 <span class="stat-glass-badge badge rounded-pill d-inline-flex align-items-center gap-2">
-                    <i class="bi bi-check2-circle text-danger"></i>
-                    <span><strong>{{ all_chapters|length }}</strong> Bài kiểm tra</span>
+                    <i class="bi bi-clock-history text-danger"></i>
+                    <span><strong>11</strong> Đề thi 90 phút</span>
                 </span>
                 <span class="stat-glass-badge badge rounded-pill d-inline-flex align-items-center gap-2">
                     <i class="bi bi-question-diamond text-warning"></i>
@@ -34,8 +34,8 @@
                 </span>
             </div>
 
-            <!-- 2 CTA buttons: Primary learning action & Exam room -->
-            <div class="d-flex flex-column flex-sm-row flex-wrap gap-3">
+            <!-- 2 CTA buttons: Primary learning action & Exam room on single horizontal row -->
+            <div class="hero-cta-group d-flex flex-wrap gap-3 align-items-center">
                 <a href="{{ url_for('lesson_detail', chapter_id=1, lesson_id=1) }}" id="heroPrimaryBtn" class="hero-btn-primary btn btn-lg px-4 fw-bold text-primary d-inline-flex align-items-center justify-content-center gap-2 shadow-sm">
                     <i class="bi bi-play-circle-fill"></i> <span id="heroPrimaryBtnText">Bắt đầu học ngay: Chương 1 - Bài 1</span>
                 </a>
