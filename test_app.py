@@ -160,16 +160,29 @@ class Math11AppTests(unittest.TestCase):
         res.close()
 
     def test_sidebar_accordion_structure(self):
-        """Kiểm tra cấu trúc nút accordion và icon chevron trong thanh Sidebar"""
+        """Kiểm tra cấu trúc thanh Sidebar: 4 Quick Links, container curriculumAccordion và Data-Driven Rendering từ main.js"""
         res = self.app.get('/')
         self.assertEqual(res.status_code, 200)
         html_text = res.data.decode('utf-8')
-        self.assertIn('sidebar-ch-btn', html_text)
-        self.assertIn('sidebar-accordion-collapse', html_text)
-        self.assertIn('data-chapter-id="1"', html_text)
-        self.assertIn('data-chapter-target="collapse-ch-1"', html_text)
-        self.assertIn('accordion-button', html_text)
+        self.assertIn('sidebar-quick-nav', html_text)
+        self.assertIn('sidebar-quick-link', html_text)
+        self.assertIn('Trang chủ tổng quan', html_text)
+        self.assertIn('Phòng thi thử 90 phút', html_text)
+        self.assertIn('Mô hình Không gian 3D', html_text)
+        self.assertIn('Sổ tay công thức 11', html_text)
+        self.assertIn('id="curriculumAccordion"', html_text)
         res.close()
+
+        # Kiểm tra file static/js/main.js chứa mảng dữ liệu chaptersData và hàm renderSidebar()
+        res_js = self.app.get('/static/js/main.js')
+        self.assertEqual(res_js.status_code, 200)
+        js_text = res_js.data.decode('utf-8')
+        self.assertIn('const chaptersData', js_text)
+        self.assertIn('function renderSidebar', js_text)
+        self.assertIn('function initSidebarEventDelegation', js_text)
+        self.assertIn('Chương 1: Lượng giác', js_text)
+        self.assertIn('Chương 9: Xác suất', js_text)
+        res_js.close()
 
 if __name__ == '__main__':
     unittest.main()

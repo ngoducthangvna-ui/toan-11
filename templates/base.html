@@ -24,26 +24,11 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 
+
     <!-- KaTeX CSS & JS for ultra-fast instant LaTeX rendering without FOUC -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-
-    <!-- MathJax 3 Configuration -->
-    <script>
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-                processEscapes: true
-            },
-            options: {
-                ignoreHtmlClass: 'tex2jax_ignore',
-                processHtmlClass: 'tex2jax_process'
-            }
-        };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body class="bg-body-tertiary">
     <!-- SPA Top Progress Bar (Appears only if navigation takes > 120ms) -->
@@ -61,15 +46,15 @@
             </a>
 
             <!-- Search box – expanded to center, visible on all sizes -->
-            <div class="position-relative mx-auto flex-grow-1 navbar-search-wrap px-2 px-md-3" style="max-width: 640px;">
+            <div class="position-relative mx-auto flex-grow-1 navbar-search-wrap navbar-search-wrap-box px-2 px-md-3">
                 <div class="input-group">
                     <span class="input-group-text bg-body-tertiary border-end-0 text-muted"><i class="bi bi-search"></i></span>
                     <input type="text" id="globalSearchInput" class="form-control bg-body-tertiary border-start-0 border-end-0 ps-0" placeholder="Tìm kiếm bài học, công thức..." autocomplete="off">
-                    <span class="input-group-text bg-body-tertiary border-start-0 text-muted d-none d-md-flex align-items-center" style="font-size:0.72rem;">
+                    <span class="input-group-text bg-body-tertiary border-start-0 text-muted d-none d-md-flex align-items-center search-kbd-text">
                         <kbd class="search-kbd">Ctrl</kbd>&nbsp;<kbd class="search-kbd">K</kbd>
                     </span>
                 </div>
-                <div id="searchResultsDropdown" class="dropdown-menu w-100 shadow border-0 p-2 mt-1" style="display:none; max-height: 380px; overflow-y: auto;"></div>
+                <div id="searchResultsDropdown" class="dropdown-menu w-100 shadow border-0 p-2 mt-1 search-dropdown-menu"></div>
             </div>
 
             <!-- Only dark-mode toggle remains in navbar -->
@@ -88,63 +73,16 @@
                 {% include 'includes/sidebar.html' %}
             </aside>
             <!-- Zero-flicker instant state & scroll restoration (Runs synchronously before browser paint) -->
+            <!-- Synchronous instant scroll restoration -->
             <script>
             (function() {
                 try {
                     var s = document.getElementById('desktopSidebar');
                     if (!s) return;
-                    s.classList.add('no-transition');
-
-                    // 1. Determine active chapter to open (only open active chapter or chapter 1 by default)
-                    var activeChId = '1';
-                    var pathMatch = window.location.pathname.match(/\/chapter\/(\d+)/);
-                    if (pathMatch && pathMatch[1]) {
-                        activeChId = String(pathMatch[1]);
-                    } else {
-                        var lastRaw = localStorage.getItem('toan11_last_lesson');
-                        if (lastRaw) {
-                            try {
-                                var lastObj = JSON.parse(lastRaw);
-                                var m = lastObj.url && lastObj.url.match(/\/chapter\/(\d+)/);
-                                if (m && m[1]) activeChId = String(m[1]);
-                            } catch(_) {}
-                        }
-                    }
-                    var openIds = [activeChId];
-
-                    var colls = s.querySelectorAll('.sidebar-accordion-collapse');
-                    colls.forEach(function(c) {
-                        var chId = c.getAttribute('data-chapter-id');
-                        var btn = s.querySelector('.sidebar-ch-btn[data-chapter-target="' + c.id + '"]') ||
-                                  s.querySelector('.sidebar-ch-btn[data-chapter-id="' + chId + '"]');
-                        var isOpen = openIds.indexOf(chId) !== -1 || openIds.indexOf(Number(chId)) !== -1;
-                        if (isOpen) {
-                            c.classList.add('show');
-                            if (btn) {
-                                btn.classList.remove('collapsed');
-                                btn.setAttribute('aria-expanded', 'true');
-                            }
-                        } else {
-                            c.classList.remove('show');
-                            if (btn) {
-                                btn.classList.add('collapsed');
-                                btn.setAttribute('aria-expanded', 'false');
-                            }
-                        }
-                    });
-
-                    // 2. Restore scroll position
                     var scroll = localStorage.getItem('toan11_sidebar_scroll') || sessionStorage.getItem('toan11_sidebar_scroll');
                     if (scroll !== null) {
                         s.scrollTop = parseInt(scroll, 10) || 0;
                     }
-
-                    // 3. Remove .no-transition after layout paint
-                    requestAnimationFrame(function() {
-                        requestAnimationFrame(function() {
-                            s.classList.remove('no-transition');
-                        });
-                    });
                 } catch(e) {}
             })();
             </script>
@@ -189,7 +127,7 @@
     </div>
 
     <!-- Toast Notification Container -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
+    <div class="toast-container position-fixed bottom-0 end-0 p-3 app-toast-container">
         <div id="appToast" class="toast align-items-center border-0 shadow-lg text-white bg-success" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
                 <div class="toast-body d-flex align-items-center gap-2 fw-medium">

@@ -276,8 +276,9 @@
 {% block scripts %}
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        if (window.MathJax) {
-            MathJax.typesetPromise();
+        const quizContainer = document.querySelector('.quiz-page') || document.getElementById('spaViewContainer');
+        if (typeof renderMath === 'function' && quizContainer) {
+            renderMath(quizContainer);
         }
 
         const isStandard = document.querySelector('.quiz-page').dataset.isStandard === 'true';

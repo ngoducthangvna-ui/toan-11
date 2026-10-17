@@ -1,7 +1,114 @@
 /**
  * Main JavaScript for TOAN 11 MASTER
- * Handles Dark Mode, Learning Progress, Quick Check, Live Search Filter, Interactive Quiz Engine, and SPA Router
+ * Refactored: Data-Driven Sidebar, Event Delegation, Lazy Loading & Clean Modular Architecture
  */
+
+// ==========================================================================
+// 1. Data-Driven Curriculum Definition (Chapters 1 to 9 & 29 Lessons)
+// ==========================================================================
+const chaptersData = [
+    {
+        id: 1,
+        volume: 1,
+        title: "Chương 1: Lượng giác",
+        icon: "bi-symmetry-horizontal",
+        lessons: [
+            { id: 1, title: "Bài 1: Giá trị lượng giác của góc lượng giác" },
+            { id: 2, title: "Bài 2: Các công thức lượng giác trọng tâm" },
+            { id: 3, title: "Bài 3: Hàm số lượng giác và đồ thị" },
+            { id: 4, title: "Bài 4: Phương trình lượng giác cơ bản" }
+        ]
+    },
+    {
+        id: 2,
+        volume: 1,
+        title: "Chương 2: Dãy số, CSC & CSN",
+        icon: "bi-sort-numeric-up",
+        lessons: [
+            { id: 1, title: "Bài 1: Dãy số và các tính chất" },
+            { id: 2, title: "Bài 2: Cấp số cộng (CSC)" },
+            { id: 3, title: "Bài 3: Cấp số nhân (CSN)" }
+        ]
+    },
+    {
+        id: 3,
+        volume: 1,
+        title: "Chương 3: Thống kê mẫu ghép nhóm",
+        icon: "bi-bar-chart-line-fill",
+        lessons: [
+            { id: 1, title: "Bài 1: Thu thập và ghép nhóm số liệu" },
+            { id: 2, title: "Bài 2: Các số đặc trưng đo xu thế trung tâm" }
+        ]
+    },
+    {
+        id: 4,
+        volume: 1,
+        title: "Chương 4: Song song không gian",
+        icon: "bi-box",
+        lessons: [
+            { id: 1, title: "Bài 1: Điểm, đường thẳng và mặt phẳng trong không gian" },
+            { id: 2, title: "Bài 2: Hai đường thẳng song song" },
+            { id: 3, title: "Bài 3: Đường thẳng song song với mặt phẳng" },
+            { id: 4, title: "Bài 4: Hai mặt phẳng song song" }
+        ]
+    },
+    {
+        id: 5,
+        volume: 1,
+        title: "Chương 5: Giới hạn & Liên tục",
+        icon: "bi-infinity",
+        lessons: [
+            { id: 1, title: "Bài 1: Giới hạn của dãy số" },
+            { id: 2, title: "Bài 2: Giới hạn của hàm số và các dạng vô định" },
+            { id: 3, title: "Bài 3: Hàm số liên tục" }
+        ]
+    },
+    {
+        id: 6,
+        volume: 2,
+        title: "Chương 6: Mũ & Logarit",
+        icon: "bi-graph-up-arrow",
+        lessons: [
+            { id: 1, title: "Bài 1: Phép tính lũy thừa với số mũ thực" },
+            { id: 2, title: "Bài 2: Phép tính logarit" },
+            { id: 3, title: "Bài 3: Hàm số mũ và Hàm số logarit" },
+            { id: 4, title: "Bài 4: Phương trình và Bất phương trình mũ, logarit cơ bản" }
+        ]
+    },
+    {
+        id: 7,
+        volume: 2,
+        title: "Chương 7: Đạo hàm",
+        icon: "bi-lightning-charge-fill",
+        lessons: [
+            { id: 1, title: "Bài 1: Định nghĩa và ý nghĩa của đạo hàm" },
+            { id: 2, title: "Bài 2: Các quy tắc tính đạo hàm và đạo hàm hàm hợp" },
+            { id: 3, title: "Bài 3: Đạo hàm cấp hai" }
+        ]
+    },
+    {
+        id: 8,
+        volume: 2,
+        title: "Chương 8: Vuông góc không gian",
+        icon: "bi-bounding-box-circles",
+        lessons: [
+            { id: 1, title: "Bài 1: Góc giữa hai đường thẳng và hai đường thẳng vuông góc" },
+            { id: 2, title: "Bài 2: Đường thẳng vuông góc với mặt phẳng" },
+            { id: 3, title: "Bài 3: Hai mặt phẳng vuông góc" },
+            { id: 4, title: "Bài 4: Khoảng cách và Góc trong không gian" }
+        ]
+    },
+    {
+        id: 9,
+        volume: 2,
+        title: "Chương 9: Xác suất",
+        icon: "bi-dice-5-fill",
+        lessons: [
+            { id: 1, title: "Bài 1: Biến cố giao và quy tắc nhân xác suất" },
+            { id: 2, title: "Bài 2: Biến cố hợp và quy tắc cộng xác suất" }
+        ]
+    }
+];
 
 // Monkey-patch document.addEventListener for DOMContentLoaded to support dynamic SPA scripts
 const _originalAddEventListener = document.addEventListener;
@@ -13,9 +120,7 @@ document.addEventListener = function(type, listener, options) {
     return _originalAddEventListener.call(this, type, listener, options);
 };
 
-/* ==========================================================================
-   Global Toast & Ultra-Fast Math Rendering Helpers
-   ========================================================================== */
+// Global Toast Helper
 function showToast(message, type = 'success') {
     const toastEl = document.getElementById('appToast');
     if (!toastEl) return;
@@ -41,49 +146,299 @@ function showToast(message, type = 'success') {
     } catch (_) {}
 }
 
+// Ultra-Fast Math Rendering (KaTeX auto-render prioritized with targeted scoping)
 function renderMath(container) {
-    if (!container) container = document.body;
-    // 1. Try KaTeX auto-render first (Fastest, zero FOUC)
+    if (!container) {
+        // Scoped targeting: never render document.body to avoid layout thrashing and freezing
+        container = document.querySelector('.lesson-article') || 
+                    document.querySelector('.exam-view-page') || 
+                    document.getElementById('quizForm') || 
+                    document.getElementById('formulaCategoriesContainer') || 
+                    document.getElementById('spaViewContainer');
+    }
+    if (!container) return;
+
+    const renderOpts = {
+        delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '\\[', right: '\\]', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false,
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code", "option"]
+    };
+
     if (window.renderMathInElement) {
         try {
-            window.renderMathInElement(container, {
-                delimiters: [
-                    { left: '$$', right: '$$', display: true },
-                    { left: '\\[', right: '\\]', display: true },
-                    { left: '$', right: '$', display: false },
-                    { left: '\\(', right: '\\)', display: false }
-                ],
-                throwOnError: false,
-                ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code", "option"]
-            });
-            return;
+            window.renderMathInElement(container, renderOpts);
         } catch (_) {}
+    } else {
+        // If KaTeX auto-render script is still loading in head, poll briefly
+        let retries = 0;
+        const checkKaTeX = setInterval(() => {
+            retries++;
+            if (window.renderMathInElement) {
+                clearInterval(checkKaTeX);
+                try {
+                    window.renderMathInElement(container, renderOpts);
+                } catch (_) {}
+            } else if (retries >= 20) {
+                clearInterval(checkKaTeX);
+            }
+        }, 50);
     }
-    // 2. MathJax 3 fallback
-    if (window.MathJax && window.MathJax.typesetPromise) {
+}
+window.renderMath = renderMath;
+
+
+// ==========================================================================
+// 2. Data-Driven Sidebar Rendering Engine
+// ==========================================================================
+function renderSidebar(activeChapterId = null, activeLessonId = null) {
+    const containers = document.querySelectorAll('#curriculumAccordion');
+    if (!containers.length) return;
+
+    if (activeChapterId === null) {
+        const path = window.location.pathname;
+        const match = path.match(/\/chapter\/(\d+)(?:\/lesson\/(\d+))?/);
+        if (match) {
+            activeChapterId = parseInt(match[1], 10);
+            if (match[2]) activeLessonId = parseInt(match[2], 10);
+        } else {
+            // Default to Chapter 1 on home page and others
+            activeChapterId = 1;
+        }
+    }
+
+    let vol1Html = `
+        <div class="volume-header volume-header-first">
+            <i class="bi bi-book-half text-primary flex-shrink-0"></i> TẬP 1 (HỌC KÌ I)
+        </div>
+    `;
+
+    let vol2Html = `
+        <div class="volume-header">
+            <i class="bi bi-book-fill text-success flex-shrink-0"></i> TẬP 2 (HỌC KÌ II)
+        </div>
+    `;
+
+    chaptersData.forEach(ch => {
+        const isOpen = (ch.id === Number(activeChapterId));
+        const iconColor = ch.volume === 1 ? 'text-primary' : 'text-success';
+
+        let lessonsHtml = '';
+        ch.lessons.forEach(les => {
+            const isActive = (ch.id === Number(activeChapterId) && les.id === Number(activeLessonId));
+            lessonsHtml += `
+                <a href="/chapter/${ch.id}/lesson/${les.id}" 
+                   class="sidebar-lesson-link ${isActive ? 'active' : ''}"
+                   data-lesson-id="ch${ch.id}_les${les.id}"
+                   title="${les.title}">
+                    <span class="lesson-link-text">${les.title}</span>
+                    <i class="bi bi-check-circle-fill lesson-check-icon text-success d-none ms-1 flex-shrink-0"></i>
+                </a>
+            `;
+        });
+
+        const chHtml = `
+            <div class="accordion-item border-0 mb-1 rounded-3 overflow-hidden" data-chapter-id="${ch.id}">
+                <h2 class="accordion-header" id="heading-ch-${ch.id}">
+                    <button class="accordion-button sidebar-ch-btn ${isOpen ? '' : 'collapsed'}" 
+                            type="button" 
+                            data-chapter-target="collapse-ch-${ch.id}" 
+                            data-chapter-id="${ch.id}" 
+                            aria-expanded="${isOpen ? 'true' : 'false'}">
+                        <span class="chapter-btn-left">
+                            <i class="bi ${ch.icon} ${iconColor} flex-shrink-0"></i>
+                            <span class="sidebar-chapter-label">${ch.title}</span>
+                        </span>
+                    </button>
+                </h2>
+                <div id="collapse-ch-${ch.id}" class="sidebar-accordion-collapse ${isOpen ? 'show' : ''}" data-chapter-id="${ch.id}">
+                    <div class="sidebar-accordion-inner">
+                        <div class="sidebar-lessons-tree">
+                            ${lessonsHtml}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        if (ch.volume === 1) {
+            vol1Html += chHtml;
+        } else {
+            vol2Html += chHtml;
+        }
+    });
+
+    const fullHtml = vol1Html + vol2Html;
+    containers.forEach(c => {
+        c.innerHTML = fullHtml;
+    });
+
+    // Update completed checkmarks in sidebar
+    updateCompletedLessonCheckmarks();
+}
+
+// ==========================================================================
+// 3. Event Delegation for Sidebar (Accordion Toggle & Lesson Selection)
+// ==========================================================================
+function initSidebarEventDelegation() {
+    const sidebars = document.querySelectorAll('#desktopSidebar, #sidebarOffcanvas');
+    sidebars.forEach(sidebar => {
+        if (sidebar._hasSidebarEvents) return;
+        sidebar._hasSidebarEvents = true;
+
+        sidebar.addEventListener('click', function(e) {
+            // A. Accordion Chapter Click (entire header or button)
+            const chBtn = e.target.closest('.sidebar-ch-btn') || e.target.closest('.accordion-header')?.querySelector('.sidebar-ch-btn');
+            if (chBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleChapterAccordion(chBtn);
+                return;
+            }
+
+            // B. Lesson Link Selection (track last lesson)
+            const lessonLink = e.target.closest('.sidebar-lesson-link');
+            if (lessonLink) {
+                const textEl = lessonLink.querySelector('.lesson-link-text');
+                const title = textEl ? textEl.innerText.trim() : lessonLink.innerText.trim();
+                const url = lessonLink.getAttribute('href');
+                if (url && url !== '#') {
+                    try {
+                        const data = { title, url };
+                        localStorage.setItem('toan11_last_lesson', JSON.stringify(data));
+                        localStorage.setItem('lastVisitedLesson', JSON.stringify(data));
+                    } catch (_) {}
+                }
+                closeMobileSidebar();
+                return;
+            }
+        });
+    });
+}
+
+function toggleChapterAccordion(btn) {
+    const chapterId = btn.getAttribute('data-chapter-id') || 
+                      btn.closest('.accordion-item')?.getAttribute('data-chapter-id');
+    const targetId = btn.getAttribute('data-chapter-target') || (chapterId ? `collapse-ch-${chapterId}` : null);
+    if (!targetId && !chapterId) return;
+
+    const accordionItem = btn.closest('.accordion-item');
+    const targetCollapse = accordionItem ? 
+        accordionItem.querySelector('.sidebar-accordion-collapse') : 
+        (targetId ? document.getElementById(targetId) : null);
+        
+    if (!targetCollapse) return;
+
+    const isCurrentlyOpen = targetCollapse.classList.contains('show');
+    const nextState = !isCurrentlyOpen;
+
+    if (nextState) {
+        // Accordion behavior: close other chapters
+        document.querySelectorAll('.sidebar-accordion-collapse').forEach(c => {
+            const id = c.getAttribute('data-chapter-id');
+            if (id !== chapterId && c.id !== targetId) {
+                c.classList.remove('show');
+            }
+        });
+        document.querySelectorAll('.sidebar-ch-btn').forEach(b => {
+            const id = b.getAttribute('data-chapter-id');
+            const target = b.getAttribute('data-chapter-target');
+            if (id !== chapterId && target !== targetId) {
+                b.classList.add('collapsed');
+                b.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    // Toggle across all instances of this chapter (desktop & offcanvas)
+    const collSelector = chapterId ? `.sidebar-accordion-collapse[data-chapter-id="${chapterId}"]` : `#${targetId}`;
+    const btnSelector = chapterId ? `.sidebar-ch-btn[data-chapter-id="${chapterId}"]` : `[data-chapter-target="${targetId}"]`;
+
+    document.querySelectorAll(collSelector).forEach(c => {
+        if (nextState) c.classList.add('show');
+        else c.classList.remove('show');
+    });
+
+    document.querySelectorAll(btnSelector).forEach(b => {
+        if (nextState) {
+            b.classList.remove('collapsed');
+            b.setAttribute('aria-expanded', 'true');
+        } else {
+            b.classList.add('collapsed');
+            b.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    saveSidebarState();
+}
+
+function saveSidebarState() {
+    try {
+        const openIds = [];
+        const desktop = document.getElementById('desktopSidebar');
+        const scope = desktop || document;
+        scope.querySelectorAll('.sidebar-accordion-collapse.show').forEach(el => {
+            const id = el.getAttribute('data-chapter-id');
+            if (id && !openIds.includes(String(id))) {
+                openIds.push(String(id));
+            }
+        });
+        localStorage.setItem('toan11_open_chapters', JSON.stringify(openIds));
+        sessionStorage.setItem('toan11_open_chapters', JSON.stringify(openIds));
+    } catch (_) {}
+}
+
+function closeMobileSidebar() {
+    const offcanvasEl = document.getElementById('sidebarOffcanvas');
+    if (offcanvasEl && offcanvasEl.classList.contains('show') && window.bootstrap && window.bootstrap.Offcanvas) {
         try {
-            window.MathJax.typesetClear && window.MathJax.typesetClear([container]);
-            window.MathJax.typesetPromise([container]).catch(() => {});
+            const inst = bootstrap.Offcanvas.getInstance(offcanvasEl);
+            if (inst) inst.hide();
         } catch (_) {}
     }
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    initTheme();
-    initProgress();
-    initContinueLearning();
-    initSearch();
-    initQuiz();
-    initSidebarAccordion();
-    initSidebarScrollTracking();
-    initKeyboardShortcuts();
-    initSpaRouter();
-    renderMath();
-});
+function updateCompletedLessonCheckmarks() {
+    try {
+        const completed = JSON.parse(localStorage.getItem('toan11_completed_lessons') || '[]');
+        document.querySelectorAll('.sidebar-lesson-link').forEach(link => {
+            const lessonId = link.getAttribute('data-lesson-id');
+            const icon = link.querySelector('.lesson-check-icon');
+            if (icon && lessonId) {
+                if (completed.includes(lessonId)) {
+                    icon.classList.remove('d-none');
+                } else {
+                    icon.classList.add('d-none');
+                }
+            }
+        });
+    } catch (_) {}
+}
 
-/* ==========================================================================
-   1. Theme Management (Dark / Light Mode)
-   ========================================================================== */
+function initSidebarScrollTracking() {
+    const desktop = document.getElementById('desktopSidebar');
+    if (!desktop || desktop._scrollTracked) return;
+    desktop._scrollTracked = true;
+
+    let scrollTimeout = null;
+    desktop.addEventListener('scroll', function() {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            try {
+                localStorage.setItem('toan11_sidebar_scroll', desktop.scrollTop);
+                sessionStorage.setItem('toan11_sidebar_scroll', desktop.scrollTop);
+            } catch (_) {}
+        }, 60);
+    }, { passive: true });
+}
+
+// ==========================================================================
+// 4. Theme Management (Dark / Light Mode)
+// ==========================================================================
 function initTheme() {
     const themeBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
@@ -92,7 +447,8 @@ function initTheme() {
     document.documentElement.setAttribute('data-bs-theme', savedTheme);
     updateThemeIcon(savedTheme);
 
-    if (themeBtn) {
+    if (themeBtn && !themeBtn._themeBound) {
+        themeBtn._themeBound = true;
         themeBtn.addEventListener('click', function() {
             const currentTheme = document.documentElement.getAttribute('data-bs-theme');
             const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -112,18 +468,18 @@ function initTheme() {
     }
 }
 
-/* ==========================================================================
-   2. Progress Tracker & Chapter Card Sync (Local Storage)
-   ========================================================================== */
+// ==========================================================================
+// 5. Learning Progress Tracker
+// ==========================================================================
 function initProgress() {
     const STORAGE_KEY = 'toan11_completed_lessons';
     let completedLessons = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 
     updateProgressUI();
 
-    // Mark complete button on lesson page
     const markBtn = document.getElementById('markCompleteBtn');
-    if (markBtn) {
+    if (markBtn && !markBtn.dataset.bound) {
+        markBtn.dataset.bound = 'true';
         const lessonId = markBtn.dataset.lessonId;
         const markText = document.getElementById('markCompleteText');
 
@@ -131,23 +487,20 @@ function initProgress() {
             setBtnCompleted(true);
         }
 
-        if (!markBtn.dataset.bound) {
-            markBtn.dataset.bound = 'true';
-            markBtn.addEventListener('click', function() {
-                const idx = completedLessons.indexOf(lessonId);
-                if (idx === -1) {
-                    completedLessons.push(lessonId);
-                    setBtnCompleted(true);
-                    showToast('Đã hoàn thành bài học! Tiến độ +1', 'success');
-                } else {
-                    completedLessons.splice(idx, 1);
-                    setBtnCompleted(false);
-                    showToast('Đã hủy đánh dấu hoàn thành bài học', 'info');
-                }
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(completedLessons));
-                updateProgressUI();
-            });
-        }
+        markBtn.addEventListener('click', function() {
+            const idx = completedLessons.indexOf(lessonId);
+            if (idx === -1) {
+                completedLessons.push(lessonId);
+                setBtnCompleted(true);
+                showToast('Đã hoàn thành bài học! Tiến độ +1', 'success');
+            } else {
+                completedLessons.splice(idx, 1);
+                setBtnCompleted(false);
+                showToast('Đã hủy đánh dấu hoàn thành bài học', 'info');
+            }
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(completedLessons));
+            updateProgressUI();
+        });
 
         function setBtnCompleted(isDone) {
             const icon = markBtn.querySelector('i');
@@ -163,9 +516,9 @@ function initProgress() {
         }
     }
 
-    // Reset progress button
     const resetBtn = document.getElementById('resetProgressBtn');
-    if (resetBtn) {
+    if (resetBtn && !resetBtn._resetBound) {
+        resetBtn._resetBound = true;
         resetBtn.addEventListener('click', function(e) {
             e.preventDefault();
             if (confirm('Bạn có chắc chắn muốn đặt lại toàn bộ tiến độ học tập?')) {
@@ -182,7 +535,7 @@ function initProgress() {
     }
 
     function updateProgressUI() {
-        const totalLessons = 29; // Total across all 9 chapters
+        const totalLessons = 29;
         const count = completedLessons.length;
         const percent = Math.min(100, Math.round((count / totalLessons) * 100));
 
@@ -194,113 +547,41 @@ function initProgress() {
         if (text) text.innerText = percent + '%';
         if (counter) counter.innerText = `${count}/${totalLessons} bài`;
 
-        // Update checkmarks in sidebar
-        document.querySelectorAll('.lesson-check-icon').forEach(icon => {
-            const link = icon.closest('a');
-            if (link && link.dataset.lessonId) {
-                if (completedLessons.includes(link.dataset.lessonId)) {
-                    icon.classList.remove('d-none');
-                } else {
-                    icon.classList.add('d-none');
-                }
-            }
-        });
+        updateCompletedLessonCheckmarks();
     }
 }
 
-/* ==========================================================================
-   3. Continue Learning Feature (localStorage: toan11_last_lesson & lastVisitedLesson)
-   ========================================================================== */
+// ==========================================================================
+// 6. Continue Learning Feature (Homepage CTA)
+// ==========================================================================
 function initContinueLearning() {
     const LAST_LESSON_KEY = 'toan11_last_lesson';
-    const COMPLETED_KEY = 'toan11_completed_lessons';
-    let completedLessons = [];
-    try {
-        completedLessons = JSON.parse(localStorage.getItem(COMPLETED_KEY) || '[]');
-    } catch (_) {
-        completedLessons = [];
-    }
+    const heroBtn = document.getElementById('heroPrimaryBtn');
+    const heroText = document.getElementById('heroPrimaryBtnText');
+    if (!heroBtn || !heroText) return;
+
     let savedLast = null;
     try {
-        savedLast = localStorage.getItem(LAST_LESSON_KEY) || localStorage.getItem('lastVisitedLesson');
-    } catch (_) {
-        savedLast = null;
-    }
+        const raw = localStorage.getItem(LAST_LESSON_KEY) || localStorage.getItem('lastVisitedLesson');
+        if (raw) savedLast = JSON.parse(raw);
+    } catch (_) {}
 
-    // 1. If currently on a lesson page, save it as the latest lesson
-    if (window.location.pathname.includes('/lesson/')) {
-        const titleEl = document.querySelector('h1.display-6, .lesson-header h1, h1');
-        const lessonTitle = titleEl ? titleEl.innerText.trim() : 'Bài học gần nhất';
-        const currentData = {
-            title: lessonTitle,
-            url: window.location.pathname
-        };
-        try {
-            localStorage.setItem(LAST_LESSON_KEY, JSON.stringify(currentData));
-            localStorage.setItem('lastVisitedLesson', JSON.stringify(currentData));
-        } catch (_) {}
-    }
-
-    // 2. Global listener: when user clicks on any lesson link, remember it
-    document.addEventListener('click', function(e) {
-        const lessonLink = e.target.closest('[data-lesson-id]');
-        if (lessonLink && lessonLink.getAttribute('href')) {
-            const title = lessonLink.dataset.lessonTitle || lessonLink.innerText.trim();
-            const url = lessonLink.getAttribute('href');
-            if (url && url !== '#') {
-                const data = { title: title, url: url };
-                try {
-                    localStorage.setItem(LAST_LESSON_KEY, JSON.stringify(data));
-                    localStorage.setItem('lastVisitedLesson', JSON.stringify(data));
-                } catch (_) {}
-            }
-        }
-    });
-
-    // 3. On Homepage: Smart CTA logic
-    const heroPrimaryBtn = document.getElementById('heroPrimaryBtn');
-    const heroBtnText = document.getElementById('heroPrimaryBtnText');
-    if (heroPrimaryBtn && heroBtnText) {
-        // New user condition: no completed lessons AND no visited lesson yet
-        if (completedLessons.length === 0 && !savedLast) {
-            heroPrimaryBtn.href = '/chapter/1/lesson/1';
-            heroBtnText.innerText = 'Bắt đầu học ngay: Chương 1 - Bài 1';
-            heroPrimaryBtn.className = 'btn hero-btn-primary btn-lg px-4 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm';
-        } else if (savedLast) {
-            try {
-                const lastLesson = JSON.parse(savedLast);
-                if (lastLesson && lastLesson.url && lastLesson.title) {
-                    heroPrimaryBtn.href = lastLesson.url;
-                    let displayTitle = lastLesson.title;
-                    if (displayTitle.length > 36) {
-                        displayTitle = displayTitle.substring(0, 34) + '...';
-                    }
-                    heroBtnText.innerText = `Học tiếp: ${displayTitle}`;
-                    heroPrimaryBtn.className = 'btn hero-btn-primary btn-lg px-4 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm';
-                    heroPrimaryBtn.title = `Học tiếp: ${lastLesson.title}`;
-                }
-            } catch (err) {
-                heroPrimaryBtn.href = '/chapter/1/lesson/1';
-                heroBtnText.innerText = 'Bắt đầu học ngay: Chương 1 - Bài 1';
-                heroPrimaryBtn.className = 'btn hero-btn-primary btn-lg px-4 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-sm';
-            }
-        }
+    if (savedLast && savedLast.url && savedLast.title) {
+        heroBtn.href = savedLast.url;
+        heroText.innerText = `Tiếp tục học: ${savedLast.title}`;
     }
 }
 
-/* ==========================================================================
-   4. Live Search & Filter (with Ctrl+K Shortcut)
-   ========================================================================== */
+// ==========================================================================
+// 7. Live Search & Homepage Card Filter
+// ==========================================================================
 function initSearch() {
     const searchInput = document.getElementById('globalSearchInput');
     const dropdown = document.getElementById('searchResultsDropdown');
-    const homeAlert = document.getElementById('homeSearchAlert');
-    const homeKeyword = document.getElementById('homeSearchKeyword');
     const clearHomeBtn = document.getElementById('clearHomeSearchBtn');
-    const isHomepage = document.querySelector('.homepage-container') !== null;
-
     if (!searchInput) return;
 
+    let debounceTimer = null;
     let selectedSearchIdx = -1;
 
     function highlightSearchItem(idx) {
@@ -319,148 +600,129 @@ function initSearch() {
         selectedSearchIdx = idx;
     }
 
-    // Keyboard shortcut: Ctrl + K or Cmd + K
-    document.addEventListener('keydown', function(e) {
-        if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
-            e.preventDefault();
-            searchInput.focus();
-            searchInput.select();
-        }
-        if (e.key === 'Escape' && dropdown) {
-            dropdown.style.display = 'none';
-        }
-    });
+    if (!searchInput._searchBound) {
+        searchInput._searchBound = true;
 
-    // Keyboard navigation within search input
-    searchInput.addEventListener('keydown', function(e) {
-        if (!dropdown || dropdown.style.display !== 'block') return;
-        const items = dropdown.querySelectorAll('.dropdown-item');
-        if (!items.length) return;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const query = this.value.trim();
 
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            const nextIdx = (selectedSearchIdx + 1) % items.length;
-            highlightSearchItem(nextIdx);
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            const prevIdx = (selectedSearchIdx - 1 + items.length) % items.length;
-            highlightSearchItem(prevIdx);
-        } else if (e.key === 'Enter') {
-            if (selectedSearchIdx >= 0 && items[selectedSearchIdx]) {
-                e.preventDefault();
-                items[selectedSearchIdx].click();
-                dropdown.style.display = 'none';
-                searchInput.blur();
-            }
-        }
-    });
-
-    let debounceTimer;
-    searchInput.addEventListener('input', function() {
-        clearTimeout(debounceTimer);
-        const query = this.value.trim();
-
-        debounceTimer = setTimeout(async () => {
-            // 1. Live Filter on Homepage Cards
-            if (isHomepage) {
-                filterHomepageCards(query);
-            }
-
-            // 2. Dropdown search suggestion via API
-            if (query.length < 2) {
-                if (dropdown) {
-                    dropdown.style.display = 'none';
-                    dropdown.innerHTML = '';
-                    selectedSearchIdx = -1;
-                }
+            if (!query) {
+                if (dropdown) dropdown.style.display = 'none';
+                filterHomepageCards('');
                 return;
             }
 
-            try {
-                const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-                const data = await res.json();
-                renderSearchResults(data.results);
-            } catch (err) {
-                console.error("Search error:", err);
-            }
-        }, 180);
-    });
+            filterHomepageCards(query);
 
-    // Helper: Vietnamese search normalization (remove accents)
-    function removeAccents(str) {
-        if (!str) return '';
-        return str.normalize('NFD')
-                  .replace(/[\u0300-\u036f]/g, '')
-                  .replace(/đ/g, 'd')
-                  .replace(/Đ/g, 'D')
-                  .toLowerCase();
-    }
-
-    // Filter Homepage Chapter Cards
-    function filterHomepageCards(rawQuery) {
-        const query = removeAccents(rawQuery.trim());
-        const chapterCols = document.querySelectorAll('.chapter-card-col');
-
-        if (!query) {
-            chapterCols.forEach(col => {
-                col.classList.remove('d-none', 'search-matched');
-            });
-            if (homeAlert) homeAlert.classList.add('d-none');
-            return;
-        }
-
-        let matchCount = 0;
-        chapterCols.forEach(col => {
-            const content = removeAccents(col.getAttribute('data-search-content') || col.innerText);
-            if (content.includes(query)) {
-                col.classList.remove('d-none');
-                col.classList.add('search-matched');
-                matchCount++;
-            } else {
-                col.classList.add('d-none');
-                col.classList.remove('search-matched');
-            }
+            debounceTimer = setTimeout(() => {
+                fetch(`/api/search?q=${encodeURIComponent(query)}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        renderSearchResults(data.results || [], query);
+                    })
+                    .catch(() => {
+                        if (dropdown) dropdown.style.display = 'none';
+                    });
+            }, 180);
         });
 
-        if (homeAlert && homeKeyword) {
-            homeKeyword.innerText = rawQuery;
-            homeAlert.classList.remove('d-none');
-        }
+        searchInput.addEventListener('keydown', function(e) {
+            if (!dropdown || dropdown.style.display !== 'block') return;
+            const items = dropdown.querySelectorAll('.dropdown-item');
+            if (!items.length) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedSearchIdx = (selectedSearchIdx + 1) % items.length;
+                highlightSearchItem(selectedSearchIdx);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedSearchIdx = (selectedSearchIdx - 1 + items.length) % items.length;
+                highlightSearchItem(selectedSearchIdx);
+            } else if (e.key === 'Enter') {
+                if (selectedSearchIdx >= 0 && items[selectedSearchIdx]) {
+                    e.preventDefault();
+                    items[selectedSearchIdx].click();
+                }
+            } else if (e.key === 'Escape') {
+                dropdown.style.display = 'none';
+            }
+        });
     }
 
-    if (clearHomeBtn) {
+    if (clearHomeBtn && !clearHomeBtn._clearBound) {
+        clearHomeBtn._clearBound = true;
         clearHomeBtn.addEventListener('click', function() {
             searchInput.value = '';
             filterHomepageCards('');
             if (dropdown) dropdown.style.display = 'none';
-            searchInput.focus();
         });
     }
 
-    function renderSearchResults(results) {
-        if (!dropdown) return;
-        selectedSearchIdx = -1;
+    // Close dropdown on outside click
+    document.addEventListener('click', function(e) {
+        if (dropdown && !searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
 
-        if (!results || results.length === 0) {
-            dropdown.innerHTML = '<div class="p-3 text-center text-muted small"><i class="bi bi-emoji-neutral me-1"></i> Không tìm thấy bài học phù hợp</div>';
+    function filterHomepageCards(query) {
+        const cards = document.querySelectorAll('.chapter-card-col');
+        const alertBox = document.getElementById('homeSearchAlert');
+        const keywordSpan = document.getElementById('homeSearchKeyword');
+        if (!cards.length) return;
+
+        if (!query) {
+            cards.forEach(c => c.classList.remove('d-none', 'search-matched'));
+            if (alertBox) alertBox.classList.add('d-none');
+            return;
+        }
+
+        const normQuery = query.toLowerCase();
+        let matchCount = 0;
+
+        cards.forEach(card => {
+            const text = card.innerText.toLowerCase();
+            if (text.includes(normQuery)) {
+                card.classList.remove('d-none');
+                card.classList.add('search-matched');
+                matchCount++;
+            } else {
+                card.classList.add('d-none');
+                card.classList.remove('search-matched');
+            }
+        });
+
+        if (alertBox && keywordSpan) {
+            alertBox.classList.remove('d-none');
+            keywordSpan.innerText = `${query} (${matchCount} kết quả)`;
+        }
+    }
+
+    function renderSearchResults(results, query) {
+        if (!dropdown) return;
+        if (!results.length) {
+            dropdown.innerHTML = `<div class="p-3 text-muted text-center small">Không tìm thấy kết quả cho "<strong>${escapeHtml(query)}</strong>"</div>`;
             dropdown.style.display = 'block';
             return;
         }
 
-        let html = '<div class="py-1">';
-        results.forEach(item => {
-            const icon = item.type === 'chapter' ? 'bi-journal-richtext text-primary' : 'bi-file-earmark-text text-success';
+        selectedSearchIdx = -1;
+        let html = '';
+        results.slice(0, 8).forEach(res => {
+            const icon = res.type === 'lesson' ? 'bi-file-earmark-text text-primary' : 'bi-journal-bookmark text-success';
             html += `
-                <a href="${item.url}" class="dropdown-item py-2 px-3 d-flex align-items-center gap-2 rounded-2">
-                    <i class="bi ${icon} fs-5 flex-shrink-0"></i>
-                    <div class="text-truncate">
-                        <div class="fw-semibold small text-truncate text-body">${item.title}</div>
-                        <div class="text-muted small text-truncate" style="font-size: 0.75rem;">${item.subtitle}</div>
+                <a href="${res.url}" class="dropdown-item d-flex align-items-center gap-2 p-2 rounded-2 text-decoration-none">
+                    <i class="bi ${icon} flex-shrink-0"></i>
+                    <div class="flex-grow-1 overflow-hidden">
+                        <div class="fw-semibold text-truncate small">${escapeHtml(res.title)}</div>
+                        <div class="text-muted text-truncate" style="font-size:0.75rem;">${escapeHtml(res.subtitle || '')}</div>
                     </div>
                 </a>
             `;
         });
-        html += '</div>';
+
         dropdown.innerHTML = html;
         dropdown.style.display = 'block';
 
@@ -469,27 +731,25 @@ function initSearch() {
         });
     }
 
-    // Close on outside click
-    document.addEventListener('click', function(e) {
-        if (dropdown && !searchInput.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.style.display = 'none';
-        }
-    });
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
 }
 
-/* ==========================================================================
-   5. Interactive Quiz Engine
-   ========================================================================== */
+// ==========================================================================
+// 8. Interactive Quiz Engine & Lazy-Loaded Celebration
+// ==========================================================================
 function initQuiz() {
     const quizForm = document.getElementById('quizForm');
-    if (!quizForm) return;
+    if (!quizForm || quizForm._quizBound) return;
+    quizForm._quizBound = true;
 
     const questionCards = document.querySelectorAll('.question-card');
     const submitBtn = document.getElementById('submitQuizBtn');
-    const resultCard = document.getElementById('quizResultCard');
     const retryBtn = document.getElementById('retryQuizBtn');
+    const resultCard = document.getElementById('quizResultCard');
 
-    // Radio option selection highlighting
     questionCards.forEach(card => {
         const labels = card.querySelectorAll('.option-label');
         labels.forEach(label => {
@@ -502,159 +762,146 @@ function initQuiz() {
         });
     });
 
-    // Submit and Grade
     if (submitBtn) {
         submitBtn.addEventListener('click', function() {
-        let correctCount = 0;
-        const total = questionCards.length;
-        let unanswered = 0;
+            let correctCount = 0;
+            const total = questionCards.length;
+            let unanswered = 0;
 
-        // Check for unanswered
-        questionCards.forEach(card => {
-            const checked = card.querySelector('input[type="radio"]:checked');
-            if (!checked) unanswered++;
-        });
+            questionCards.forEach(card => {
+                const checked = card.querySelector('input[type="radio"]:checked');
+                if (!checked) unanswered++;
+            });
 
-        if (unanswered > 0) {
-            const confirmSubmit = confirm(`Bạn còn ${unanswered} câu chưa làm. Bạn có chắc chắn muốn nộp bài luôn không?`);
-            if (!confirmSubmit) return;
-        }
-
-        // Process answers
-        questionCards.forEach((card, idx) => {
-            const correctVal = parseInt(card.dataset.correct);
-            const qId = card.dataset.questionId;
-            const checked = card.querySelector('input[type="radio"]:checked');
-            const explanationBox = document.getElementById(`explanation-${qId}`);
-            const statusBox = explanationBox.querySelector('.explanation-status');
-            const labels = card.querySelectorAll('.option-label');
-
-            // Disable all radios
-            card.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
-
-            // Highlight the truly correct answer
-            if (labels[correctVal]) {
-                labels[correctVal].classList.add('correct-choice');
+            if (unanswered > 0) {
+                if (!confirm(`Bạn còn ${unanswered} câu chưa làm. Bạn có chắc chắn muốn nộp bài luôn không?`)) return;
             }
 
-            if (checked) {
-                const userVal = parseInt(checked.value);
-                if (userVal === correctVal) {
-                    correctCount++;
-                    statusBox.innerHTML = '<span class="badge bg-success"><i class="bi bi-check-lg"></i> Chính xác!</span>';
+            questionCards.forEach(card => {
+                const correctVal = parseInt(card.dataset.correct, 10);
+                const qId = card.dataset.questionId;
+                const checked = card.querySelector('input[type="radio"]:checked');
+                const explanationBox = document.getElementById(`explanation-${qId}`);
+                const statusBox = explanationBox ? explanationBox.querySelector('.explanation-status') : null;
+                const labels = card.querySelectorAll('.option-label');
+
+                card.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+                if (labels[correctVal]) labels[correctVal].classList.add('correct-choice');
+
+                if (checked) {
+                    const userVal = parseInt(checked.value, 10);
+                    if (userVal === correctVal) {
+                        correctCount++;
+                        if (statusBox) statusBox.innerHTML = '<span class="badge bg-success"><i class="bi bi-check-lg"></i> Chính xác!</span>';
+                    } else {
+                        if (labels[userVal]) labels[userVal].classList.add('wrong-choice');
+                        if (statusBox) statusBox.innerHTML = '<span class="badge bg-danger"><i class="bi bi-x-lg"></i> Chưa chính xác</span>';
+                    }
                 } else {
-                    if (labels[userVal]) labels[userVal].classList.add('wrong-choice');
-                    statusBox.innerHTML = '<span class="badge bg-danger"><i class="bi bi-x-lg"></i> Chưa chính xác</span>';
+                    if (statusBox) statusBox.innerHTML = '<span class="badge bg-secondary"><i class="bi bi-dash-circle"></i> Chưa trả lời</span>';
                 }
+
+                if (explanationBox) explanationBox.classList.remove('d-none');
+            });
+
+            const score = ((correctCount / total) * 10).toFixed(1);
+            const percent = Math.round((correctCount / total) * 100);
+
+            // Update Result Banner
+            const scoreEl = document.getElementById('resultScore');
+            const progressEl = document.getElementById('resultProgressBar');
+            const titleEl = document.getElementById('resultTitle');
+            const feedbackEl = document.getElementById('resultFeedback');
+            const iconEl = document.getElementById('resultIcon');
+
+            if (scoreEl) scoreEl.innerText = `${score} / 10 điểm`;
+            if (progressEl) progressEl.style.width = percent + '%';
+
+            if (percent >= 80) {
+                if (titleEl) titleEl.innerText = "🎉 Xuất sắc! Nắm vững kiến thức";
+                if (feedbackEl) feedbackEl.innerText = `Bạn đã trả lời đúng ${correctCount}/${total} câu hỏi.`;
+                if (iconEl) iconEl.innerHTML = '<i class="bi bi-trophy-fill text-warning fs-1"></i>';
+                if (progressEl) progressEl.className = 'progress-bar progress-bar-striped bg-success';
+                triggerConfetti();
+            } else if (percent >= 50) {
+                if (titleEl) titleEl.innerText = "👍 Khá tốt! Đạt yêu cầu cơ bản";
+                if (feedbackEl) feedbackEl.innerText = `Bạn đã trả lời đúng ${correctCount}/${total} câu hỏi.`;
+                if (iconEl) iconEl.innerHTML = '<i class="bi bi-award-fill text-info fs-1"></i>';
+                if (progressEl) progressEl.className = 'progress-bar progress-bar-striped bg-info';
             } else {
-                statusBox.innerHTML = '<span class="badge bg-secondary"><i class="bi bi-dash-circle"></i> Chưa trả lời</span>';
+                if (titleEl) titleEl.innerText = "📚 Cần ôn tập lại lý thuyết";
+                if (feedbackEl) feedbackEl.innerText = `Bạn đã trả lời đúng ${correctCount}/${total} câu hỏi. Hãy xem lại phần giải thích!`;
+                if (iconEl) iconEl.innerHTML = '<i class="bi bi-exclamation-triangle-fill text-danger fs-1"></i>';
+                if (progressEl) progressEl.className = 'progress-bar progress-bar-striped bg-danger';
             }
 
-            // Reveal explanation
-            explanationBox.classList.remove('d-none');
-        });
-
-        // Calculate score on 10-point scale
-        const score = ((correctCount / total) * 10).toFixed(1);
-        const percent = Math.round((correctCount / total) * 100);
-
-        // Save best score to localStorage
-        try {
-            const quizPage = document.querySelector('.quiz-page');
-            const chapterId = quizPage?.dataset?.chapterId || (window.location.pathname.match(/\/chapter\/(\d+)\/quiz/)?.[1]);
-            if (chapterId) {
-                const scores = JSON.parse(localStorage.getItem('toan11_chapter_scores') || '{}');
-                const numScore = parseFloat(score);
-                const prevBest = parseFloat(scores[chapterId] || 0);
-                if (numScore > prevBest) {
-                    scores[chapterId] = numScore;
-                    localStorage.setItem('toan11_chapter_scores', JSON.stringify(scores));
-                }
+            if (resultCard) {
+                resultCard.classList.remove('d-none');
+                resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-        } catch (e) {
-            console.error('Error saving chapter score:', e);
-        }
 
-        // Update Result Banner
-        document.getElementById('resultScore').innerText = `${score} / 10 điểm`;
-        document.getElementById('resultProgressBar').style.width = percent + '%';
-
-        const resultTitle = document.getElementById('resultTitle');
-        const resultFeedback = document.getElementById('resultFeedback');
-        const resultIcon = document.getElementById('resultIcon');
-
-        if (percent >= 80) {
-            resultTitle.innerText = "🎉 Xuất sắc! Nắm vững kiến thức";
-            resultFeedback.innerText = `Bạn đã trả lời đúng ${correctCount}/${total} câu hỏi. Hãy tiếp tục phát huy ở các chương tiếp theo!`;
-            resultIcon.innerHTML = '<i class="bi bi-trophy-fill text-warning fs-1"></i>';
-            document.getElementById('resultProgressBar').className = 'progress-bar progress-bar-striped bg-success';
-            // Trigger confetti!
-            if (typeof confetti === 'function') {
-                confetti({
-                    particleCount: 120,
-                    spread: 80,
-                    origin: { y: 0.6 }
-                });
-            }
-        } else if (percent >= 50) {
-            resultTitle.innerText = "👍 Khá tốt! Đạt yêu cầu cơ bản";
-            resultFeedback.innerText = `Bạn đã trả lời đúng ${correctCount}/${total} câu hỏi. Hãy xem lại lời giải chi tiết cho các câu sai bên dưới nhé.`;
-            resultIcon.innerHTML = '<i class="bi bi-award-fill text-primary fs-1"></i>';
-            document.getElementById('resultProgressBar').className = 'progress-bar progress-bar-striped bg-primary';
-        } else {
-            resultTitle.innerText = "💪 Cố gắng thêm nhé!";
-            resultFeedback.innerText = `Bạn đạt ${correctCount}/${total} câu. Hãy đọc lại lý thuyết của chương và bấm "Làm lại bài kiểm tra" để cải thiện điểm số.`;
-            resultIcon.innerHTML = '<i class="bi bi-patch-exclamation-fill text-danger fs-1"></i>';
-            document.getElementById('resultProgressBar').className = 'progress-bar progress-bar-striped bg-warning';
-        }
-
-        resultCard.classList.remove('d-none');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="bi bi-check-all"></i> Đã nộp bài';
-
-        // Smooth scroll up to result card
-        resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-        // Typeset explanations with MathJax (scoped)
-        if (window.MathJax && MathJax.typesetPromise) {
-            const quizContainer = document.getElementById('quizForm') || document.querySelector('.quiz-page');
-            MathJax.typesetPromise(quizContainer ? [quizContainer] : []).catch(() => {});
-        }
+            submitBtn.disabled = true;
+            renderMath(quizForm);
         });
     }
 
-    // Retry Quiz
     if (retryBtn) {
         retryBtn.addEventListener('click', function() {
             questionCards.forEach(card => {
                 const qId = card.dataset.questionId;
                 const explanationBox = document.getElementById(`explanation-${qId}`);
-                explanationBox.classList.add('d-none');
-
+                if (explanationBox) explanationBox.classList.add('d-none');
                 card.querySelectorAll('input[type="radio"]').forEach(r => {
                     r.disabled = false;
                     r.checked = false;
                 });
-
                 card.querySelectorAll('.option-label').forEach(l => {
                     l.className = 'option-label p-3 rounded-3 border d-flex align-items-center gap-3 cursor-pointer transition-all';
                 });
             });
 
-            resultCard.classList.add('d-none');
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="bi bi-send-check-fill"></i> Nộp bài & Chấm điểm';
-
+            if (resultCard) resultCard.classList.add('d-none');
+            if (submitBtn) submitBtn.disabled = false;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
 }
 
+// Lazy-load confetti script on demand only when celebration triggers
+function triggerConfetti() {
+    if (typeof confetti === 'function') {
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+        return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js';
+    script.onload = function() {
+        if (typeof confetti === 'function') {
+            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+        }
+    };
+    document.head.appendChild(script);
+}
+
+// ==========================================================================
+// 9. Unified Keyboard Shortcuts (Search & Navigation)
+// ==========================================================================
 function initKeyboardShortcuts() {
     if (window._keyboardShortcutsInitialized) return;
     window._keyboardShortcutsInitialized = true;
 
     document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + K: Focus search
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+            const searchInput = document.getElementById('globalSearchInput');
+            if (searchInput) {
+                e.preventDefault();
+                searchInput.focus();
+                searchInput.select();
+            }
+            return;
+        }
+
         // Alt + Left Arrow: Previous lesson
         if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'Left')) {
             const prevBtn = document.getElementById('prevLessonBtn');
@@ -662,183 +909,53 @@ function initKeyboardShortcuts() {
                 e.preventDefault();
                 prevBtn.click();
             }
+            return;
         }
+
         // Alt + Right Arrow: Next lesson
-        else if (e.altKey && (e.key === 'ArrowRight' || e.key === 'Right')) {
+        if (e.altKey && (e.key === 'ArrowRight' || e.key === 'Right')) {
             const nextBtn = document.getElementById('nextLessonBtn');
             if (nextBtn) {
                 e.preventDefault();
                 nextBtn.click();
             }
+            return;
         }
     });
 }
 
-/* ==========================================================================
-   7. Sidebar 60fps Accordion & Smart LocalStorage Persistence
-   ========================================================================== */
-function saveSidebarState() {
-    try {
-        const openIds = [];
-        const desktop = document.getElementById('desktopSidebar');
-        const scope = desktop || document;
-        scope.querySelectorAll('.sidebar-accordion-collapse.show').forEach(el => {
-            const id = el.getAttribute('data-chapter-id');
-            if (id && !openIds.includes(String(id))) {
-                openIds.push(String(id));
+// ==========================================================================
+// 10. SPA Smooth Navigation Engine (Lazy Load Heavy Assets & History API)
+// ==========================================================================
+function initSpaRouter() {
+    const pageCache = new Map();
+    const CACHE_PREFIX = 'toan11_page_';
+
+    function getCachedPage(key) {
+        if (pageCache.has(key)) return pageCache.get(key);
+        try {
+            const stored = sessionStorage.getItem(CACHE_PREFIX + key);
+            if (stored) {
+                const data = JSON.parse(stored);
+                pageCache.set(key, data);
+                return data;
             }
-        });
-        localStorage.setItem('toan11_open_chapters', JSON.stringify(openIds));
-        sessionStorage.setItem('toan11_open_chapters', JSON.stringify(openIds));
-    } catch (_) {}
-}
-
-function initSidebarAccordion() {
-    // 1. Determine active chapter: only open active chapter or chapter 1 by default
-    try {
-        let activeChId = '1';
-        const pathMatch = window.location.pathname.match(/\/chapter\/(\d+)/);
-        if (pathMatch && pathMatch[1]) {
-            activeChId = String(pathMatch[1]);
-        } else {
-            const lastLessonRaw = localStorage.getItem('toan11_last_lesson');
-            if (lastLessonRaw) {
-                try {
-                    const lastLesson = JSON.parse(lastLessonRaw);
-                    const m = lastLesson.url && lastLesson.url.match(/\/chapter\/(\d+)/);
-                    if (m && m[1]) activeChId = String(m[1]);
-                } catch (_) {}
-            }
-        }
-
-        // Apply state across both desktop & offcanvas mobile sidebars
-        document.querySelectorAll('.sidebar-accordion-collapse').forEach(collapseEl => {
-            const chId = String(collapseEl.getAttribute('data-chapter-id'));
-            const targetId = collapseEl.id;
-            const buttons = document.querySelectorAll(
-                `.sidebar-ch-btn[data-chapter-target="${targetId}"], .sidebar-ch-btn[data-chapter-id="${chId}"]`
-            );
-            const isOpen = (chId === activeChId);
-
-            if (isOpen) {
-                collapseEl.classList.add('show');
-                buttons.forEach(btn => {
-                    btn.classList.remove('collapsed');
-                    btn.setAttribute('aria-expanded', 'true');
-                });
-            } else {
-                collapseEl.classList.remove('show');
-                buttons.forEach(btn => {
-                    btn.classList.add('collapsed');
-                    btn.setAttribute('aria-expanded', 'false');
-                });
-            }
-        });
-
-        // Auto scroll to active lesson if on a lesson page
-        if (pathMatch && pathMatch[1]) {
-            setTimeout(() => {
-                const activeLink = document.querySelector('#desktopSidebar a.active, #desktopSidebar .sidebar-lesson-link.active');
-                if (activeLink) {
-                    activeLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 120);
-        }
-
-        saveSidebarState();
-    } catch (e) {
-        console.warn('Sidebar state initialization error:', e);
+        } catch (_) {}
+        return null;
     }
 
-    // 2. Delegate click handler on entire chapter header (including native chevron & icons)
-    if (window._sidebarAccordionBound) return;
-    window._sidebarAccordionBound = true;
+    function setCachedPage(key, data) {
+        pageCache.set(key, data);
+        try {
+            // Keep session cache within reasonable limits
+            sessionStorage.setItem(CACHE_PREFIX + key, JSON.stringify(data));
+        } catch (_) {}
+    }
 
-    document.addEventListener('click', function(e) {
-        const header = e.target.closest('.accordion-header') || e.target.closest('.sidebar-ch-btn');
-        if (!header) return;
-
-        const btn = header.classList.contains('sidebar-ch-btn') ? header : header.querySelector('.sidebar-ch-btn');
-        if (!btn) return;
-
-        e.preventDefault();
-        e.stopPropagation();
-
-        const chapterId = btn.getAttribute('data-chapter-id') || 
-                          btn.closest('.accordion-item')?.getAttribute('data-chapter-id');
-        const targetId = btn.getAttribute('data-chapter-target') || (chapterId ? `collapse-ch-${chapterId}` : null);
-        if (!targetId && !chapterId) return;
-
-        // Locate target collapse container in the current accordion-item
-        const accordionItem = btn.closest('.accordion-item');
-        const targetCollapse = accordionItem ? 
-            accordionItem.querySelector('.sidebar-accordion-collapse') : 
-            (targetId ? document.getElementById(targetId) : null);
-            
-        if (!targetCollapse) return;
-
-        const isCurrentlyOpen = targetCollapse.classList.contains('show');
-        const nextState = !isCurrentlyOpen;
-
-        // Toggle state across both desktop & offcanvas mobile instances of this chapter
-        const collSelector = chapterId ? 
-            `.sidebar-accordion-collapse[data-chapter-id="${chapterId}"]` : 
-            `#${targetId}`;
-        const btnSelector = chapterId ? 
-            `.sidebar-ch-btn[data-chapter-id="${chapterId}"]` : 
-            `[data-chapter-target="${targetId}"]`;
-
-        document.querySelectorAll(collSelector).forEach(c => {
-            if (nextState) {
-                c.classList.add('show');
-            } else {
-                c.classList.remove('show');
-            }
-        });
-
-        document.querySelectorAll(btnSelector).forEach(b => {
-            if (nextState) {
-                b.classList.remove('collapsed');
-                b.setAttribute('aria-expanded', 'true');
-            } else {
-                b.classList.add('collapsed');
-                b.setAttribute('aria-expanded', 'false');
-            }
-        });
-
-        saveSidebarState();
-    });
-}
-
-function initSidebarScrollTracking() {
-    const desktop = document.getElementById('desktopSidebar');
-    if (!desktop) return;
-    const scroller = desktop;
-
-    let scrollTimeout = null;
-    scroller.addEventListener('scroll', function() {
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(() => {
-            try {
-                localStorage.setItem('toan11_sidebar_scroll', scroller.scrollTop);
-                sessionStorage.setItem('toan11_sidebar_scroll', scroller.scrollTop);
-            } catch (_) {}
-        }, 60);
-    }, { passive: true });
-}
-
-/* ==========================================================================
-   8. SPA Smooth Navigation Engine (Fetch API + History API + View Transitions)
-   ========================================================================== */
-function initSpaRouter() {
-    // 1. In-memory Cache: url -> { title, viewHtml, scriptsHtml, timestamp }
-    const pageCache = new Map();
-
-    // Cache initial page on load
     const initialView = document.getElementById('spaViewContainer');
     const initialScripts = document.getElementById('spaScriptsContainer');
     if (initialView) {
-        pageCache.set(window.location.pathname + window.location.search, {
+        setCachedPage(window.location.pathname + window.location.search, {
             title: document.title,
             viewHtml: initialView.innerHTML,
             scriptsHtml: initialScripts ? initialScripts.innerHTML : '',
@@ -846,43 +963,44 @@ function initSpaRouter() {
         });
     }
 
-    // 2. Top Progress Bar Controller (Only appears if network takes > 120ms)
     const ProgressBar = {
-        timer: null,
         bar: document.getElementById('spaProgressBar'),
+        timer: null,
         start() {
-            if (!this.bar) this.bar = document.getElementById('spaProgressBar');
             if (!this.bar) return;
             clearTimeout(this.timer);
-            this.bar.classList.remove('done');
             this.bar.style.width = '0%';
+            this.bar.classList.add('active');
+            this.bar.classList.remove('done');
             this.timer = setTimeout(() => {
-                this.bar.classList.add('active');
-                this.bar.style.width = '35%';
-                setTimeout(() => {
-                    if (this.bar.classList.contains('active')) {
-                        this.bar.style.width = '75%';
-                    }
-                }, 200);
-            }, 120);
+                if (this.bar) this.bar.style.width = '70%';
+            }, 60);
         },
         finish() {
-            clearTimeout(this.timer);
             if (!this.bar) return;
-            if (this.bar.classList.contains('active')) {
-                this.bar.style.width = '100%';
-                this.bar.classList.add('done');
-                setTimeout(() => {
+            clearTimeout(this.timer);
+            this.bar.style.width = '100%';
+            this.bar.classList.add('done');
+            setTimeout(() => {
+                if (this.bar) {
                     this.bar.classList.remove('active', 'done');
                     this.bar.style.width = '0%';
-                }, 300);
-            }
+                }
+            }, 300);
         }
     };
 
-    // 3. Instant Sidebar Active State Updater
     function updateSidebarActive(targetPath, shouldScroll = true) {
         const cleanPath = targetPath.split('?')[0].split('#')[0];
+        const match = cleanPath.match(/\/chapter\/(\d+)(?:\/lesson\/(\d+))?/);
+        const activeChId = match ? match[1] : null;
+
+        // If sidebar container is empty, render it
+        const accordion = document.getElementById('curriculumAccordion');
+        if (accordion && !accordion.children.length) {
+            renderSidebar(activeChId ? parseInt(activeChId, 10) : 1);
+        }
+
         const sidebarLinks = document.querySelectorAll('.sidebar-column a, #sidebarOffcanvas a');
         let activeLink = null;
 
@@ -894,75 +1012,45 @@ function initSpaRouter() {
             if (linkPath === cleanPath) {
                 link.classList.add('active');
                 activeLink = link;
-                if (link.href.includes('/quiz')) {
-                    link.classList.add('text-white', 'bg-danger');
-                    link.classList.remove('bg-danger-subtle');
-                }
             } else {
                 link.classList.remove('active');
-                if (link.href.includes('/quiz')) {
-                    link.classList.remove('text-white', 'bg-danger');
-                    link.classList.add('bg-danger-subtle');
-                }
             }
         });
 
-        // Smart Chapter Accordion Sync: Open active chapter, collapse other chapters
-        if (activeLink) {
-            const collapseEl = activeLink.closest('.sidebar-accordion-collapse');
-            if (collapseEl) {
-                const activeChId = collapseEl.getAttribute('data-chapter-id');
-                if (activeChId) {
-                    // Open active chapter across desktop & mobile, collapse other chapters
-                    document.querySelectorAll('.sidebar-accordion-collapse').forEach(c => {
-                        const id = c.getAttribute('data-chapter-id');
-                        if (id === activeChId) {
-                            c.classList.add('show');
-                        } else {
-                            c.classList.remove('show');
-                        }
-                    });
-                    document.querySelectorAll('.sidebar-ch-btn').forEach(btn => {
-                        const id = btn.getAttribute('data-chapter-id');
-                        if (id === activeChId) {
-                            btn.classList.remove('collapsed');
-                            btn.setAttribute('aria-expanded', 'true');
-                        } else {
-                            btn.classList.add('collapsed');
-                            btn.setAttribute('aria-expanded', 'false');
-                        }
-                    });
-
-                    saveSidebarState();
+        if (activeChId) {
+            document.querySelectorAll('.sidebar-accordion-collapse').forEach(c => {
+                const id = c.getAttribute('data-chapter-id');
+                if (id === activeChId) {
+                    c.classList.add('show');
+                } else {
+                    c.classList.remove('show');
                 }
-            }
-
-            // Smooth scroll into view inside desktop sidebar
-            if (shouldScroll) {
-                setTimeout(() => {
-                    const desktopActive = document.querySelector('#desktopSidebar a.active, #desktopSidebar .sidebar-lesson-link.active');
-                    if (desktopActive) {
-                        desktopActive.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                }, 120);
-            }
+            });
+            document.querySelectorAll('.sidebar-ch-btn').forEach(btn => {
+                const id = btn.getAttribute('data-chapter-id');
+                if (id === activeChId) {
+                    btn.classList.remove('collapsed');
+                    btn.setAttribute('aria-expanded', 'true');
+                } else {
+                    btn.classList.add('collapsed');
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
+            saveSidebarState();
         }
 
-        // Close mobile offcanvas if open
-        const offcanvasEl = document.getElementById('sidebarOffcanvas');
-        if (offcanvasEl && offcanvasEl.classList.contains('show')) {
-            try {
-                const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasEl);
-                if (offcanvasInstance) offcanvasInstance.hide();
-            } catch (_) {}
+        if (shouldScroll && activeLink) {
+            setTimeout(() => {
+                activeLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 120);
         }
 
-        // Close search dropdown if open
+        closeMobileSidebar();
         const dropdown = document.getElementById('searchResultsDropdown');
         if (dropdown) dropdown.style.display = 'none';
     }
 
-    // 4. Background Prefetcher (Low-priority fetch with 60ms hover debounce)
+    // Background Prefetcher (excludes heavy 3D and exam pages to save bandwidth)
     let prefetchTimer = null;
     function prefetchPage(url) {
         const urlObj = new URL(url, window.location.origin);
@@ -1001,11 +1089,12 @@ function initSpaRouter() {
             const targetUrl = new URL(href, window.location.origin);
             if (targetUrl.origin !== window.location.origin) return;
             if (targetUrl.pathname === window.location.pathname && targetUrl.search === window.location.search) return;
-            if (targetUrl.pathname.startsWith('/api/')) return;
+            // Lazy load requirement: do not background-fetch 3D or exam questions on hover
+            if (targetUrl.pathname.startsWith('/api/') || targetUrl.pathname === '/hinh-hoc-3d' || targetUrl.pathname.startsWith('/exam/')) return;
 
             prefetchTimer = setTimeout(() => {
                 prefetchPage(targetUrl.href);
-            }, 60);
+            }, 80);
         } catch (_) {}
     });
 
@@ -1017,27 +1106,12 @@ function initSpaRouter() {
         }
     });
 
-    document.addEventListener('pointerdown', function(e) {
-        const link = e.target.closest('a[href]');
-        if (!link) return;
-        const href = link.getAttribute('href');
-        if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:')) return;
-        try {
-            const targetUrl = new URL(href, window.location.origin);
-            if (targetUrl.origin === window.location.origin && !targetUrl.pathname.startsWith('/api/')) {
-                prefetchPage(targetUrl.href);
-            }
-        } catch (_) {}
-    }, { passive: true });
-
-    // 5. Script Re-Execution Helper
     async function executeScriptsFromContainer(scriptsContainer) {
         if (!scriptsContainer) return;
         const scripts = Array.from(scriptsContainer.querySelectorAll('script'));
 
         for (const oldScript of scripts) {
             if (oldScript.src) {
-                // Skip re-downloading large external libs if already in window
                 if (oldScript.src.includes('three.min.js') && window.THREE) continue;
                 if (oldScript.src.includes('OrbitControls.js') && window.THREE && window.THREE.OrbitControls) continue;
                 if (oldScript.src.includes('geometry3d.js')) {
@@ -1047,7 +1121,6 @@ function initSpaRouter() {
                     }
                 }
 
-                // Sequential load for new external scripts
                 await new Promise((resolve) => {
                     const newScript = document.createElement('script');
                     Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
@@ -1056,7 +1129,6 @@ function initSpaRouter() {
                     document.head.appendChild(newScript);
                 });
             } else {
-                // Inline script execution
                 try {
                     const newScript = document.createElement('script');
                     Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
@@ -1070,13 +1142,10 @@ function initSpaRouter() {
         }
     }
 
-    // 6. Navigation Logic with View Transitions
-    let isNavigating = false;
     async function navigateTo(url, isPopState = false) {
         const targetUrl = new URL(url, window.location.origin);
         const cacheKey = targetUrl.pathname + targetUrl.search;
 
-        // If clicking on current URL without hash difference, no-op
         if (!isPopState && targetUrl.pathname === window.location.pathname && targetUrl.search === window.location.search) {
             if (targetUrl.hash) {
                 const targetEl = document.querySelector(targetUrl.hash);
@@ -1085,22 +1154,17 @@ function initSpaRouter() {
             return;
         }
 
-        // 1. Instant active feedback on sidebar with smooth auto-scroll
         updateSidebarActive(targetUrl.pathname, true);
 
-        // 2. Cleanup 3D scene if leaving 3D page
-        if (window.location.pathname === '/hinh-hoc-3d' && targetUrl.pathname !== '/hinh-hoc-3d') {
-            if (window.cleanupGeometry3D) {
-                try { window.cleanupGeometry3D(); } catch (_) {}
-            }
+        // Strict Resource Management: Cleanup 3D scene & cancel requestAnimationFrame before navigating away
+        if (targetUrl.pathname !== '/hinh-hoc-3d' && window.cleanupGeometry3D) {
+            try { window.cleanupGeometry3D(); } catch (_) {}
         }
 
-        // 3. Start top progress bar
         ProgressBar.start();
-        isNavigating = true;
 
         try {
-            let pageData = pageCache.get(cacheKey);
+            let pageData = getCachedPage(cacheKey);
 
             if (!pageData) {
                 const response = await fetch(targetUrl.href);
@@ -1125,15 +1189,13 @@ function initSpaRouter() {
                     scriptsHtml: scripts ? scripts.innerHTML : '',
                     timestamp: Date.now()
                 };
-                pageCache.set(cacheKey, pageData);
+                setCachedPage(cacheKey, pageData);
             }
 
-            // 4. Update History
             if (!isPopState) {
                 history.pushState({ url: targetUrl.href }, '', targetUrl.href);
             }
 
-            // 5. DOM Swap with View Transitions API or Fallback
             const viewContainer = document.getElementById('spaViewContainer');
             const scriptsContainer = document.getElementById('spaScriptsContainer');
 
@@ -1164,22 +1226,19 @@ function initSpaRouter() {
                 }
             }
 
-            // 6. Execute scripts from the new page
             try {
                 await executeScriptsFromContainer(scriptsContainer);
             } catch (scriptErr) {
                 console.warn('SPA Script Execution Warning:', scriptErr);
             }
 
-            // 7. Ultra-fast Math rendering (KaTeX auto-render prioritized + MathJax fallback)
             renderMath(viewContainer);
 
-            // 8. Re-initialize global components on new DOM
             try { initProgress(); } catch (_) {}
             try { initContinueLearning(); } catch (_) {}
             try { initQuiz(); } catch (_) {}
 
-            // 9. If navigated to 3D page, ensure 3D scene starts
+            // Lazy initialization: 3D scene only runs when user visits /hinh-hoc-3d
             if (targetUrl.pathname === '/hinh-hoc-3d') {
                 if (window.initGeometry3D) {
                     try { window.initGeometry3D(); } catch (_) {}
@@ -1192,12 +1251,10 @@ function initSpaRouter() {
                 window.location.href = targetUrl.href;
             }
         } finally {
-            isNavigating = false;
             ProgressBar.finish();
         }
     }
 
-    // 7. Global Link Interception
     document.addEventListener('click', function(e) {
         const link = e.target.closest('a');
         if (!link) return;
@@ -1220,10 +1277,27 @@ function initSpaRouter() {
         } catch (_) {}
     });
 
-    // 8. History PopState Handler (Back / Forward buttons)
     window.addEventListener('popstate', function() {
+        if (window.location.pathname !== '/hinh-hoc-3d' && window.cleanupGeometry3D) {
+            try { window.cleanupGeometry3D(); } catch (_) {}
+        }
         navigateTo(window.location.href, true);
     });
 }
 
-
+// ==========================================================================
+// 11. Application Lifecycle Initialization
+// ==========================================================================
+document.addEventListener("DOMContentLoaded", function() {
+    initTheme();
+    renderSidebar();
+    initSidebarEventDelegation();
+    initSidebarScrollTracking();
+    initProgress();
+    initContinueLearning();
+    initSearch();
+    initQuiz();
+    initKeyboardShortcuts();
+    initSpaRouter();
+    renderMath();
+});

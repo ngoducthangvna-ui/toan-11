@@ -133,9 +133,10 @@
 {% block scripts %}
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Typeset MathJax
-        if (window.MathJax) {
-            MathJax.typesetPromise();
+        // Render Math via KaTeX
+        const errContainer = document.querySelector('.error-log-page') || document.getElementById('spaViewContainer');
+        if (typeof renderMath === 'function' && errContainer) {
+            renderMath(errContainer);
         }
 
         // Filter buttons
