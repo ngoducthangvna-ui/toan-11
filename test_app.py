@@ -29,12 +29,10 @@ class Math11AppTests(unittest.TestCase):
             self.assertEqual(res.status_code, 200, f"Lesson ch{ch['id']}_les{first_les['id']} failed")
 
     def test_all_quizzes(self):
-        import html
         for ch in ALL_CHAPTERS:
             res = self.app.get(f'/chapter/{ch["id"]}/quiz')
-            self.assertEqual(res.status_code, 200, f"Quiz for Chapter {ch['id']} failed")
-            expected_title = html.escape(ch['quiz']['title'])
-            self.assertIn(expected_title.encode('utf-8'), res.data)
+            self.assertEqual(res.status_code, 302, f"Quiz for Chapter {ch['id']} should safely redirect")
+            self.assertTrue(res.location.endswith(f'/chapter/{ch["id"]}'))
 
     def test_formulas_page(self):
         res = self.app.get('/formulas')

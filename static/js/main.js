@@ -18,8 +18,6 @@ document.addEventListener("DOMContentLoaded", function() {
     initProgress();
     initContinueLearning();
     initSearch();
-    initQuiz();
-    initWorkout();
     initSpaRouter();
 });
 
@@ -172,25 +170,6 @@ function initProgress() {
                 chBar.style.width = chPercent + '%';
             }
         });
-
-        // Update Chapter Quiz Best Scores from localStorage
-        try {
-            const chapterScores = JSON.parse(localStorage.getItem('toan11_chapter_scores') || '{}');
-            document.querySelectorAll('.chapter-best-score').forEach(badge => {
-                const chId = badge.dataset.chapterId;
-                if (chId && chapterScores[chId] !== undefined) {
-                    badge.classList.remove('d-none');
-                    const scoreVal = badge.querySelector('.score-val');
-                    if (scoreVal) {
-                        scoreVal.innerText = `Điểm cao nhất: ${chapterScores[chId]}/10`;
-                    }
-                } else {
-                    badge.classList.add('d-none');
-                }
-            });
-        } catch (e) {
-            console.error('Error rendering chapter scores:', e);
-        }
     }
 }
 
@@ -587,153 +566,7 @@ function initQuiz() {
 }
 
 /* ==========================================================================
-   6. Workout Luyện Phản Xạ 15 Phút (10 Câu Nhanh)
-   ========================================================================== */
-function initWorkout() {
-    const startBtn = document.getElementById('startWorkoutBtn');
-    const container = document.getElementById('workoutContainer');
-    const timerEl = document.getElementById('workoutTimer');
-    const scoreEl = document.getElementById('workoutScore');
-    if (!startBtn || !container) return;
-
-    const WORKOUT_QUESTIONS = [
-        { q: "Giá trị của $\\sin\\left(\\frac{\\pi}{2}\\right)$ bằng:", opts: ["0", "1", "-1", "1/2"], ans: 1 },
-        { q: "Cấp số cộng có $u_1 = 3, d = 4$. Số hạng $u_2$ bằng:", opts: ["7", "12", "1", "9"], ans: 0 },
-        { q: "Giá trị của $\\log_2 8$ bằng:", opts: ["2", "3", "4", "1"], ans: 1 },
-        { q: "Đạo hàm của hàm số $y = x^3$ tại $x = 2$ bằng:", opts: ["6", "12", "8", "4"], ans: 1 },
-        { q: "Công bội $q$ của cấp số nhân $2, 6, 18, 54$ là:", opts: ["2", "3", "4", "6"], ans: 1 },
-        { q: "Giới hạn $\\lim_{n \\to \\infty} \\frac{1}{n}$ bằng:", opts: ["0", "1", "+\\infty", "Không tồn tại"], ans: 0 },
-        { q: "Giá trị của $\\cos(0)$ bằng:", opts: ["0", "1", "-1", "undefined"], ans: 1 },
-        { q: "Tập xác định của hàm số $y = \\sqrt{x - 3}$ là:", opts: ["$[3; +\\infty)$", "$(3; +\\infty)$", "$(-\\infty; 3]$", "$\\mathbb{R}$"], ans: 0 },
-        { q: "Đạo hàm của $y = \\ln x$ (với $x > 0$) là:", opts: ["$1/x$", "$-1/x^2$", "$x$", "$e^x$"], ans: 0 },
-        { q: "Góc giữa 2 đường thẳng vuông góc trong không gian bằng:", opts: ["$0^\\circ$", "$45^\\circ$", "$90^\\circ$", "$180^\\circ$"], ans: 2 }
-    ];
-
-    let currentIdx = 0;
-    let score = 0;
-    let timerInterval = null;
-
-    startBtn.addEventListener('click', function() {
-        currentIdx = 0;
-        score = 0;
-        if (scoreEl) scoreEl.innerText = "0 / 10";
-
-        // Drift-free countdown using Date.now()
-        const durationSeconds = 15 * 60;
-        const endTime = Date.now() + durationSeconds * 1000;
-        clearInterval(timerInterval);
-
-        function updateWorkoutTimer() {
-            const remaining = Math.max(0, Math.round((endTime - Date.now()) / 1000));
-            if (remaining <= 0) {
-                clearInterval(timerInterval);
-                finishWorkout();
-                return;
-            }
-            const mins = Math.floor(remaining / 60);
-            const secs = remaining % 60;
-            if (timerEl) {
-                timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-            }
-        }
-
-        timerInterval = setInterval(updateWorkoutTimer, 1000);
-        updateWorkoutTimer();
-
-        renderQuestion();
-    });
-
-    function renderQuestion() {
-        if (currentIdx >= WORKOUT_QUESTIONS.length) {
-            finishWorkout();
-            return;
-        }
-
-        const item = WORKOUT_QUESTIONS[currentIdx];
-        let optsHtml = '';
-        item.opts.forEach((opt, idx) => {
-            optsHtml += `
-                <button type="button" class="btn btn-outline-secondary text-start p-3 w-100 workout-opt-btn rounded-3 fw-semibold" data-idx="${idx}">
-                    ${String.fromCharCode(65 + idx)}. ${opt}
-                </button>
-            `;
-        });
-
-        container.innerHTML = `
-            <div class="workout-question-card">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="badge bg-primary-subtle text-primary border fw-bold">Câu ${currentIdx + 1} / 10</span>
-                </div>
-                <h5 class="fw-bold mb-3 text-body">${item.q}</h5>
-                <div class="d-grid gap-2 mb-3">
-                    ${optsHtml}
-                </div>
-            </div>
-        `;
-
-        if (window.MathJax && MathJax.typesetPromise) {
-            MathJax.typesetPromise([container]).catch(() => {});
-        }
-
-        // Bind clicks
-        container.querySelectorAll('.workout-opt-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const chosen = parseInt(this.dataset.idx);
-                const allBtns = container.querySelectorAll('.workout-opt-btn');
-                allBtns.forEach(b => b.disabled = true);
-
-                if (chosen === item.ans) {
-                    this.className = 'btn btn-success text-start p-3 w-100 rounded-3 fw-bold';
-                    score++;
-                    if (scoreEl) scoreEl.innerText = `${score} / 10`;
-                } else {
-                    this.className = 'btn btn-danger text-start p-3 w-100 rounded-3 fw-bold';
-                    allBtns[item.ans].className = 'btn btn-success text-start p-3 w-100 rounded-3 fw-bold';
-                }
-
-                setTimeout(() => {
-                    currentIdx++;
-                    renderQuestion();
-                }, 650);
-            });
-        });
-    }
-
-    function finishWorkout() {
-        clearInterval(timerInterval);
-        const percent = Math.round((score / 10) * 100);
-        let feedback = "Hãy ôn tập thêm lý thuyết để đạt kết quả tốt hơn nhé!";
-        let badgeColor = "bg-warning";
-        if (percent >= 80) {
-            feedback = "🎉 Quá xuất sắc! Phản xạ kiến thức 11 đỉnh cao!";
-            badgeColor = "bg-success";
-            if (typeof confetti === 'function') {
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-            }
-        } else if (percent >= 50) {
-            feedback = "👍 Khá tốt! Cần luyện thêm để tăng tốc độ.";
-            badgeColor = "bg-primary";
-        }
-
-        container.innerHTML = `
-            <div class="text-center py-4">
-                <span class="badge ${badgeColor} fs-5 px-3 py-2 mb-3 rounded-pill">${score} / 10 Điểm</span>
-                <h4 class="fw-bold mb-2 text-body">Hoàn thành bài luyện phản xạ!</h4>
-                <p class="text-muted mb-4">${feedback}</p>
-                <button type="button" id="restartWorkoutBtn" class="btn btn-warning text-dark fw-bold px-4 rounded-pill">
-                    <i class="bi bi-arrow-counterclockwise me-1"></i> Luyện tập lại
-                </button>
-            </div>
-        `;
-
-        document.getElementById('restartWorkoutBtn')?.addEventListener('click', function() {
-            startBtn.click();
-        });
-    }
-}
-
-/* ==========================================================================
-   7. SPA Smooth Navigation Engine (Fetch API + History API + View Transitions)
+   6. SPA Smooth Navigation Engine (Fetch API + History API + View Transitions)
    ========================================================================== */
 function initSpaRouter() {
     // 1. In-memory Cache: url -> { title, viewHtml, scriptsHtml, timestamp }
@@ -797,10 +630,6 @@ function initSpaRouter() {
 
             if (linkPath === cleanPath) {
                 link.classList.add('active');
-                if (link.href.includes('/quiz')) {
-                    link.classList.add('text-white', 'bg-danger');
-                    link.classList.remove('bg-danger-subtle');
-                }
                 // Auto-expand parent chapter accordion if collapsed
                 const collapseEl = link.closest('.accordion-collapse');
                 if (collapseEl && !collapseEl.classList.contains('show')) {
@@ -813,10 +642,6 @@ function initSpaRouter() {
                 }
             } else {
                 link.classList.remove('active');
-                if (link.href.includes('/quiz')) {
-                    link.classList.remove('text-white', 'bg-danger');
-                    link.classList.add('bg-danger-subtle');
-                }
             }
         });
 
@@ -1033,8 +858,6 @@ function initSpaRouter() {
             // 8. Re-initialize global components on new DOM
             initProgress();
             initContinueLearning();
-            initQuiz();
-            initWorkout();
 
             // 9. If navigated to 3D page, ensure 3D scene starts
             if (targetUrl.pathname === '/hinh-hoc-3d') {

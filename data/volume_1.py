@@ -14,7 +14,7 @@ VOLUME_1_CHAPTERS = [
         "badge": "Đại số & Giải tích",
         "icon": "bi-symmetry-horizontal",
         "color": "indigo",
-        "summary": "Nắm vững góc lượng giác, các công thức biến đổi lượng giác cốt lõi, khảo sát 4 hàm số lượng giác và phương pháp giải phương trình lượng giác cơ bản.",
+        "summary": "Góc & cung lượng giác, công thức biến đổi, hàm số lượng giác, phương trình lượng giác.",
         "lessons": [
             {
                 "id": 1,
@@ -677,7 +677,7 @@ VOLUME_1_CHAPTERS = [
         "badge": "Đại số & Giải tích",
         "icon": "bi-sort-numeric-up",
         "color": "teal",
-        "summary": "Khái niệm dãy số, dãy tăng giảm, bị chặn. Nắm vững tính chất, công thức số hạng tổng quát và công thức tính tổng $n$ số hạng đầu của Cấp số cộng và Cấp số nhân.",
+        "summary": "Dãy số, cấp số cộng, cấp số nhân, số hạng tổng quát, tính tổng n số hạng đầu.",
         "lessons": [
             {
                 "id": 1,
@@ -868,7 +868,7 @@ VOLUME_1_CHAPTERS = [
         "badge": "Thống kê & Xác suất",
         "icon": "bi-bar-chart-line-fill",
         "color": "emerald",
-        "summary": "Nắm vững phương pháp ghép nhóm dữ liệu, tính số trung bình, trung vị, các tứ phân vị ($Q_1, Q_2, Q_3$) và mốt của mẫu số liệu ghép nhóm.",
+        "summary": "Mẫu số liệu ghép nhóm, số trung bình, trung vị, tứ phân vị, mốt.",
         "lessons": [
             {
                 "id": 1,
@@ -1000,7 +1000,7 @@ VOLUME_1_CHAPTERS = [
         "badge": "Hình học không gian",
         "icon": "bi-box",
         "color": "amber",
-        "summary": "Đại cương đường thẳng và mặt phẳng, các tiên đề hình học không gian, vị trí tương đối, định lí về đường thẳng và hai mặt phẳng song song, hình lăng trụ và hình chóp cụt.",
+        "summary": "Đường thẳng & mặt phẳng, quan hệ song song, hình lăng trụ, hình chóp cụt.",
         "lessons": [
             {
                 "id": 1,
@@ -1206,7 +1206,7 @@ VOLUME_1_CHAPTERS = [
         "badge": "Đại số & Giải tích",
         "icon": "bi-infinity",
         "color": "rose",
-        "summary": r"Giới hạn của dãy số, tổng cấp số nhân lùi vô hạn. Giới hạn của hàm số tại một điểm, tại vô cực, các dạng vô định $\frac{0}{0}, \frac{\infty}{\infty}, \infty - \infty$ và tính liên tục của hàm số.",
+        "summary": "Giới hạn dãy số, giới hạn hàm số, khử dạng vô định, hàm số liên tục.",
         "lessons": [
             {
                 "id": 1,

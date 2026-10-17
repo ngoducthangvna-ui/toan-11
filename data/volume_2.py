@@ -14,7 +14,7 @@ VOLUME_2_CHAPTERS = [
         "badge": "Đại số & Giải tích",
         "icon": "bi-graph-up-arrow",
         "color": "cyan",
-        "summary": "Phép tính lũy thừa số mũ thực, định nghĩa và tính chất logarit, khảo sát hàm số mũ, hàm số logarit và giải phương trình, bất phương trình mũ - logarit cơ bản.",
+        "summary": "Lũy thừa, hàm số mũ, logarit, phương trình & bất phương trình mũ - logarit.",
         "lessons": [
             {
                 "id": 1,
@@ -235,7 +235,7 @@ VOLUME_2_CHAPTERS = [
         "badge": "Đại số & Giải tích",
         "icon": "bi-lightning-charge-fill",
         "color": "violet",
-        "summary": "Định nghĩa đạo hàm, ý nghĩa hình học (tiếp tuyến) và vật lí (vận tốc tức thời). Bảng đạo hàm các hàm sơ cấp, quy tắc đạo hàm tổng, tích, thương, đạo hàm hàm hợp và đạo hàm cấp hai.",
+        "summary": "Đạo hàm, tiếp tuyến, quy tắc tính đạo hàm, đạo hàm hàm hợp, đạo hàm cấp hai.",
         "lessons": [
             {
                 "id": 1,
@@ -408,7 +408,7 @@ VOLUME_2_CHAPTERS = [
         "badge": "Hình học không gian",
         "icon": "bi-bounding-box-circles",
         "color": "blue",
-        "summary": "Hai đường thẳng vuông góc, đường thẳng vuông góc mặt phẳng, hai mặt phẳng vuông góc, định lí ba đường vuông góc và các bài toán tính khoảng cách, góc trong không gian.",
+        "summary": "Đường thẳng & mặt phẳng vuông góc, hai mặt phẳng vuông góc, khoảng cách & góc trong không gian.",
         "lessons": [
             {
                 "id": 1,
@@ -615,7 +615,7 @@ VOLUME_2_CHAPTERS = [
         "badge": "Thống kê & Xác suất",
         "icon": "bi-dice-5-fill",
         "color": "rose",
-        "summary": "Biến cố hợp, biến cố giao, hai biến cố độc lập, hai biến cố xung khắc, quy tắc cộng xác suất và quy tắc nhân xác suất.",
+        "summary": "Biến cố hợp, biến cố giao, biến cố độc lập, quy tắc cộng & nhân xác suất.",
         "lessons": [
             {
                 "id": 1,

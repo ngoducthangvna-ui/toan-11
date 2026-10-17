@@ -120,11 +120,8 @@ def lesson_detail(chapter_id, lesson_id):
 
 @app.route('/chapter/<int:chapter_id>/quiz')
 def chapter_quiz(chapter_id):
-    """Trang bài kiểm tra trắc nghiệm cuối mỗi chương"""
-    chapter, quiz = get_chapter_quiz(chapter_id)
-    if not chapter or not quiz:
-        return redirect(url_for('index'))
-    return render_template('quiz.html', chapter=chapter, quiz=quiz)
+    """Vô hiệu hóa an toàn route bài kiểm tra cuối chương - Điều hướng về chi tiết chương"""
+    return redirect(url_for('chapter_detail', chapter_id=chapter_id))
 
 @app.route('/formulas')
 def formulas():
