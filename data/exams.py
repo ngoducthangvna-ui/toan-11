@@ -638,7 +638,7 @@ EXAM_LIST = [
             {
                 "id": 8,
                 "question": r"Phương trình $\cos^2 x = 1$ tương đương với phương trình nào sau đây?",
-                "options": [r"A. $\sin x = 0$", r"B. $\cos x = 1$", r"C. $\sin x = 1$", r"D. $\tan x = 0$"],
+                "options": ["A. $\sin x = 0$", "B. $\cos x = 1$", "C. $\sin x = 1$", "D. $\tan x = 0$"],
                 "correct": 0,
                 "method": "Hệ thức cơ bản",
                 "explanation": r"$\cos^2 x = 1 \iff 1 - \sin^2 x = 1 \iff \sin^2 x = 0 \iff \sin x = 0$."
@@ -817,7 +817,7 @@ EXAM_LIST = [
             {
                 "id": 1,
                 "question": r"Giá trị của giới hạn $\lim_{n \to \infty} \frac{3n^2 + n - 2}{n^2 + 5}$ bằng:",
-                "options": ["A. 3", "B. 0", r"C. $+\infty$", "D. 1"],
+                "options": ["A. 3", "B. 0", "C. $+\infty$", "D. 1"],
                 "correct": 0,
                 "method": "Bậc tử = bậc mẫu",
                 "explanation": r"Bậc cao nhất là $n^2$. Hệ số tương ứng là 3 và 1. Vậy giới hạn bằng $3/1 = 3$."
@@ -845,7 +845,7 @@ EXAM_LIST = [
                     "A. $(P) // (Q)$",
                     "B. $(P)$ cắt $(Q)$",
                     "C. $(P)$ trùng $(Q)$",
-                    r"D. $(P) \perp (Q)$"
+                    "D. $(P) \perp (Q)$"
                 ],
                 "correct": 0,
                 "method": "Tính chất bắc cầu",
@@ -917,7 +917,7 @@ EXAM_LIST = [
             {
                 "id": 11,
                 "question": r"Giới hạn $\lim_{x \to -\infty} \frac{\sqrt{x^2 + 1}}{x}$ bằng:",
-                "options": ["A. -1", "B. 1", "C. 0", r"D. $+\infty$"],
+                "options": ["A. -1", "B. 1", "C. 0", "D. $+\infty$"],
                 "correct": 0,
                 "method": "Dấu căn bậc hai khi x âm",
                 "explanation": r"Khi $x \to -\infty$, $\sqrt{x^2} = |x| = -x$. Do đó tử bằng $-x\sqrt{1 + 1/x^2}$, chia cho $x$ được kết quả là -1."

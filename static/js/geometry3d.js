@@ -482,8 +482,8 @@ window.initGeometry3D = function() {
         if (titleEl) titleEl.innerText = exp.title;
         if (explainBody) {
             explainBody.innerHTML = exp.body;
-            if (typeof renderMath === 'function') {
-                renderMath(explainBody);
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise([explainBody]).catch(() => {});
             }
         }
     }
@@ -590,18 +590,8 @@ window.initGeometry3D = function() {
         if (controls && controls.dispose) {
             try { controls.dispose(); } catch(_) {}
         }
-        if (currentShapeGroup) {
-            scene.remove(currentShapeGroup);
-            disposeHierarchy(currentShapeGroup);
-            currentShapeGroup.clear();
-            currentShapeGroup = null;
-        }
         disposeHierarchy(scene);
-        scene.clear();
-        try {
-            renderer.dispose();
-            renderer.forceContextLoss();
-        } catch(_) {}
+        try { renderer.dispose(); } catch(_) {}
         window._geo3dCleanup = null;
     };
 

@@ -281,46 +281,32 @@ document.addEventListener("DOMContentLoaded", function() {
     const timerDisplay = document.getElementById('countdownTimer');
     const form = document.getElementById('examForm');
 
-    const STORAGE_KEY_EXAM_ID = 'toan11_current_exam_id';
     const STORAGE_KEY_ENDTIME = 'toan11_exam_endtime_' + examId;
-    const STORAGE_KEY_ANSWERS = 'toan11_exam_userAnswers_' + examId;
     const STORAGE_KEY_DRAFT = 'toan11_exam_draft_' + examId;
     const STORAGE_KEY_SCORE = 'toan11_exam_score_' + examId;
 
     let examSubmitted = false;
 
-    // 1. Scoped KaTeX typesetting (never scans document.body)
-    if (typeof renderMath === 'function' && pageEl) {
-        renderMath(pageEl);
+    // 1. MathJax typesetting (scoped to exam container to avoid freezing)
+    if (window.MathJax && MathJax.typesetPromise && pageEl) {
+        MathJax.typesetPromise([pageEl]).catch(() => {});
     }
 
-    // 2. Initialize Exam State in localStorage
-    try {
-        localStorage.setItem(STORAGE_KEY_EXAM_ID, examId);
-        if (!localStorage.getItem(STORAGE_KEY_ANSWERS) && !localStorage.getItem(STORAGE_KEY_DRAFT)) {
-            localStorage.setItem(STORAGE_KEY_ANSWERS, JSON.stringify({ part1: {}, part2: {}, part3: {} }));
-        }
-    } catch (_) {}
-
-    // Drift-Free Timer using Date.now() & localStorage
+    // 2. Drift-Free Timer using Date.now() & localStorage
     const now = Date.now();
     let storedEndTime = localStorage.getItem(STORAGE_KEY_ENDTIME);
     let endTime;
 
     if (storedEndTime && !isNaN(parseInt(storedEndTime, 10))) {
         endTime = parseInt(storedEndTime, 10);
-        // If expired while away
-        if (endTime <= now) {
-            setTimeout(() => {
-                alert("⏰ Đã hết thời gian làm bài trong khi bạn rời trang! Hệ thống tự động thu bài và chấm điểm.");
-                gradeExam();
-            }, 100);
+        // Reset if expired long ago (> 2 hours)
+        if (endTime < now - 7200000) {
+            endTime = now + totalDurationSeconds * 1000;
+            localStorage.setItem(STORAGE_KEY_ENDTIME, endTime.toString());
         }
     } else {
         endTime = now + totalDurationSeconds * 1000;
-        try {
-            localStorage.setItem(STORAGE_KEY_ENDTIME, endTime.toString());
-        } catch (_) {}
+        localStorage.setItem(STORAGE_KEY_ENDTIME, endTime.toString());
     }
 
     function updateTimer() {
@@ -352,10 +338,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const timerInterval = setInterval(updateTimer, 1000);
     updateTimer();
 
-    // 3. Draft Answers Auto-Save & Restore (Auto-save on ANY click or typing)
+    // 3. Draft Answers Auto-Save & Restore
     function saveDraftAnswers() {
         if (examSubmitted) return;
-        const userAnswers = {
+        const draft = {
             part1: {},
             part2: {},
             part3: {}
@@ -366,7 +352,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const qId = card.dataset.id;
             const checked = card.querySelector(`input[name="p1_q${qId}"]:checked`);
             if (checked) {
-                userAnswers.part1[qId] = checked.value;
+                draft.part1[qId] = checked.value;
             }
         });
 
@@ -374,11 +360,11 @@ document.addEventListener("DOMContentLoaded", function() {
         document.querySelectorAll('.exam-question-card[data-part="2"]').forEach(card => {
             const qId = card.dataset.id;
             const subItems = card.querySelectorAll('.sub-item');
-            userAnswers.part2[qId] = {};
+            draft.part2[qId] = {};
             subItems.forEach((sub, subIdx) => {
                 const checked = sub.querySelector(`input[name="p2_q${qId}_sub${subIdx}"]:checked`);
                 if (checked) {
-                    userAnswers.part2[qId][subIdx] = checked.value;
+                    draft.part2[qId][subIdx] = checked.value;
                 }
             });
         });
@@ -388,22 +374,20 @@ document.addEventListener("DOMContentLoaded", function() {
             const qId = card.dataset.id;
             const inputElem = document.getElementById(`input_p3_${qId}`);
             if (inputElem && inputElem.value.trim()) {
-                userAnswers.part3[qId] = inputElem.value.trim();
+                draft.part3[qId] = inputElem.value.trim();
             }
         });
 
         try {
-            const serialized = JSON.stringify(userAnswers);
-            localStorage.setItem(STORAGE_KEY_ANSWERS, serialized);
-            localStorage.setItem(STORAGE_KEY_DRAFT, serialized);
+            localStorage.setItem(STORAGE_KEY_DRAFT, JSON.stringify(draft));
         } catch (_) {}
     }
 
     function restoreDraftAnswers() {
         try {
-            const raw = localStorage.getItem(STORAGE_KEY_ANSWERS) || localStorage.getItem(STORAGE_KEY_DRAFT);
-            if (!raw) return;
-            const draft = JSON.parse(raw);
+            const draftStr = localStorage.getItem(STORAGE_KEY_DRAFT);
+            if (!draftStr) return;
+            const draft = JSON.parse(draftStr);
 
             // Restore Part 1
             if (draft.part1) {
@@ -438,7 +422,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
             }
         } catch (e) {
-            console.error("Error restoring answers:", e);
+            console.error("Error restoring draft:", e);
         }
     }
 
@@ -456,7 +440,6 @@ document.addEventListener("DOMContentLoaded", function() {
             const card = this.closest('.exam-question-card');
             card.querySelectorAll('.p1-option-label').forEach(l => l.classList.remove('selected'));
             this.classList.add('selected');
-            saveDraftAnswers();
         });
     });
 
@@ -475,9 +458,7 @@ document.addEventListener("DOMContentLoaded", function() {
         clearInterval(timerInterval);
         try {
             localStorage.removeItem(STORAGE_KEY_ENDTIME);
-            localStorage.removeItem(STORAGE_KEY_ANSWERS);
             localStorage.removeItem(STORAGE_KEY_DRAFT);
-            localStorage.removeItem(STORAGE_KEY_EXAM_ID);
         } catch (_) {}
 
         let p1Score = 0.0;
@@ -621,11 +602,6 @@ document.addEventListener("DOMContentLoaded", function() {
         resultCard.classList.remove('d-none');
         resultCard.scrollIntoView({ behavior: 'smooth' });
 
-        // Typeset solutions using KaTeX
-        if (typeof renderMath === 'function' && pageEl) {
-            renderMath(pageEl);
-        }
-
         // Ẩn nút nộp bài
         document.getElementById('submitExamBtn').style.display = 'none';
     }
@@ -636,9 +612,7 @@ document.addEventListener("DOMContentLoaded", function() {
         retakeBtn.addEventListener('click', function() {
             try {
                 localStorage.removeItem(STORAGE_KEY_ENDTIME);
-                localStorage.removeItem(STORAGE_KEY_ANSWERS);
                 localStorage.removeItem(STORAGE_KEY_DRAFT);
-                localStorage.removeItem(STORAGE_KEY_EXAM_ID);
             } catch (_) {}
             window.location.reload();
         });

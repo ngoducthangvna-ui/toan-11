@@ -2,72 +2,8 @@
 
 :root {
     --app-font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    
-    /* Brand & Primary Gradients */
-    --primary-color: #2563eb;
-    --primary-hover: #1d4ed8;
-    --primary-light: #38bdf8;
     --primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
     --quiz-gradient: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
-    --hero-gradient: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0369a1 100%);
-    --feature-3d-gradient: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
-    --feature-exam-gradient: linear-gradient(135deg, #1e3a8a 0%, #4338ca 100%);
-
-    /* Theme Neutral Colors */
-    --bg-dark: #0f172a;
-    --bg-card-dark: #1e293b;
-    --text-muted: #94a3b8;
-    --text-subtle: #64748b;
-    --text-light: #f1f5f9;
-    --border-dark: rgba(255, 255, 255, 0.12);
-    --border-light: rgba(148, 163, 184, 0.35);
-}
-
-/* Semantic Classes to eliminate inline styles */
-.hero-lead {
-    max-width: 760px;
-}
-
-.feature-card-3d {
-    background: var(--feature-3d-gradient) !important;
-}
-
-.feature-card-exam {
-    background: var(--feature-exam-gradient) !important;
-}
-
-.badge-teal {
-    color: #0f766e !important;
-}
-
-.btn-teal {
-    color: #0f766e !important;
-}
-
-.sidebar-progress {
-    height: 6px;
-}
-
-.sidebar-progress-bar-init {
-    width: 0%;
-}
-
-.navbar-search-wrap-box {
-    max-width: 640px;
-}
-
-.search-kbd-text {
-    font-size: 0.72rem;
-}
-
-.search-dropdown-menu {
-    display: none;
-    max-height: 380px;
-    overflow-y: auto;
-}
-
-.app-toast-container {
-    z-index: 1090;
 }
 
 body {
@@ -114,201 +50,85 @@ body {
     background-color: transparent;
 }
 
-/* Desktop Sidebar 290px width & Layout */
+/* Desktop Sidebar 280px width & Layout */
 @media (min-width: 992px) {
     .sidebar-column {
-        width: 290px !important;
-        min-width: 290px !important;
-        max-width: 290px !important;
-        flex: 0 0 290px !important;
+        width: 280px !important;
+        flex: 0 0 280px !important;
+        max-width: 280px !important;
     }
     .main-column {
-        width: calc(100% - 290px) !important;
-        max-width: calc(100% - 290px) !important;
-        flex: 0 0 calc(100% - 290px) !important;
+        width: calc(100% - 280px) !important;
+        flex: 0 0 calc(100% - 280px) !important;
+        max-width: calc(100% - 280px) !important;
         min-width: 0 !important;
     }
 }
 
-/* Remove all underlines on sidebar links */
-.sidebar-wrapper a,
-.sidebar-column a,
-#sidebarOffcanvas a,
-.sidebar-quick-link,
-.sidebar-lesson-link {
-    text-decoration: none !important;
-}
-
-/* Quick Navigation Menu (Modern Detached Cards) */
-.sidebar-quick-nav {
-    display: flex !important;
-    flex-direction: column !important;
-    width: 100% !important;
-    gap: 3px !important;
-}
-
-.sidebar-quick-link {
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    padding: 8.5px 12px !important;
-    border-radius: 8px !important;
-    margin-bottom: 2px !important;
-    color: #e2e8f0 !important;
-    font-size: 13.5px !important;
-    font-weight: 500 !important;
-    text-decoration: none !important;
-    transition: all 0.2s ease !important;
-    background: transparent;
-    border: none !important;
-    box-sizing: border-box !important;
-    white-space: nowrap !important;
-}
-
-[data-bs-theme="light"] .sidebar-quick-link {
-    color: #334155 !important;
-}
-
-[data-bs-theme="dark"] .sidebar-quick-link {
-    color: #e2e8f0 !important;
-}
-
-.sidebar-quick-link:hover,
-.sidebar-quick-link.active {
-    background: rgba(255, 255, 255, 0.08) !important;
-    color: #ffffff !important;
-    text-decoration: none !important;
-}
-
-[data-bs-theme="light"] .sidebar-quick-link:hover,
-[data-bs-theme="light"] .sidebar-quick-link.active {
-    background: rgba(37, 99, 235, 0.1) !important;
-    color: #1d4ed8 !important;
-}
-
-.quick-link-left {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-}
-
-.quick-link-text {
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-}
-
-.quick-link-badge {
-    flex-shrink: 0 !important;
-    white-space: nowrap !important;
-    font-size: 11px !important;
-    padding: 2.5px 8px !important;
-    border-radius: 99px !important;
-    margin-left: 8px !important;
-}
-
-/* Volume Headers (TẬP 1 & TẬP 2) */
-.volume-header {
-    margin: 20px 0 8px 0 !important;
-    padding: 0 8px !important;
-    font-size: 11px !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.06em !important;
-    color: #64748b !important;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.volume-header.volume-header-first {
-    margin-top: 14px !important;
-}
-
-/* Sidebar Header & Button Styling */
-.sidebar-wrapper .accordion-header {
-    pointer-events: auto !important;
-}
-
-.sidebar-wrapper .accordion-item {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    margin-bottom: 3px !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+/* Sidebar Wrapping - Never cut text with ... */
+.sidebar-wrapper .nav-link,
+.sidebar-wrapper .list-group-item,
+.sidebar-chapter-label,
+.lesson-link-text {
+    white-space: normal !important;
+    word-break: break-word !important;
+    line-height: 1.4 !important;
 }
 
 .sidebar-wrapper .accordion-button {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    width: 100% !important;
-    padding: 8px 10px !important;
-    border-radius: 8px !important;
-    font-size: 14px !important;
-    font-weight: 600 !important;
-    color: #f1f5f9 !important;
-    background: transparent !important;
-    border: none !important;
-    cursor: pointer !important;
-    box-shadow: none !important;
-    transition: all 0.2s ease !important;
+    padding-right: 2.25rem !important;
 }
 
-[data-bs-theme="light"] .sidebar-wrapper .accordion-button {
-    color: #1e293b !important;
+.sidebar-wrapper .accordion-button div {
+    width: 100%;
 }
 
-.sidebar-wrapper .accordion-button:hover {
-    background: rgba(255, 255, 255, 0.06) !important;
-    color: #ffffff !important;
+/* ==========================================================================
+   Sidebar 60fps CSS Grid Accordion & Zero-Flicker State Lock
+   ========================================================================== */
+.no-transition,
+.no-transition * {
+    transition: none !important;
+    animation: none !important;
 }
 
-[data-bs-theme="light"] .sidebar-wrapper .accordion-button:hover {
-    background: rgba(148, 163, 184, 0.12) !important;
-    color: #0f172a !important;
+/* 60fps CSS Grid Accordion for Sidebar (Zero layout reflow) */
+.sidebar-accordion-collapse {
+    display: grid !important;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 220ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+    will-change: grid-template-rows;
+    visibility: visible !important;
 }
 
-.sidebar-wrapper .accordion-button:not(.collapsed) {
-    background: rgba(37, 99, 235, 0.08) !important;
-    color: #38bdf8 !important;
+.sidebar-accordion-collapse.show {
+    grid-template-rows: 1fr !important;
 }
 
-[data-bs-theme="light"] .sidebar-wrapper .accordion-button:not(.collapsed) {
-    background: rgba(37, 99, 235, 0.08) !important;
-    color: #1d4ed8 !important;
-}
-
-.chapter-btn-left {
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    text-align: left !important;
-    white-space: nowrap !important;
+.sidebar-accordion-inner {
     overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    min-height: 0 !important;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 160ms ease, transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
 }
 
-.sidebar-chapter-label {
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    font-size: 14px !important;
+.sidebar-accordion-collapse.show > .sidebar-accordion-inner {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-/* Original Native Chevron Arrow Rotation */
+/* Accordion button & Chevron rotation (GPU accelerated transform) */
+.sidebar-wrapper .accordion-button {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+
 .sidebar-wrapper .accordion-button::after {
-    transition: transform 0.2s ease-in-out !important;
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1) !important;
     will-change: transform;
-    flex-shrink: 0;
 }
 
 .sidebar-wrapper .accordion-button.collapsed::after {
@@ -319,192 +139,44 @@ body {
     transform: rotate(-180deg) !important;
 }
 
-/* ==========================================================================
-   Sidebar Accordion Collapse & Zero-Flicker State Lock
-   ========================================================================== */
-.no-transition,
-.no-transition * {
-    transition: none !important;
-    animation: none !important;
+/* Clean Nav links: eliminate transition: all, only color & background */
+.sidebar-wrapper .nav-link,
+.sidebar-wrapper .list-group-item {
+    transition: background-color 0.15s ease, color 0.15s ease !important;
 }
 
-/* Bulletproof Expand / Collapse: Non-open chapters are 100% hidden */
-.sidebar-accordion-collapse {
-    display: none !important;
+/* Eliminate heavy box-shadow or backdrop-filter during transitions */
+.sidebar-wrapper .accordion-item {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(148, 163, 184, 0.15) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
-.sidebar-accordion-collapse.show {
-    display: block !important;
-    animation: fadeInAccordion 0.18s ease-in-out;
-}
-
-@keyframes fadeInAccordion {
-    from {
-        opacity: 0;
-        transform: translateY(-3px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.sidebar-accordion-inner {
-    min-height: 0;
-}
-
-/* Tree-view Container for Lessons */
-.sidebar-lessons-tree {
-    margin-left: 14px !important;
-    padding-left: 10px !important;
-    border-left: 1.5px solid rgba(255, 255, 255, 0.12) !important;
-    margin-top: 4px !important;
-    margin-bottom: 8px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    width: calc(100% - 14px) !important;
-    box-sizing: border-box !important;
-    gap: 2px !important;
-}
-
-[data-bs-theme="light"] .sidebar-lessons-tree {
-    border-left: 1.5px solid rgba(148, 163, 184, 0.35) !important;
-}
-
-/* Individual Lesson Link - Strictly 1 single horizontal row */
-.sidebar-lesson-link {
-    text-decoration: none !important;
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    width: 100% !important;
-    padding: 6.5px 10px !important;
-    border-radius: 6px !important;
-    font-size: 13px !important;
-    line-height: 1.35 !important;
-    color: #94a3b8 !important;
-    transition: all 0.15s ease !important;
-    background: transparent;
-    box-sizing: border-box !important;
-    white-space: nowrap !important;
-    position: relative;
-}
-
-.sidebar-lesson-link .lesson-link-text {
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-    display: block !important;
-}
-
-.sidebar-lesson-link .lesson-check-icon {
-    flex-shrink: 0 !important;
-    margin-left: 6px !important;
-}
-
-[data-bs-theme="light"] .sidebar-lesson-link {
-    color: #64748b !important;
-}
-
-.sidebar-lesson-link:hover,
-.sidebar-lesson-link.active {
-    color: #38bdf8 !important;
-    background: rgba(56, 189, 248, 0.08) !important;
-    text-decoration: none !important;
-}
-
-[data-bs-theme="light"] .sidebar-lesson-link:hover,
-[data-bs-theme="light"] .sidebar-lesson-link.active {
-    color: #0284c7 !important;
-    background: rgba(14, 165, 233, 0.1) !important;
-    font-weight: 600 !important;
-}
-
-/* Active indicator notch connecting to tree guide line */
-.sidebar-lesson-link.active::before {
-    content: '';
-    position: absolute;
-    left: -11.5px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 16px;
-    border-radius: 2px;
-    background-color: #0284c7;
-}
-
-[data-bs-theme="dark"] .sidebar-lesson-link.active::before {
-    background-color: #38bdf8;
-    box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
-}
-
-/* Sidebar Sticky Container & Smooth Independent Vertical Scroll */
+/* Scrollbar Sidebar mỏng 5px, màu #334155 chuẩn Dark Mode */
 .sidebar-sticky {
-    position: sticky !important;
-    top: 64px !important;
-    height: calc(100vh - 64px) !important;
-    max-height: calc(100vh - 64px) !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-    padding-top: 1rem !important;
-    padding-bottom: 3.5rem !important;
-}
-
-.sidebar-wrapper {
-    display: block;
-    width: 100%;
-}
-
-#curriculumAccordion {
-    display: block;
-    width: 100%;
-}
-
-/* Scrollbar Sidebar mỏng 5px, thích ứng hoàn hảo Dark / Light Mode */
-#curriculumAccordion,
-.sidebar-sticky {
+    position: sticky;
+    top: 70px;
+    height: calc(100vh - 80px);
+    overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+    scrollbar-color: #334155 transparent;
 }
 
-#curriculumAccordion::-webkit-scrollbar,
 .sidebar-sticky::-webkit-scrollbar {
     width: 5px;
 }
 
-#curriculumAccordion::-webkit-scrollbar-track,
 .sidebar-sticky::-webkit-scrollbar-track {
     background: transparent;
 }
 
-#curriculumAccordion::-webkit-scrollbar-thumb,
 .sidebar-sticky::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.4);
+    background: #334155;
     border-radius: 999px;
 }
 
-#curriculumAccordion::-webkit-scrollbar-thumb:hover,
 .sidebar-sticky::-webkit-scrollbar-thumb:hover {
-    background: rgba(100, 116, 139, 0.7);
-}
-
-[data-bs-theme="dark"] #curriculumAccordion,
-[data-bs-theme="dark"] .sidebar-sticky {
-    scrollbar-color: #334155 transparent;
-}
-
-[data-bs-theme="dark"] #curriculumAccordion::-webkit-scrollbar-thumb,
-[data-bs-theme="dark"] .sidebar-sticky::-webkit-scrollbar-thumb {
-    background: #334155;
-}
-
-[data-bs-theme="dark"] #curriculumAccordion::-webkit-scrollbar-thumb:hover,
-[data-bs-theme="dark"] .sidebar-sticky::-webkit-scrollbar-thumb:hover {
     background: #475569;
 }
 
@@ -552,25 +224,6 @@ body {
     text-align: right;
 }
 
-/* Hero CTA Group on Single Horizontal Row */
-.hero-cta-group {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 12px;
-    align-items: center;
-}
-
-.hero-cta-group .btn {
-    white-space: nowrap;
-}
-
-/* Performance: content-visibility for offscreen homepage cards */
-.chapter-card-col {
-    content-visibility: auto;
-    contain-intrinsic-size: 0 280px;
-}
-
 /* Chapter Card & Animations */
 .chapter-card {
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease;
@@ -589,16 +242,53 @@ body {
     box-shadow: 0 14px 28px rgba(0,0,0,0.09) !important;
 }
 
-.chapter-title-link {
-    transition: color 0.15s ease-in-out;
-}
-
 .chapter-title-link:hover {
     color: #2563eb !important;
 }
 
-[data-bs-theme="dark"] .chapter-title-link:hover {
-    color: #38bdf8 !important;
+/* Header của Card: flex-nowrap & white-space: nowrap để không rớt số */
+.chapter-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+    margin-bottom: 0.5rem;
+}
+
+.chapter-card-header .badge,
+.chapter-card-header .chapter-number {
+    white-space: nowrap !important;
+    flex-shrink: 0;
+}
+
+/* Cụm nút bấm ở đáy Card: margin-top: auto để luôn thẳng hàng tuyệt đối */
+.chapter-card-actions {
+    margin-top: auto !important;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--bs-border-color-translucent);
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    width: 100%;
+}
+
+.chapter-card-actions .btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    font-size: 0.8rem !important;
+    padding: 0.42rem 0.65rem !important;
+    line-height: 1.25 !important;
+}
+
+.chapter-card-actions .btn-detail {
+    flex: 1 1 0;
+}
+
+.chapter-card-actions .btn-quiz {
+    flex-shrink: 0;
 }
 
 /* Lesson Preview Link Hover Effect */
@@ -804,6 +494,21 @@ body {
     color: #1d4ed8 !important;
 }
 
+.hero-btn-workout {
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: #f8fafc !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+}
+
+.hero-btn-workout:hover {
+    background: rgba(255, 255, 255, 0.22) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    transform: translateY(-2px);
+}
 
 /* 3D Geometry Canvas Container */
 .geometry-3d-wrapper {
@@ -957,112 +662,4 @@ body {
 .spa-fade-in {
     animation: spaFadeIn 180ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
 }
-
-/* ==========================================================================
-   LaTeX Math Spacing & Anti-FOUC (KaTeX & MathJax)
-   ========================================================================== */
-mjx-container[jax="CHTML"][display="false"],
-mjx-container:not([display="true"]),
-.katex {
-    margin: 0 3px !important;
-    display: inline-block !important;
-    vertical-align: -0.08em;
-}
-
-.katex-display,
-mjx-container[jax="CHTML"][display="true"] {
-    margin: 1rem 0 !important;
-    overflow-x: auto;
-    overflow-y: hidden;
-}
-
-/* Anti-FOUC gentle fade in for math contents */
-.lesson-page .theory-section {
-    transition: opacity 0.2s ease-in;
-}
-
-/* ==========================================================================
-   Subtle Hover Effects & Micro-interactions
-   ========================================================================== */
-.formula-card,
-.math-box {
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
-}
-
-.formula-card:hover,
-.math-box:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08) !important;
-}
-
-.lesson-nav-footer .btn {
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-}
-
-.lesson-nav-footer .btn:hover {
-    transform: translateY(-2px);
-}
-
-/* Search Dropdown Keyboard Highlight */
-.dropdown-item.search-active {
-    background-color: rgba(13, 110, 253, 0.12) !important;
-    border-left: 3px solid var(--bs-primary) !important;
-    padding-left: calc(1rem - 3px) !important;
-}
-
-/* ==========================================================================
-   Print Optimization (@media print)
-   ========================================================================== */
-@media print {
-    /* Hide navigation, header, sidebar, footer, search, buttons, and progress */
-    .navbar,
-    .sidebar-column,
-    #sidebarOffcanvas,
-    .spa-progress-bar,
-    .lesson-nav-footer,
-    #markCompleteBtn,
-    button[onclick="window.print()"],
-    .toast-container,
-    .footer,
-    .breadcrumb,
-    #themeToggleBtn {
-        display: none !important;
-    }
-
-    body {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-        font-size: 12pt !important;
-        line-height: 1.6 !important;
-    }
-
-    .container-fluid,
-    .main-column,
-    .lesson-content-card,
-    .card {
-        width: 100% !important;
-        max-width: 100% !important;
-        border: none !important;
-        box-shadow: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        background: transparent !important;
-    }
-
-    .formula-card,
-    .math-box {
-        border: 1px solid #ccc !important;
-        background-color: #fafafa !important;
-        color: #000000 !important;
-        page-break-inside: avoid;
-        break-inside: avoid;
-        margin-bottom: 1rem !important;
-        padding: 0.8rem 1rem !important;
-    }
-
-    mjx-container, .katex {
-        color: #000000 !important;
-    }
-}
-
 

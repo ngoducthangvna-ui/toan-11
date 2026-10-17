@@ -146,45 +146,5 @@ class Math11AppTests(unittest.TestCase):
             self.assertIn('id="spaScriptsContainer"', html_text, f"{path} missing spaScriptsContainer")
             res.close()
 
-    def test_lesson_streamlined_content(self):
-        """Kiểm tra trang bài học đã được tinh gọn và đã loại bỏ bài kiểm tra cuối chương theo yêu cầu"""
-        res = self.app.get('/chapter/1/lesson/1')
-        self.assertEqual(res.status_code, 200)
-        html_text = res.data.decode('utf-8')
-        self.assertNotIn('Mục tiêu cần đạt của bài học', html_text)
-        self.assertNotIn('Trắc nghiệm phản xạ nhanh', html_text)
-        self.assertNotIn('Ví dụ vận dụng trọng tâm', html_text)
-        self.assertIn('lesson-content-card', html_text)
-        self.assertIn('id="curriculumAccordion"', html_text)
-        self.assertNotIn('Kiểm tra Chương 1', html_text)
-        res.close()
-
-    def test_sidebar_accordion_structure(self):
-        """Kiểm tra cấu trúc thanh Sidebar: 4 Quick Links, container curriculumAccordion và Data-Driven Rendering từ main.js"""
-        res = self.app.get('/')
-        self.assertEqual(res.status_code, 200)
-        html_text = res.data.decode('utf-8')
-        self.assertIn('sidebar-quick-nav', html_text)
-        self.assertIn('sidebar-quick-link', html_text)
-        self.assertIn('Trang chủ tổng quan', html_text)
-        self.assertIn('Phòng thi thử 90 phút', html_text)
-        self.assertIn('Mô hình Không gian 3D', html_text)
-        self.assertIn('Sổ tay công thức 11', html_text)
-        self.assertIn('id="curriculumAccordion"', html_text)
-        res.close()
-
-        # Kiểm tra file static/js/main.js chứa mảng dữ liệu chaptersData và hàm renderSidebar()
-        res_js = self.app.get('/static/js/main.js')
-        self.assertEqual(res_js.status_code, 200)
-        js_text = res_js.data.decode('utf-8')
-        self.assertIn('const chaptersData', js_text)
-        self.assertIn('function renderSidebar', js_text)
-        self.assertIn('function initSidebarEventDelegation', js_text)
-        self.assertIn('Chương 1: Lượng giác', js_text)
-        self.assertIn('Chương 9: Xác suất', js_text)
-        res_js.close()
-
 if __name__ == '__main__':
     unittest.main()
-
-

@@ -81,7 +81,7 @@ EXAMS_GK2 = [
             {
                 "id": 6,
                 "question": r"Cho $a > 0, a \neq 1$. Giá trị của $a^{\log_a 5}$ bằng:",
-                "options": ["A. 5", "B. 1", r"C. $\log_a 5$", "D. $a^5$"],
+                "options": ["A. 5", "B. 1", "C. $\log_a 5$", "D. $a^5$"],
                 "correct": 0,
                 "method": "Tính chất logarit",
                 "explanation": r"Theo định nghĩa logarit: $a^{\log_a b} = b$ với mọi $b > 0$. Do đó $a^{\log_a 5} = 5$."
@@ -119,9 +119,9 @@ EXAMS_GK2 = [
                 "id": 10,
                 "question": r"Cho hình chóp $S.ABC$ có $SA \perp (ABC)$ và đáy $ABC$ là tam giác vuông tại $B$. Khẳng định nào sau đây là SAI?",
                 "options": [
-                    r"A. $AC \perp (SAB)$",
-                    r"B. $BC \perp (SAB)$",
-                    r"C. $SA \perp BC$",
+                    "A. $AC \perp (SAB)$",
+                    "B. $BC \perp (SAB)$",
+                    "C. $SA \perp BC$",
                     "D. Tam giác $SBC$ là tam giác vuông tại $B$"
                 ],
                 "correct": 0,

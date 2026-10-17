@@ -150,8 +150,8 @@
                     document.getElementById('latexResultDisplay').innerHTML = `$$${data.result_latex}$$`;
                     document.getElementById('textResultDisplay').innerText = `Python output: ${data.result_text}`;
 
-                    if (typeof renderMath === 'function') {
-                        renderMath(resultDisplay);
+                    if (window.MathJax) {
+                        MathJax.typesetPromise([resultDisplay]);
                     }
                 } else {
                     errorAlert.innerText = data.error;

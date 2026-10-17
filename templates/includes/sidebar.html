@@ -7,49 +7,131 @@
                 <span class="small fw-bold"><i class="bi bi-award-fill me-1"></i>Tiến độ học tập</span>
                 <span id="overallProgressText" class="badge bg-primary text-white">0%</span>
             </div>
-            <div class="progress sidebar-progress">
-                <div id="overallProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary sidebar-progress-bar-init" role="progressbar"></div>
+            <div class="progress" style="height: 6px;">
+                <div id="overallProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%"></div>
             </div>
             <div class="small text-muted mt-2 d-flex justify-content-between">
-                <span id="completedLessonsCount">0/29 bài</span>
+                <span id="completedLessonsCount">0/{{ total_lessons }} bài</span>
                 <a href="#" id="resetProgressBtn" class="text-decoration-none text-danger small" title="Đặt lại tiến độ">Làm mới</a>
             </div>
         </div>
     </div>
 
-    <!-- Quick Navigation Links (Detached modern cards, flex row layout) -->
-    <div class="sidebar-quick-nav mb-3">
-        <a href="{{ url_for('index') }}" class="sidebar-quick-link" title="Trang chủ tổng quan">
-            <span class="quick-link-left">
-                <i class="bi bi-house-door-fill text-primary flex-shrink-0"></i>
-                <span class="quick-link-text">Trang chủ tổng quan</span>
-            </span>
+    <!-- Quick Navigation Links -->
+    <div class="list-group list-group-flush mb-3 rounded-3 shadow-sm border bg-body overflow-hidden">
+        <a href="{{ url_for('index') }}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 py-2 px-3">
+            <i class="bi bi-house-door-fill text-primary flex-shrink-0"></i>
+            <span class="small fw-semibold flex-grow-1">Trang chủ tổng quan</span>
         </a>
-        <a href="{{ url_for('exams') }}" class="sidebar-quick-link" title="Phòng thi thử 90 phút (11 Đề HY)">
-            <span class="quick-link-left">
+        <a href="{{ url_for('exams') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between gap-2 py-2 px-3 text-primary fw-semibold bg-primary-subtle">
+            <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-clock-history text-primary flex-shrink-0"></i>
-                <span class="quick-link-text">Phòng thi thử 90 phút</span>
-            </span>
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill quick-link-badge">11 Đề HY</span>
+                <span class="small fw-semibold">Phòng thi thử 90 phút</span>
+            </div>
+            <span class="badge bg-primary rounded-pill flex-shrink-0" style="font-size: 0.68rem; padding: 0.22rem 0.5rem; white-space: nowrap;">11 Đề HY</span>
         </a>
-        <a href="{{ url_for('hinh_hoc_3d') }}" class="sidebar-quick-link" title="Mô hình Không gian 3D (C.4 & C.8)">
-            <span class="quick-link-left">
+        <a href="{{ url_for('hinh_hoc_3d') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between gap-2 py-2 px-3 text-success fw-semibold bg-success-subtle">
+            <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-bounding-box text-success flex-shrink-0"></i>
-                <span class="quick-link-text">Mô hình Không gian 3D</span>
-            </span>
-            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill quick-link-badge">C.4 & C.8</span>
+                <span class="small fw-semibold">Mô hình Không gian 3D</span>
+            </div>
+            <span class="badge bg-success rounded-pill flex-shrink-0" style="font-size: 0.68rem; padding: 0.22rem 0.5rem; white-space: nowrap;">C.4 & C.8</span>
         </a>
-        <a href="{{ url_for('formulas') }}" class="sidebar-quick-link" title="Sổ tay công thức 11 (Flashcard)">
-            <span class="quick-link-left">
+        <a href="{{ url_for('formulas') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between gap-2 py-2 px-3">
+            <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-journal-bookmark-fill text-warning flex-shrink-0"></i>
-                <span class="quick-link-text">Sổ tay công thức 11</span>
-            </span>
-            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill quick-link-badge">Flashcard</span>
+                <span class="small fw-medium">Sổ tay công thức 11</span>
+            </div>
+            <span class="badge bg-secondary-subtle text-secondary rounded-pill flex-shrink-0" style="font-size: 0.68rem; padding: 0.22rem 0.5rem; white-space: nowrap;">Flashcard</span>
         </a>
     </div>
 
-    <!-- Volumes and Chapters Accordion (Data-driven rendered via renderSidebar) -->
+    <!-- Volumes and Chapters Accordion -->
     <div class="accordion sidebar-accordion" id="curriculumAccordion">
-        <!-- Rendered automatically from chaptersData via renderSidebar() -->
+        <!-- Tập 1 Header -->
+        <div class="volume-header mt-2 mb-2 px-1 text-uppercase fw-bold text-muted small d-flex align-items-center gap-2">
+            <i class="bi bi-book-half text-primary"></i> TẬP 1 (HỌC KÌ I)
+        </div>
+
+        {% for ch in vol1_chapters %}
+        <div class="accordion-item border-0 mb-2 rounded-3 shadow-sm overflow-hidden">
+            <h2 class="accordion-header" id="heading-ch-{{ ch.id }}">
+                <button class="accordion-button sidebar-ch-btn py-2 px-3 {% if chapter and chapter.id == ch.id %}{% else %}collapsed{% endif %}" type="button" data-chapter-target="collapse-ch-{{ ch.id }}" aria-expanded="{% if chapter and chapter.id == ch.id %}true{% else %}false{% endif %}">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi {{ ch.icon }} text-primary flex-shrink-0"></i>
+                        <span class="fw-semibold small sidebar-chapter-label">{{ ch.short_title }}</span>
+                    </div>
+                </button>
+            </h2>
+            <div id="collapse-ch-{{ ch.id }}" class="sidebar-accordion-collapse {% if chapter and chapter.id == ch.id %}show{% endif %}" data-chapter-id="{{ ch.id }}">
+                <div class="sidebar-accordion-inner">
+                    <div class="accordion-body p-2 bg-body-tertiary">
+                        <ul class="nav nav-pills flex-column gap-1">
+                            {% for les in ch.lessons %}
+                            <li class="nav-item">
+                                <a href="{{ url_for('lesson_detail', chapter_id=ch.id, lesson_id=les.id) }}" 
+                                   class="nav-link py-1 px-2 small d-flex align-items-center justify-content-between rounded-2 {% if chapter and lesson and chapter.id == ch.id and lesson.id == les.id %}active{% endif %}"
+                                   data-lesson-id="ch{{ ch.id }}_les{{ les.id }}">
+                                    <span class="lesson-link-text flex-grow-1">{{ les.title }}</span>
+                                    <i class="bi bi-check-circle-fill lesson-check-icon text-success d-none ms-1"></i>
+                                </a>
+                            </li>
+                            {% endfor %}
+                            <li class="nav-item mt-1 pt-1 border-top border-light-subtle">
+                                <a href="{{ url_for('chapter_quiz', chapter_id=ch.id) }}" 
+                                   class="nav-link py-1 px-2 small d-flex align-items-center justify-content-between rounded-2 text-danger fw-semibold bg-danger-subtle {% if request.path == url_for('chapter_quiz', chapter_id=ch.id) %}active text-white bg-danger{% endif %}">
+                                    <span><i class="bi bi-pencil-square me-1"></i>Kiểm tra Chương {{ ch.id }}</span>
+                                    <span class="badge bg-danger text-white rounded-pill">{{ ch.quiz.questions|length }} câu</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Tập 2 Header -->
+        <div class="volume-header mt-4 mb-2 px-1 text-uppercase fw-bold text-muted small d-flex align-items-center gap-2">
+            <i class="bi bi-book-fill text-success"></i> TẬP 2 (HỌC KÌ II)
+        </div>
+
+        {% for ch in vol2_chapters %}
+        <div class="accordion-item border-0 mb-2 rounded-3 shadow-sm overflow-hidden">
+            <h2 class="accordion-header" id="heading-ch-{{ ch.id }}">
+                <button class="accordion-button sidebar-ch-btn py-2 px-3 {% if chapter and chapter.id == ch.id %}{% else %}collapsed{% endif %}" type="button" data-chapter-target="collapse-ch-{{ ch.id }}" aria-expanded="{% if chapter and chapter.id == ch.id %}true{% else %}false{% endif %}">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi {{ ch.icon }} text-success flex-shrink-0"></i>
+                        <span class="fw-semibold small sidebar-chapter-label">{{ ch.short_title }}</span>
+                    </div>
+                </button>
+            </h2>
+            <div id="collapse-ch-{{ ch.id }}" class="sidebar-accordion-collapse {% if chapter and chapter.id == ch.id %}show{% endif %}" data-chapter-id="{{ ch.id }}">
+                <div class="sidebar-accordion-inner">
+                    <div class="accordion-body p-2 bg-body-tertiary">
+                        <ul class="nav nav-pills flex-column gap-1">
+                            {% for les in ch.lessons %}
+                            <li class="nav-item">
+                                <a href="{{ url_for('lesson_detail', chapter_id=ch.id, lesson_id=les.id) }}" 
+                                   class="nav-link py-1 px-2 small d-flex align-items-center justify-content-between rounded-2 {% if chapter and lesson and chapter.id == ch.id and lesson.id == les.id %}active{% endif %}"
+                                   data-lesson-id="ch{{ ch.id }}_les{{ les.id }}">
+                                    <span class="lesson-link-text flex-grow-1">{{ les.title }}</span>
+                                    <i class="bi bi-check-circle-fill lesson-check-icon text-success d-none ms-1"></i>
+                                </a>
+                            </li>
+                            {% endfor %}
+                            <li class="nav-item mt-1 pt-1 border-top border-light-subtle">
+                                <a href="{{ url_for('chapter_quiz', chapter_id=ch.id) }}" 
+                                   class="nav-link py-1 px-2 small d-flex align-items-center justify-content-between rounded-2 text-danger fw-semibold bg-danger-subtle {% if request.path == url_for('chapter_quiz', chapter_id=ch.id) %}active text-white bg-danger{% endif %}">
+                                    <span><i class="bi bi-pencil-square me-1"></i>Kiểm tra Chương {{ ch.id }}</span>
+                                    <span class="badge bg-danger text-white rounded-pill">{{ ch.quiz.questions|length }} câu</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </div>
