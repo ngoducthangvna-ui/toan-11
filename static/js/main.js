@@ -694,34 +694,31 @@ function saveSidebarState() {
 }
 
 function initSidebarAccordion() {
-    // 1. Restore state from localStorage & auto-expand active chapter
+    // 1. Determine active chapter: only open active chapter or chapter 1 by default
     try {
-        let openIds = [];
-        const saved = localStorage.getItem('toan11_open_chapters') || sessionStorage.getItem('toan11_open_chapters');
-        if (saved) {
-            try { openIds = JSON.parse(saved); } catch (_) { openIds = []; }
-        }
-
-        // Detect active chapter from URL e.g. /chapter/2 or /chapter/2/lesson/1
+        let activeChId = '1';
         const pathMatch = window.location.pathname.match(/\/chapter\/(\d+)/);
         if (pathMatch && pathMatch[1]) {
-            const activeChId = String(pathMatch[1]);
-            if (!openIds.includes(activeChId)) {
-                openIds.push(activeChId);
+            activeChId = String(pathMatch[1]);
+        } else {
+            const lastLessonRaw = localStorage.getItem('toan11_last_lesson');
+            if (lastLessonRaw) {
+                try {
+                    const lastLesson = JSON.parse(lastLessonRaw);
+                    const m = lastLesson.url && lastLesson.url.match(/\/chapter\/(\d+)/);
+                    if (m && m[1]) activeChId = String(m[1]);
+                } catch (_) {}
             }
-        } else if (!saved) {
-            // First time visit on homepage: open Chapter 1 by default
-            openIds = ['1'];
         }
 
         // Apply state across both desktop & offcanvas mobile sidebars
         document.querySelectorAll('.sidebar-accordion-collapse').forEach(collapseEl => {
-            const chId = collapseEl.getAttribute('data-chapter-id');
+            const chId = String(collapseEl.getAttribute('data-chapter-id'));
             const targetId = collapseEl.id;
             const buttons = document.querySelectorAll(
                 `.sidebar-ch-btn[data-chapter-target="${targetId}"], .sidebar-ch-btn[data-chapter-id="${chId}"]`
             );
-            const isOpen = openIds.includes(String(chId)) || openIds.includes(Number(chId));
+            const isOpen = (chId === activeChId);
 
             if (isOpen) {
                 collapseEl.classList.add('show');
@@ -737,6 +734,16 @@ function initSidebarAccordion() {
                 });
             }
         });
+
+        // Auto scroll to active lesson if on a lesson page
+        if (pathMatch && pathMatch[1]) {
+            setTimeout(() => {
+                const activeLink = document.querySelector('#desktopSidebar a.active, #desktopSidebar .sidebar-lesson-link.active');
+                if (activeLink) {
+                    activeLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 120);
+        }
 
         saveSidebarState();
     } catch (e) {
@@ -906,11 +913,24 @@ function initSpaRouter() {
             if (collapseEl) {
                 const activeChId = collapseEl.getAttribute('data-chapter-id');
                 if (activeChId) {
-                    // Open active chapter across desktop & mobile
-                    document.querySelectorAll(`.sidebar-accordion-collapse[data-chapter-id="${activeChId}"]`).forEach(c => c.classList.add('show'));
-                    document.querySelectorAll(`.sidebar-ch-btn[data-chapter-id="${activeChId}"], .sidebar-ch-btn[data-chapter-target="collapse-ch-${activeChId}"]`).forEach(btn => {
-                        btn.classList.remove('collapsed');
-                        btn.setAttribute('aria-expanded', 'true');
+                    // Open active chapter across desktop & mobile, collapse other chapters
+                    document.querySelectorAll('.sidebar-accordion-collapse').forEach(c => {
+                        const id = c.getAttribute('data-chapter-id');
+                        if (id === activeChId) {
+                            c.classList.add('show');
+                        } else {
+                            c.classList.remove('show');
+                        }
+                    });
+                    document.querySelectorAll('.sidebar-ch-btn').forEach(btn => {
+                        const id = btn.getAttribute('data-chapter-id');
+                        if (id === activeChId) {
+                            btn.classList.remove('collapsed');
+                            btn.setAttribute('aria-expanded', 'true');
+                        } else {
+                            btn.classList.add('collapsed');
+                            btn.setAttribute('aria-expanded', 'false');
+                        }
                     });
 
                     saveSidebarState();
@@ -920,7 +940,7 @@ function initSpaRouter() {
             // Smooth scroll into view inside desktop sidebar
             if (shouldScroll) {
                 setTimeout(() => {
-                    const desktopActive = document.querySelector('#desktopSidebar a.active');
+                    const desktopActive = document.querySelector('#desktopSidebar a.active, #desktopSidebar .sidebar-lesson-link.active');
                     if (desktopActive) {
                         desktopActive.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }

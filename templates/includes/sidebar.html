@@ -17,33 +17,33 @@
         </div>
     </div>
 
-    <!-- Quick Navigation Links (Detached modern cards, no outer border) -->
+    <!-- Quick Navigation Links (Detached modern cards, flex row layout) -->
     <div class="sidebar-quick-nav mb-3">
         <a href="{{ url_for('index') }}" class="sidebar-quick-link">
-            <div class="d-flex align-items-center gap-2 text-truncate">
+            <span class="quick-link-left">
                 <i class="bi bi-house-door-fill text-primary flex-shrink-0"></i>
-                <span class="quick-link-title text-truncate">Trang chủ tổng quan</span>
-            </div>
+                <span class="quick-link-text">Trang chủ tổng quan</span>
+            </span>
         </a>
         <a href="{{ url_for('exams') }}" class="sidebar-quick-link">
-            <div class="d-flex align-items-center gap-2 text-truncate">
+            <span class="quick-link-left">
                 <i class="bi bi-clock-history text-primary flex-shrink-0"></i>
-                <span class="quick-link-title text-truncate">Phòng thi thử 90 phút</span>
-            </div>
+                <span class="quick-link-text">Phòng thi thử 90 phút</span>
+            </span>
             <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill quick-link-badge">11 Đề HY</span>
         </a>
         <a href="{{ url_for('hinh_hoc_3d') }}" class="sidebar-quick-link">
-            <div class="d-flex align-items-center gap-2 text-truncate">
+            <span class="quick-link-left">
                 <i class="bi bi-bounding-box text-success flex-shrink-0"></i>
-                <span class="quick-link-title text-truncate">Mô hình Không gian 3D</span>
-            </div>
+                <span class="quick-link-text">Mô hình Không gian 3D</span>
+            </span>
             <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill quick-link-badge">C.4 & C.8</span>
         </a>
         <a href="{{ url_for('formulas') }}" class="sidebar-quick-link">
-            <div class="d-flex align-items-center gap-2 text-truncate">
+            <span class="quick-link-left">
                 <i class="bi bi-journal-bookmark-fill text-warning flex-shrink-0"></i>
-                <span class="quick-link-title text-truncate">Sổ tay công thức 11</span>
-            </div>
+                <span class="quick-link-text">Sổ tay công thức 11</span>
+            </span>
             <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill quick-link-badge">Flashcard</span>
         </a>
     </div>
@@ -51,35 +51,31 @@
     <!-- Volumes and Chapters Accordion -->
     <div class="accordion sidebar-accordion" id="curriculumAccordion">
         <!-- Tập 1 Header -->
-        <div class="volume-header volume-header-first px-2 text-uppercase fw-bold d-flex align-items-center gap-2">
-            <i class="bi bi-book-half text-primary"></i> TẬP 1 (HỌC KÌ I)
+        <div class="volume-header volume-header-first">
+            <i class="bi bi-book-half text-primary flex-shrink-0"></i> TẬP 1 (HỌC KÌ I)
         </div>
 
         {% for ch in vol1_chapters %}
         <div class="accordion-item border-0 mb-1 rounded-3 overflow-hidden" data-chapter-id="{{ ch.id }}">
             <h2 class="accordion-header" id="heading-ch-{{ ch.id }}">
-                <button class="accordion-button sidebar-ch-btn py-2 px-3 {% if chapter and chapter.id == ch.id %}{% else %}collapsed{% endif %}" type="button" data-chapter-target="collapse-ch-{{ ch.id }}" data-chapter-id="{{ ch.id }}" aria-expanded="{% if chapter and chapter.id == ch.id %}true{% else %}false{% endif %}">
-                    <div class="d-flex align-items-center gap-2 text-truncate">
+                <button class="accordion-button sidebar-ch-btn {% if chapter and chapter.id == ch.id %}{% else %}collapsed{% endif %}" type="button" data-chapter-target="collapse-ch-{{ ch.id }}" data-chapter-id="{{ ch.id }}" aria-expanded="{% if chapter and chapter.id == ch.id %}true{% else %}false{% endif %}">
+                    <span class="chapter-btn-left">
                         <i class="bi {{ ch.icon }} text-primary flex-shrink-0"></i>
-                        <span class="fw-semibold sidebar-chapter-label text-truncate">{{ ch.short_title }}</span>
-                    </div>
+                        <span class="sidebar-chapter-label">{{ ch.short_title }}</span>
+                    </span>
                 </button>
             </h2>
             <div id="collapse-ch-{{ ch.id }}" class="sidebar-accordion-collapse {% if chapter and chapter.id == ch.id %}show{% endif %}" data-chapter-id="{{ ch.id }}">
                 <div class="sidebar-accordion-inner">
                     <div class="sidebar-lessons-tree">
-                        <ul class="nav nav-pills flex-column gap-1">
-                            {% for les in ch.lessons %}
-                            <li class="nav-item">
-                                <a href="{{ url_for('lesson_detail', chapter_id=ch.id, lesson_id=les.id) }}" 
-                                   class="nav-link sidebar-lesson-link py-1 px-2 d-flex align-items-center justify-content-between rounded-2 {% if chapter and lesson and chapter.id == ch.id and lesson.id == les.id %}active{% endif %}"
-                                   data-lesson-id="ch{{ ch.id }}_les{{ les.id }}">
-                                    <span class="lesson-link-text flex-grow-1">{{ les.title }}</span>
-                                    <i class="bi bi-check-circle-fill lesson-check-icon text-success d-none ms-1 flex-shrink-0"></i>
-                                </a>
-                            </li>
-                            {% endfor %}
-                        </ul>
+                        {% for les in ch.lessons %}
+                        <a href="{{ url_for('lesson_detail', chapter_id=ch.id, lesson_id=les.id) }}" 
+                           class="sidebar-lesson-link {% if chapter and lesson and chapter.id == ch.id and lesson.id == les.id %}active{% endif %}"
+                           data-lesson-id="ch{{ ch.id }}_les{{ les.id }}">
+                            <span class="lesson-link-text">{{ les.title }}</span>
+                            <i class="bi bi-check-circle-fill lesson-check-icon text-success d-none ms-1 flex-shrink-0"></i>
+                        </a>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -87,35 +83,31 @@
         {% endfor %}
 
         <!-- Tập 2 Header -->
-        <div class="volume-header px-2 text-uppercase fw-bold d-flex align-items-center gap-2">
-            <i class="bi bi-book-fill text-success"></i> TẬP 2 (HỌC KÌ II)
+        <div class="volume-header">
+            <i class="bi bi-book-fill text-success flex-shrink-0"></i> TẬP 2 (HỌC KÌ II)
         </div>
 
         {% for ch in vol2_chapters %}
         <div class="accordion-item border-0 mb-1 rounded-3 overflow-hidden" data-chapter-id="{{ ch.id }}">
             <h2 class="accordion-header" id="heading-ch-{{ ch.id }}">
-                <button class="accordion-button sidebar-ch-btn py-2 px-3 {% if chapter and chapter.id == ch.id %}{% else %}collapsed{% endif %}" type="button" data-chapter-target="collapse-ch-{{ ch.id }}" data-chapter-id="{{ ch.id }}" aria-expanded="{% if chapter and chapter.id == ch.id %}true{% else %}false{% endif %}">
-                    <div class="d-flex align-items-center gap-2 text-truncate">
+                <button class="accordion-button sidebar-ch-btn {% if chapter and chapter.id == ch.id %}{% else %}collapsed{% endif %}" type="button" data-chapter-target="collapse-ch-{{ ch.id }}" data-chapter-id="{{ ch.id }}" aria-expanded="{% if chapter and chapter.id == ch.id %}true{% else %}false{% endif %}">
+                    <span class="chapter-btn-left">
                         <i class="bi {{ ch.icon }} text-success flex-shrink-0"></i>
-                        <span class="fw-semibold sidebar-chapter-label text-truncate">{{ ch.short_title }}</span>
-                    </div>
+                        <span class="sidebar-chapter-label">{{ ch.short_title }}</span>
+                    </span>
                 </button>
             </h2>
             <div id="collapse-ch-{{ ch.id }}" class="sidebar-accordion-collapse {% if chapter and chapter.id == ch.id %}show{% endif %}" data-chapter-id="{{ ch.id }}">
                 <div class="sidebar-accordion-inner">
                     <div class="sidebar-lessons-tree">
-                        <ul class="nav nav-pills flex-column gap-1">
-                            {% for les in ch.lessons %}
-                            <li class="nav-item">
-                                <a href="{{ url_for('lesson_detail', chapter_id=ch.id, lesson_id=les.id) }}" 
-                                   class="nav-link sidebar-lesson-link py-1 px-2 d-flex align-items-center justify-content-between rounded-2 {% if chapter and lesson and chapter.id == ch.id and lesson.id == les.id %}active{% endif %}"
-                                   data-lesson-id="ch{{ ch.id }}_les{{ les.id }}">
-                                    <span class="lesson-link-text flex-grow-1">{{ les.title }}</span>
-                                    <i class="bi bi-check-circle-fill lesson-check-icon text-success d-none ms-1 flex-shrink-0"></i>
-                                </a>
-                            </li>
-                            {% endfor %}
-                        </ul>
+                        {% for les in ch.lessons %}
+                        <a href="{{ url_for('lesson_detail', chapter_id=ch.id, lesson_id=les.id) }}" 
+                           class="sidebar-lesson-link {% if chapter and lesson and chapter.id == ch.id and lesson.id == les.id %}active{% endif %}"
+                           data-lesson-id="ch{{ ch.id }}_les{{ les.id }}">
+                            <span class="lesson-link-text">{{ les.title }}</span>
+                            <i class="bi bi-check-circle-fill lesson-check-icon text-success d-none ms-1 flex-shrink-0"></i>
+                        </a>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
